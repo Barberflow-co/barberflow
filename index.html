@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarberFlow — Sistema para Prótese Capilar</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0D6EFD;--brand-dark:#0A56C9;--brand-light:#EBF3FF;
+  --accent:#00C48C;--accent-light:#E6FAF5;
+  --warn:#F59E0B;--danger:#EF4444;
+  --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;
+  --gray-300:#CBD5E1;--gray-400:#94A3B8;--gray-500:#64748B;
+  --gray-600:#475569;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;
+  --white:#FFFFFF;--sidebar-w:240px;--topbar-h:60px;
+  --radius:10px;--radius-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);
+}
+html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--gray-800);background:var(--gray-50);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:4px}
+.page{display:none;min-height:100vh}.page.active{display:flex}
+
+/* AUTH */
+#page-login,#page-register{flex-direction:row;min-height:100vh}
+.auth-left{flex:1;background:var(--brand);display:flex;flex-direction:column;justify-content:center;padding:64px;position:relative;overflow:hidden}
+.auth-left::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.05)}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:48px;position:relative;z-index:1}
+.auth-brand-mark{width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:18px;color:#fff}
+.auth-brand-name{font-family:'Sora',sans-serif;font-weight:700;font-size:20px;color:#fff}
+.auth-headline{font-family:'Sora',sans-serif;font-size:32px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:16px;position:relative;z-index:1}
+.auth-sub{font-size:15px;color:rgba(255,255,255,.7);line-height:1.6;position:relative;z-index:1;max-width:340px}
+.auth-feats{margin-top:36px;position:relative;z-index:1}
+.auth-feat{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.auth-feat-icon{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.auth-feat-text{font-size:13px;color:rgba(255,255,255,.85)}
+.auth-right{flex:0 0 480px;display:flex;align-items:center;justify-content:center;padding:48px;background:var(--white)}
+.auth-form-wrap{width:100%;max-width:380px}
+.auth-form-title{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--gray-900);margin-bottom:6px}
+.auth-form-sub{font-size:14px;color:var(--gray-500);margin-bottom:32px}
+
+/* APP */
+#page-app{flex-direction:row}
+.sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;z-index:50}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 20px;height:var(--topbar-h);border-bottom:1px solid var(--gray-100)}
+.sidebar-brand-mark{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.sidebar-brand-name{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:var(--gray-900)}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray-400);padding:8px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);font-size:13.5px;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all .15s;margin-bottom:1px}
+.nav-item:hover{background:var(--gray-100);color:var(--gray-900)}
+.nav-item.active{background:var(--brand-light);color:var(--brand)}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sidebar-user{padding:14px 16px;border-top:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;cursor:pointer}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:var(--brand);flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:var(--gray-800)}
+.user-role{font-size:11px;color:var(--gray-400)}
+.main-content{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:var(--topbar-h);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--white);position:sticky;top:0;z-index:40}
+.topbar-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900)}
+.view{display:none;padding:28px;flex:1}.view.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--gray-900)}
+.page-sub{font-size:13px;color:var(--gray-500);margin-top:3px}
+
+/* COMPONENTS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius);cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .15s;white-space:nowrap}
+.btn-sm{padding:7px 14px;font-size:12.5px}.btn-md{padding:10px 18px;font-size:13.5px}.btn-lg{padding:13px 24px;font-size:15px}
+.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:var(--brand-dark)}
+.btn-outline{background:transparent;border:1px solid var(--gray-300);color:var(--gray-700)}.btn-outline:hover{background:var(--gray-50)}
+.btn-ghost{background:transparent;color:var(--gray-600)}.btn-ghost:hover{background:var(--gray-100)}
+.btn-danger{background:var(--danger);color:#fff}
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-box{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px}
+.stat-label{font-size:12px;font-weight:500;color:var(--gray-500);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:700;color:var(--gray-900);font-family:'Sora',sans-serif;line-height:1}
+.stat-trend{font-size:12px;margin-top:6px}.stat-trend.up{color:var(--accent)}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px}
+.badge-green{background:#DCFCE7;color:#166534}.badge-blue{background:#DBEAFE;color:#1D4ED8}
+.badge-yellow{background:#FEF3C7;color:#92400E}.badge-red{background:#FEE2E2;color:#991B1B}
+.badge-gray{background:var(--gray-100);color:var(--gray-600)}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12.5px;font-weight:500;color:var(--gray-700);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{width:100%;border:1px solid var(--gray-300);border-radius:var(--radius);padding:10px 13px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,110,253,.08)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--gray-200)}
+table{width:100%;border-collapse:collapse;background:var(--white)}
+th{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--gray-500);padding:12px 16px;border-bottom:1px solid var(--gray-200);text-align:left;background:var(--gray-50)}
+td{padding:13px 16px;border-bottom:1px solid var(--gray-100);font-size:13.5px;color:var(--gray-700)}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius-lg);width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--gray-200)}
+.modal-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900)}
+.modal-close{background:var(--gray-100);border:none;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--gray-500)}
+.modal-body{padding:24px}.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.divider{height:1px;background:var(--gray-100);margin:20px 0}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius);padding:9px 14px}
+.search-box input{background:none;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--gray-700);flex:1}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:var(--brand);flex-shrink:0}
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:14px;font-weight:600;color:var(--gray-800)}
+.appt-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--gray-100)}
+.appt-row:last-child{border-bottom:none}
+.appt-time-box{text-align:center;min-width:52px}
+.appt-hour{font-size:14px;font-weight:700;color:var(--gray-900)}
+.appt-dur{font-size:11px;color:var(--gray-400);margin-top:2px}
+.appt-divider{width:1px;height:36px;background:var(--gray-200);flex-shrink:0}
+.appt-info{flex:1}
+.appt-name{font-size:14px;font-weight:600;color:var(--gray-800)}
+.appt-type{font-size:12px;color:var(--gray-500);margin-top:2px}
+.toggle-opt{border:1px solid var(--gray-300);border-radius:var(--radius);padding:8px 14px;font-size:13px;cursor:pointer;transition:all .15s;color:var(--gray-600);display:inline-block;margin:4px}
+.toggle-opt.active{border-color:var(--brand);background:var(--brand-light);color:var(--brand);font-weight:500}
+.scale-row{display:flex;gap:4px}
+.scale-btn{flex:1;text-align:center;border:1px solid var(--gray-300);border-radius:6px;padding:7px 2px;font-size:12.5px;cursor:pointer;transition:all .15s;color:var(--gray-600)}
+.scale-btn.active{border-color:var(--brand);background:var(--brand-light);color:var(--brand);font-weight:600}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:#fff;padding:13px 20px;border-radius:var(--radius);font-size:13.5px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-success{background:#166534}.toast-error{background:#991B1B}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--gray-400);font-size:14px}
+.empty-state{text-align:center;padding:48px 20px;color:var(--gray-400)}
+.empty-state-icon{font-size:40px;margin-bottom:12px}
+.empty-state-title{font-size:16px;font-weight:600;color:var(--gray-600);margin-bottom:6px}
+.anamnese-block{border:1px solid var(--gray-200);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden}
+.anamnese-block-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.anamnese-block-title{font-size:13.5px;font-weight:600;color:var(--gray-800)}
+.anamnese-block-body{padding:18px}
+.plan-chip{display:inline-flex;align-items:center;gap:5px;background:var(--brand-light);color:var(--brand);border:1px solid rgba(13,110,253,.2);border-radius:100px;font-size:11px;font-weight:600;padding:3px 10px}
+.check-item{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--gray-200);border-radius:var(--radius);padding:10px 13px;cursor:pointer;transition:border-color .15s;margin-bottom:7px}
+.check-item.checked{border-color:var(--brand);background:var(--brand-light)}
+.check-box{width:18px;height:18px;border:1.5px solid var(--gray-300);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:transparent;margin-top:1px;transition:all .15s}
+.check-item.checked .check-box{background:var(--brand);border-color:var(--brand);color:#fff}
+@media(max-width:768px){:root{--sidebar-w:0px}.sidebar{transform:translateX(-240px);transition:transform .3s}.sidebar.open{transform:translateX(0);width:240px}.main-content{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.auth-left{display:none}.auth-right{flex:1}.form-grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="page active" id="page-login">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-brand-mark">BF</div>
+      <span class="auth-brand-name">BarberFlow</span>
+    </div>
+    <div class="auth-headline">O sistema feito para especialistas em prótese capilar.</div>
+    <div class="auth-sub">Gestão completa, agenda online, anamnese e WhatsApp automático. Tudo em um só lugar.</div>
+    <div class="auth-feats">
+      <div class="auth-feat"><div class="auth-feat-icon">📋</div><div class="auth-feat-text">Ficha de anamnese específica para prótese</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">💬</div><div class="auth-feat-text">Lembretes automáticos via WhatsApp</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">📅</div><div class="auth-feat-text">Agenda online — celular e computador</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">💳</div><div class="auth-feat-text">Pagamentos integrados com Mercado Pago</div></div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-form-title">Bem-vindo de volta!</div>
+      <div class="auth-form-sub">Entre na sua conta para continuar.</div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="login-pass" placeholder="••••••••"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Lembrar de mim</label>
+        <a href="#" style="font-size:13px;color:var(--brand);text-decoration:none">Esqueci a senha</a>
+      </div>
+      <button class="btn btn-lg btn-primary" style="width:100%;margin-bottom:14px" onclick="doLogin()">Entrar</button>
+      <div id="login-error" style="color:var(--danger);font-size:13px;text-align:center;margin-bottom:12px;display:none"></div>
+      <div style="text-align:center;font-size:13px;color:var(--gray-500)">
+        Não tem conta? <a href="#" style="color:var(--brand);text-decoration:none;font-weight:500" onclick="go('register')">Criar conta grátis</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CADASTRO -->
+<div class="page" id="page-register">
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-brand-mark">BF</div>
+      <span class="auth-brand-name">BarberFlow</span>
+    </div>
+    <div class="auth-headline">14 dias grátis. Sem cartão de crédito.</div>
+    <div class="auth-sub">Crie sua conta em menos de 2 minutos.</div>
+    <div class="auth-feats">
+      <div class="auth-feat"><div class="auth-feat-icon">✅</div><div class="auth-feat-text">Configuração em minutos</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">📱</div><div class="auth-feat-text">Acesse pelo celular ou computador</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">🔒</div><div class="auth-feat-text">Seus dados seguros e protegidos</div></div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-form-title">Criar conta grátis</div>
+      <div class="auth-form-sub">Comece seu período de teste de 14 dias.</div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="reg-nome" type="text" placeholder="João"></div>
+        <div class="form-group"><label class="form-label">Sobrenome</label><input class="form-input" id="reg-sobrenome" type="text" placeholder="Silva"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Nome da barbearia</label><input class="form-input" id="reg-barbearia" type="text" placeholder="Barbearia Premium"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="reg-email" type="email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="reg-tel" type="tel" placeholder="(11) 9 9999-9999"></div>
+      <div class="form-group"><label class="form-label">Senha</label><input class="form-input" id="reg-pass" type="password" placeholder="Mínimo 8 caracteres"></div>
+      <button class="btn btn-lg btn-primary" style="width:100%;margin-bottom:12px" onclick="doRegister()">Criar conta gratuitamente →</button>
+      <div id="reg-error" style="color:var(--danger);font-size:13px;text-align:center;margin-bottom:12px;display:none"></div>
+      <div style="text-align:center;font-size:13px;color:var(--gray-500)">Já tem conta? <a href="#" style="color:var(--brand);font-weight:500;text-decoration:none" onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="page" id="page-app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">BF</div>
+      <span class="sidebar-brand-name">BarberFlow</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="switchView('dashboard',this)"><span class="nav-icon">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="switchView('agenda',this)"><span class="nav-icon">📅</span>Agenda</div>
+      <div class="nav-item" onclick="switchView('clientes',this)"><span class="nav-icon">👥</span>Clientes</div>
+      <div class="nav-item" onclick="switchView('anamnese',this)"><span class="nav-icon">📋</span>Anamnese</div>
+      <div class="nav-section-label" style="margin-top:8px">Financeiro</div>
+      <div class="nav-item" onclick="switchView('pagamentos',this)"><span class="nav-icon">💳</span>Pagamentos</div>
+      <div class="nav-item" onclick="switchView('relatorios',this)"><span class="nav-icon">📊</span>Relatórios</div>
+      <div class="nav-section-label" style="margin-top:8px">Gestão</div>
+      <div class="nav-item" onclick="switchView('equipe',this)"><span class="nav-icon">💈</span>Equipe</div>
+      <div class="nav-item" onclick="switchView('whatsapp',this)"><span class="nav-icon">💬</span>WhatsApp</div>
+      <div class="nav-item" onclick="switchView('configuracoes',this)"><span class="nav-icon">⚙️</span>Configurações</div>
+    </nav>
+    <div class="sidebar-user" onclick="doLogout()">
+      <div class="user-avatar" id="user-initials">--</div>
+      <div>
+        <div class="user-name" id="user-name-display">Carregando...</div>
+        <div class="user-role" id="user-plan-display">Plano Starter</div>
+      </div>
+      <span style="margin-left:auto;font-size:13px;color:var(--gray-400)" title="Sair">↩</span>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="plan-chip">✦ Profissional</span>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-novo-ag')">+ Novo agendamento</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="dash-greeting">Bom dia! 👋</div>
+          <div class="page-sub" id="dash-date">Carregando...</div>
+        </div>
+        <button class="btn btn-md btn-primary" onclick="openModal('modal-novo-ag')">+ Novo agendamento</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">Hoje</div><div class="stat-val" id="stat-hoje">0</div><div class="stat-trend up">agendamentos</div></div>
+        <div class="stat-box"><div class="stat-label">Clientes</div><div class="stat-val" id="stat-clientes">0</div><div class="stat-trend up">cadastrados</div></div>
+        <div class="stat-box"><div class="stat-label">Este mês</div><div class="stat-val" id="stat-mes">0</div><div class="stat-trend up">procedimentos</div></div>
+        <div class="stat-box"><div class="stat-label">Faturamento</div><div class="stat-val" style="font-size:20px" id="stat-fat">R$0</div><div class="stat-trend up">este mês</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+        <div class="card">
+          <div class="section-hd">
+            <div class="section-title">Próximos agendamentos</div>
+            <button class="btn btn-sm btn-outline" onclick="switchView('agenda',document.querySelector('[onclick*=agenda]'))">Ver todos</button>
+          </div>
+          <div id="dash-agenda"><div class="loading">Carregando...</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="section-title" style="margin-bottom:12px">Ações rápidas</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="openModal('modal-novo-ag')"><span style="font-size:20px">📅</span><span>Agendar</span></button>
+              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="openModal('modal-novo-cliente')"><span style="font-size:20px">👤</span><span>Cliente</span></button>
+              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="switchView('anamnese',document.querySelector('[onclick*=anamnese]'))"><span style="font-size:20px">📋</span><span>Anamnese</span></button>
+              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="switchView('whatsapp',document.querySelector('[onclick*=whatsapp]'))"><span style="font-size:20px">💬</span><span>WhatsApp</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="view" id="view-clientes">
+      <div class="page-header">
+        <div><div class="page-title">Clientes</div><div class="page-sub" id="clientes-count">Carregando...</div></div>
+        <button class="btn btn-md btn-primary" onclick="openModal('modal-novo-cliente')">+ Novo cliente</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <div class="search-box" style="flex:1">🔍 <input type="text" placeholder="Buscar por nome ou telefone..." id="search-clientes" oninput="filtrarClientes()"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Cadastro</th><th></th></tr></thead>
+          <tbody id="tabela-clientes"><tr><td colspan="5"><div class="loading">Carregando...</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="view" id="view-agenda">
+      <div class="page-header">
+        <div><div class="page-title">Agenda</div><div class="page-sub">Gerencie seus agendamentos</div></div>
+        <button class="btn btn-md btn-primary" onclick="openModal('modal-novo-ag')">+ Novo agendamento</button>
+      </div>
+      <div class="card">
+        <div class="section-hd">
+          <div class="section-title" id="agenda-date-title">Hoje</div>
+        </div>
+        <div id="agenda-lista"><div class="loading">Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- ANAMNESE -->
+    <div class="view" id="view-anamnese">
+      <div class="page-header">
+        <div><div class="page-title">Ficha de Anamnese</div><div class="page-sub">Preencha na primeira consulta do cliente</div></div>
+        <button class="btn btn-md btn-primary" onclick="salvarAnamnese()">Salvar ficha</button>
+      </div>
+      <div style="max-width:800px">
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label">Cliente</label>
+          <select class="form-select" id="anam-cliente"><option value="">Selecionar cliente...</option></select>
+        </div>
+        <div class="anamnese-block">
+          <div class="anamnese-block-header"><span style="font-size:18px">🔬</span><div class="anamnese-block-title">Histórico de alopecia</div></div>
+          <div class="anamnese-block-body">
+            <div class="form-grid-2">
+              <div class="form-group"><label class="form-label">Tipo de alopecia</label>
+                <select class="form-select" id="anam-tipo">
+                  <option value="">Selecionar...</option>
+                  <option>Alopecia androgenética</option><option>Alopecia areata</option>
+                  <option>Alopecia totalis</option><option>Quimioterapia / radioterapia</option><option>Outra</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Há quanto tempo</label>
+                <select class="form-select" id="anam-tempo">
+                  <option>Menos de 1 ano</option><option>1 a 3 anos</option><option>3 a 5 anos</option><option>Mais de 5 anos</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Escala de Norwood</label>
+              <div class="scale-row" id="norwood">
+                <div class="scale-btn" onclick="selectScale('norwood',this)">I</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">II</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">III</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">IV</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">V</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">VI</div>
+                <div class="scale-btn" onclick="selectScale('norwood',this)">VII</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="anamnese-block">
+          <div class="anamnese-block-header"><span style="font-size:18px">💊</span><div class="anamnese-block-title">Saúde</div></div>
+          <div class="anamnese-block-body">
+            <div class="form-grid-2">
+              <div class="form-group"><label class="form-label">Alergias</label><input class="form-input" id="anam-alergias" placeholder="Ex: cola látex..."></div>
+              <div class="form-group"><label class="form-label">Medicamentos</label><input class="form-input" id="anam-med" placeholder="Ex: Finasterida..."></div>
+            </div>
+            <div class="form-group"><label class="form-label">Tipo de pele do couro cabeludo</label>
+              <div id="tg-pele">
+                <span class="toggle-opt active" onclick="selToggle('tg-pele',this)">Seca</span>
+                <span class="toggle-opt" onclick="selToggle('tg-pele',this)">Normal</span>
+                <span class="toggle-opt" onclick="selToggle('tg-pele',this)">Oleosa</span>
+                <span class="toggle-opt" onclick="selToggle('tg-pele',this)">Mista</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="anamnese-block">
+          <div class="anamnese-block-header"><span style="font-size:18px">🎯</span><div class="anamnese-block-title">Preferências</div></div>
+          <div class="anamnese-block-body">
+            <div class="form-group"><label class="form-label">Material preferido</label>
+              <div id="tg-mat">
+                <span class="toggle-opt active" onclick="selToggle('tg-mat',this)">Humano</span>
+                <span class="toggle-opt" onclick="selToggle('tg-mat',this)">Sintético</span>
+                <span class="toggle-opt" onclick="selToggle('tg-mat',this)">Misto</span>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Fixação preferida</label>
+              <div id="tg-fix">
+                <span class="toggle-opt" onclick="selToggle('tg-fix',this)">Fita dupla face</span>
+                <span class="toggle-opt active" onclick="selToggle('tg-fix',this)">Cola líquida</span>
+                <span class="toggle-opt" onclick="selToggle('tg-fix',this)">Ambas</span>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="anam-obs" placeholder="Informações importantes sobre o cliente..."></textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGAMENTOS -->
+    <div class="view" id="view-pagamentos">
+      <div class="page-header"><div><div class="page-title">Pagamentos</div><div class="page-sub">Integração com gateways de pagamento</div></div></div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Gateways disponíveis</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#009EE3;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">MP</div>
+            <div><div style="font-weight:600;font-size:14px">Mercado Pago</div><div style="font-size:12px;color:var(--gray-500)">Pix, cartão, boleto</div></div>
+          </div>
+          <button class="btn btn-sm btn-outline">Configurar</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#00A859;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">AP</div>
+            <div><div style="font-weight:600;font-size:14px">App Max (Asaas)</div><div style="font-size:12px;color:var(--gray-500)">Cobranças recorrentes</div></div>
+          </div>
+          <button class="btn btn-sm btn-outline">Configurar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELATORIOS -->
+    <div class="view" id="view-relatorios">
+      <div class="page-header"><div><div class="page-title">Relatórios</div></div></div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">Agendamentos</div><div class="stat-val" id="rel-ag">0</div></div>
+        <div class="stat-box"><div class="stat-label">Clientes</div><div class="stat-val" id="rel-cl">0</div></div>
+        <div class="stat-box"><div class="stat-label">Faturamento</div><div class="stat-val" style="font-size:18px" id="rel-fat">R$0</div></div>
+        <div class="stat-box"><div class="stat-label">Ticket médio</div><div class="stat-val" style="font-size:18px" id="rel-ticket">R$0</div></div>
+      </div>
+    </div>
+
+    <!-- EQUIPE -->
+    <div class="view" id="view-equipe">
+      <div class="page-header"><div><div class="page-title">Equipe</div></div><button class="btn btn-md btn-primary">+ Adicionar</button></div>
+      <div class="card"><div class="loading">Em breve — cadastre profissionais da sua equipe</div></div>
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="view" id="view-whatsapp">
+      <div class="page-header"><div><div class="page-title">WhatsApp Automático</div></div></div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:12px">Lembretes automáticos</div>
+        <div style="background:var(--gray-50);border-radius:var(--radius);padding:16px;border-left:3px solid var(--accent)">
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">A integração com WhatsApp via Z-API ou Evolution API será configurada em breve. Quando ativo, lembretes serão enviados automaticamente para seus clientes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACOES -->
+    <div class="view" id="view-configuracoes">
+      <div class="page-header"><div><div class="page-title">Configurações</div></div></div>
+      <div style="max-width:600px">
+        <div class="card">
+          <div class="section-title" style="margin-bottom:14px">Dados do negócio</div>
+          <div class="form-group"><label class="form-label">Nome da barbearia</label><input class="form-input" id="cfg-barbearia"></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="cfg-nome"></div>
+            <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="cfg-tel"></div>
+          </div>
+          <button class="btn btn-md btn-primary" onclick="salvarConfig()">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-novo-cliente">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Novo cliente</div><button class="modal-close" onclick="closeModal('modal-novo-cliente')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Nome completo</label><input class="form-input" id="nc-nome" placeholder="Nome do cliente"></div>
+        <div class="form-group"><label class="form-label">Telefone / WhatsApp</label><input class="form-input" id="nc-tel" placeholder="(11) 9 9999-9999"></div>
+        <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="nc-email" placeholder="email@exemplo.com"></div>
+        <div class="form-group"><label class="form-label">Data de nascimento</label><input class="form-input" id="nc-nasc" type="date"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="nc-obs" placeholder="Informações iniciais..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-md btn-ghost" onclick="closeModal('modal-novo-cliente')">Cancelar</button>
+      <button class="btn btn-md btn-primary" onclick="salvarCliente()">Cadastrar cliente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-novo-ag">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Novo agendamento</div><button class="modal-close" onclick="closeModal('modal-novo-ag')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Cliente</label><select class="form-select" id="ag-cliente"><option value="">Selecionar cliente...</option></select></div>
+      <div class="form-group"><label class="form-label">Serviço</label>
+        <select class="form-select" id="ag-servico">
+          <option value="">Selecionar serviço...</option>
+          <option value="Full Lace — 1ª colocação|350|120">Full Lace — 1ª colocação · R$350</option>
+          <option value="Manutenção de prótese|120|90">Manutenção de prótese · R$120</option>
+          <option value="Higienização|80|60">Higienização · R$80</option>
+          <option value="Troca de fita / cola|60|45">Troca de fita / cola · R$60</option>
+          <option value="Corte e estilo|50|45">Corte e estilo · R$50</option>
+          <option value="Avaliação gratuita|0|30">Avaliação gratuita · Grátis</option>
+        </select>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Data</label><input class="form-input" id="ag-data" type="date"></div>
+        <div class="form-group"><label class="form-label">Horário</label><input class="form-input" id="ag-hora" type="time" value="09:00"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="ag-obs" placeholder="Informações adicionais..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-md btn-ghost" onclick="closeModal('modal-novo-ag')">Cancelar</button>
+      <button class="btn btn-md btn-primary" onclick="salvarAgendamento()">Confirmar agendamento</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+const SUPA_URL = 'https://owanynpsbutuhcaclkif.supabase.co';
+const SUPA_KEY = 'sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+let todosClientes = [];
+
+// INIT
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadProfile();
+    go('app');
+    loadDashboard();
+  } else {
+    go('login');
+  }
+}
+
+// AUTH
+async function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if (!email || !pass) { errEl.textContent = 'Preencha e-mail e senha.'; errEl.style.display = 'block'; return; }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { errEl.textContent = 'E-mail ou senha incorretos.'; errEl.style.display = 'block'; return; }
+  currentUser = data.user;
+  await loadProfile();
+  go('app');
+  loadDashboard();
+}
+
+async function doRegister() {
+  const nome = document.getElementById('reg-nome').value;
+  const sob = document.getElementById('reg-sobrenome').value;
+  const barb = document.getElementById('reg-barbearia').value;
+  const email = document.getElementById('reg-email').value;
+  const tel = document.getElementById('reg-tel').value;
+  const pass = document.getElementById('reg-pass').value;
+  const errEl = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+  if (!nome || !email || !pass) { errEl.textContent = 'Preencha todos os campos obrigatórios.'; errEl.style.display = 'block'; return; }
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+  if (data.user) {
+    await sb.from('profiles').insert({ id: data.user.id, nome: nome + ' ' + sob, email, telefone: tel, nome_barbearia: barb, plano: 'starter' });
+    currentUser = data.user;
+    await loadProfile();
+    go('app');
+    loadDashboard();
+    showToast('Conta criada com sucesso! Bem-vindo ao BarberFlow ✓', 'success');
+  }
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  go('login');
+}
+
+async function loadProfile() {
+  if (!currentUser) return;
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (data) {
+    currentProfile = data;
+    const nomePartes = (data.nome || 'Usuário').split(' ');
+    const iniciais = nomePartes.map(p => p[0]).slice(0,2).join('').toUpperCase();
+    document.getElementById('user-initials').textContent = iniciais;
+    document.getElementById('user-name-display').textContent = data.nome || 'Usuário';
+    document.getElementById('user-plan-display').textContent = 'Plano ' + (data.plano || 'Starter');
+  }
+}
+
+// NAVIGATION
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+}
+
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const view = document.getElementById('view-' + name);
+  if (view) view.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = { dashboard:'Dashboard', agenda:'Agenda', clientes:'Clientes', anamnese:'Anamnese', pagamentos:'Pagamentos', relatorios:'Relatórios', equipe:'Equipe', whatsapp:'WhatsApp', configuracoes:'Configurações' };
+  document.getElementById('topbar-title').textContent = titles[name] || name;
+  if (name === 'clientes') loadClientes();
+  if (name === 'agenda') loadAgenda();
+  if (name === 'anamnese') loadClientesSelect();
+  if (name === 'relatorios') loadRelatorios();
+}
+
+// DASHBOARD
+async function loadDashboard() {
+  const now = new Date();
+  const hora = now.getHours();
+  const saud = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  const nome = currentProfile ? currentProfile.nome.split(' ')[0] : '';
+  document.getElementById('dash-greeting').textContent = `${saud}, ${nome}! 👋`;
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if (!currentUser) return;
+  const hoje = new Date().toISOString().split('T')[0];
+  const mesInicio = hoje.substring(0,7) + '-01';
+
+  const [{ count: cAg }, { count: cCl }, { count: cMes }, { data: agHoje }] = await Promise.all([
+    sb.from('agendamentos').select('*', {count:'exact',head:true}).eq('user_id', currentUser.id).gte('data_hora', hoje + 'T00:00:00').lte('data_hora', hoje + 'T23:59:59'),
+    sb.from('clientes').select('*', {count:'exact',head:true}).eq('user_id', currentUser.id),
+    sb.from('agendamentos').select('*', {count:'exact',head:true}).eq('user_id', currentUser.id).gte('data_hora', mesInicio),
+    sb.from('agendamentos').select('*, clientes(nome)').eq('user_id', currentUser.id).gte('data_hora', hoje + 'T00:00:00').lte('data_hora', hoje + 'T23:59:59').order('data_hora')
+  ]);
+
+  document.getElementById('stat-hoje').textContent = cAg || 0;
+  document.getElementById('stat-clientes').textContent = cCl || 0;
+  document.getElementById('stat-mes').textContent = cMes || 0;
+
+  const agEl = document.getElementById('dash-agenda');
+  if (!agHoje || agHoje.length === 0) {
+    agEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-title">Nenhum agendamento hoje</div></div>';
+  } else {
+    agEl.innerHTML = agHoje.map(a => {
+      const dt = new Date(a.data_hora);
+      const hora = dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+      const statusBadge = a.status === 'confirmado' ? 'badge-green' : a.status === 'cancelado' ? 'badge-red' : 'badge-yellow';
+      return `<div class="appt-row">
+        <div class="appt-time-box"><div class="appt-hour">${hora}</div></div>
+        <div class="appt-divider"></div>
+        <div class="appt-info"><div class="appt-name">${a.clientes?.nome || 'Cliente'}</div><div class="appt-type">${a.profissional || 'Serviço'}</div></div>
+        <span class="badge ${statusBadge}">${a.status || 'aguardando'}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// CLIENTES
+async function loadClientes() {
+  if (!currentUser) return;
+  const { data } = await sb.from('clientes').select('*').eq('user_id', currentUser.id).order('nome');
+  todosClientes = data || [];
+  document.getElementById('clientes-count').textContent = `${todosClientes.length} clientes cadastrados`;
+  renderClientes(todosClientes);
+}
+
+function renderClientes(lista) {
+  const tbody = document.getElementById('tabela-clientes');
+  if (!lista || lista.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">Nenhum cliente cadastrado</div><p style="font-size:13px;color:var(--gray-400)">Clique em "+ Novo cliente" para começar</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(c => {
+    const iniciais = c.nome.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+    const dt = c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR') : '—';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar">${iniciais}</div><div style="font-weight:500">${c.nome}</div></div></td>
+      <td>${c.telefone || '—'}</td>
+      <td>${c.email || '—'}</td>
+      <td>${dt}</td>
+      <td><button class="btn btn-sm btn-outline" onclick="verCliente('${c.id}')">Ver perfil</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarClientes() {
+  const q = document.getElementById('search-clientes').value.toLowerCase();
+  renderClientes(todosClientes.filter(c => c.nome.toLowerCase().includes(q) || (c.telefone||'').includes(q)));
+}
+
+async function salvarCliente() {
+  if (!currentUser) return;
+  const nome = document.getElementById('nc-nome').value;
+  if (!nome) { showToast('Nome é obrigatório!', 'error'); return; }
+  const { error } = await sb.from('clientes').insert({
+    user_id: currentUser.id,
+    nome, telefone: document.getElementById('nc-tel').value,
+    email: document.getElementById('nc-email').value,
+    data_nascimento: document.getElementById('nc-nasc').value || null,
+    observacoes: document.getElementById('nc-obs').value
+  });
+  if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+  closeModal('modal-novo-cliente');
+  showToast('Cliente cadastrado com sucesso! ✓', 'success');
+  ['nc-nome','nc-tel','nc-email','nc-obs'].forEach(id => document.getElementById(id).value = '');
+  loadClientes();
+  loadClientesSelect();
+  loadDashboard();
+}
+
+// AGENDA
+async function loadAgenda() {
+  if (!currentUser) return;
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('agenda-date-title').textContent = 'Agendamentos de hoje — ' + new Date().toLocaleDateString('pt-BR', {day:'numeric',month:'long'});
+  const { data } = await sb.from('agendamentos').select('*, clientes(nome)').eq('user_id', currentUser.id).gte('data_hora', hoje + 'T00:00:00').lte('data_hora', hoje + 'T23:59:59').order('data_hora');
+  const el = document.getElementById('agenda-lista');
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-title">Nenhum agendamento hoje</div></div>';
+    return;
+  }
+  el.innerHTML = data.map(a => {
+    const hora = new Date(a.data_hora).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    const statusBadge = a.status === 'confirmado' ? 'badge-green' : a.status === 'cancelado' ? 'badge-red' : 'badge-yellow';
+    return `<div class="appt-row">
+      <div class="appt-time-box"><div class="appt-hour">${hora}</div></div>
+      <div class="appt-divider"></div>
+      <div class="appt-info"><div class="appt-name">${a.clientes?.nome || 'Cliente'}</div><div class="appt-type">${a.profissional || '—'}</div></div>
+      <span class="badge ${statusBadge}">${a.status || 'aguardando'}</span>
+      <button class="btn btn-sm btn-ghost" onclick="confirmarAg('${a.id}')">✓</button>
+    </div>`;
+  }).join('');
+}
+
+async function confirmarAg(id) {
+  await sb.from('agendamentos').update({ status: 'confirmado' }).eq('id', id);
+  showToast('Agendamento confirmado! ✓', 'success');
+  loadAgenda();
+}
+
+async function salvarAgendamento() {
+  if (!currentUser) return;
+  const cliente_id = document.getElementById('ag-cliente').value;
+  const servStr = document.getElementById('ag-servico').value;
+  const data = document.getElementById('ag-data').value;
+  const hora = document.getElementById('ag-hora').value;
+  if (!cliente_id || !servStr || !data || !hora) { showToast('Preencha todos os campos!', 'error'); return; }
+  const [servNome, preco] = servStr.split('|');
+  const data_hora = `${data}T${hora}:00`;
+  const { error } = await sb.from('agendamentos').insert({
+    user_id: currentUser.id, cliente_id, profissional: servNome,
+    data_hora, status: 'aguardando', valor: parseFloat(preco) || 0,
+    observacoes: document.getElementById('ag-obs').value
+  });
+  if (error) { showToast('Erro: ' + error.message, 'error'); return; }
+  closeModal('modal-novo-ag');
+  showToast('Agendamento criado com sucesso! ✓', 'success');
+  loadDashboard(); loadAgenda();
+}
+
+// SELECT CLIENTES
+async function loadClientesSelect() {
+  if (!currentUser) return;
+  const { data } = await sb.from('clientes').select('id, nome').eq('user_id', currentUser.id).order('nome');
+  ['ag-cliente', 'anam-cliente'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Selecionar cliente...</option>';
+    (data || []).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; sel.appendChild(o); });
+  });
+}
+
+// ANAMNESE
+async function salvarAnamnese() {
+  const cliente_id = document.getElementById('anam-cliente').value;
+  if (!cliente_id) { showToast('Selecione um cliente!', 'error'); return; }
+  const norwood = document.querySelector('#norwood .scale-btn.active')?.textContent || null;
+  const pele = document.querySelector('#tg-pele .toggle-opt.active')?.textContent || null;
+  const mat = document.querySelector('#tg-mat .toggle-opt.active')?.textContent || null;
+  const fix = document.querySelector('#tg-fix .toggle-opt.active')?.textContent || null;
+  const { error } = await sb.from('anamneses').insert({
+    cliente_id, tipo_alopecia: document.getElementById('anam-tipo').value,
+    tempo_alopecia: document.getElementById('anam-tempo').value,
+    norwood: norwood ? ['I','II','III','IV','V','VI','VII'].indexOf(norwood) + 1 : null,
+    alergias: document.getElementById('anam-alergias').value,
+    medicamentos: document.getElementById('anam-med').value,
+    tipo_pele: pele, material_pref: mat, fixacao_pref: fix,
+    observacoes: document.getElementById('anam-obs').value
+  });
+  if (error) { showToast('Erro: ' + error.message, 'error'); return; }
+  showToast('Ficha de anamnese salva com sucesso! ✓', 'success');
+}
+
+// RELATORIOS
+async function loadRelatorios() {
+  if (!currentUser) return;
+  const [{ count: cAg }, { count: cCl }, { data: fat }] = await Promise.all([
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id', currentUser.id),
+    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id', currentUser.id),
+    sb.from('agendamentos').select('valor').eq('user_id', currentUser.id)
+  ]);
+  const total = (fat || []).reduce((s,a) => s + (a.valor || 0), 0);
+  const ticket = cAg > 0 ? total / cAg : 0;
+  document.getElementById('rel-ag').textContent = cAg || 0;
+  document.getElementById('rel-cl').textContent = cCl || 0;
+  document.getElementById('rel-fat').textContent = 'R$' + total.toFixed(0);
+  document.getElementById('rel-ticket').textContent = 'R$' + ticket.toFixed(0);
+}
+
+// CONFIG
+async function salvarConfig() {
+  if (!currentUser) return;
+  const { error } = await sb.from('profiles').update({
+    nome_barbearia: document.getElementById('cfg-barbearia').value,
+    nome: document.getElementById('cfg-nome').value,
+    telefone: document.getElementById('cfg-tel').value
+  }).eq('id', currentUser.id);
+  if (error) { showToast('Erro ao salvar!', 'error'); return; }
+  showToast('Configurações salvas! ✓', 'success');
+  await loadProfile();
+}
+
+// MODAL
+function openModal(id) {
+  if (id === 'modal-novo-ag' || id === 'modal-novo-cliente') loadClientesSelect();
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-novo-ag') {
+    const hoje = new Date().toISOString().split('T')[0];
+    document.getElementById('ag-data').value = hoje;
+  }
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => { o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }); });
+
+// UI HELPERS
+function selToggle(gid, el) { document.querySelectorAll('#'+gid+' .toggle-opt').forEach(o => o.classList.remove('active')); el.classList.add('active'); }
+function selectScale(gid, el) { document.querySelectorAll('#'+gid+' .scale-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast-el');
+  t.textContent = msg;
+  t.className = 'toast show' + (type==='error'?' toast-error':' toast-success');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+function verCliente(id) { showToast('Perfil completo em breve!', 'success'); }
+
+// START
+init();
+</script>
+</body>
+</html>
