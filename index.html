@@ -10,7 +10,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --brand:#0D6EFD;--brand-dark:#0A56C9;--brand-light:#EBF3FF;
-  --accent:#00C48C;--danger:#EF4444;--warn:#F59E0B;
+  --accent:#00C48C;--danger:#EF4444;--warn:#F59E0B;--purple:#7C3AED;
   --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;
   --gray-300:#CBD5E1;--gray-400:#94A3B8;--gray-500:#64748B;
   --gray-600:#475569;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;
@@ -38,7 +38,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--
 .auth-title{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--gray-900);margin-bottom:6px}
 .auth-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px}
 
-/* APP LAYOUT */
+/* APP */
 #page-app{flex-direction:row}
 .sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:#fff;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;z-index:50}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:0 20px;height:var(--topbar-h);border-bottom:1px solid var(--gray-100)}
@@ -50,7 +50,8 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--
 .nav-item:hover{background:var(--gray-100);color:var(--gray-900)}
 .nav-item.active{background:var(--brand-light);color:var(--brand)}
 .nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
-.sb-user{padding:14px 16px;border-top:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-item.hidden{display:none}
+.sb-user{padding:14px 16px;border-top:1px solid var(--gray-100);display:flex;align-items:center;gap:10px}
 .u-av{width:34px;height:34px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:var(--brand);flex-shrink:0}
 .u-name{font-size:13px;font-weight:600;color:var(--gray-800)}
 .u-role{font-size:11px;color:var(--gray-400)}
@@ -79,6 +80,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--
 .b-green{background:#DCFCE7;color:#166534}.b-blue{background:#DBEAFE;color:#1D4ED8}
 .b-yellow{background:#FEF3C7;color:#92400E}.b-red{background:#FEE2E2;color:#991B1B}
 .b-gray{background:var(--gray-100);color:var(--gray-600)}.b-purple{background:#F3E8FF;color:#6B21A8}
+.b-orange{background:#FFF7ED;color:#C2410C}
 .fg{margin-bottom:16px}
 .fl{display:block;font-size:12.5px;font-weight:500;color:var(--gray-700);margin-bottom:6px}
 .fi,.fs,.ft{width:100%;border:1px solid var(--gray-300);border-radius:var(--radius);padding:10px 13px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--gray-800);background:#fff;outline:none;transition:border-color .15s}
@@ -105,7 +107,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .st{font-size:14px;font-weight:600;color:var(--gray-800)}
 .ar{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--gray-100)}
 .ar:last-child{border-bottom:none}
-.at{text-align:center;min-width:52px}.ah{font-size:14px;font-weight:700;color:var(--gray-900)}.ad{font-size:11px;color:var(--gray-400);margin-top:2px}
+.at{text-align:center;min-width:52px}.ah{font-size:14px;font-weight:700;color:var(--gray-900)}.adur{font-size:11px;color:var(--gray-400);margin-top:2px}
 .adiv{width:1px;height:36px;background:var(--gray-200);flex-shrink:0}
 .ai{flex:1}.an{font-size:14px;font-weight:600;color:var(--gray-800)}.atp{font-size:12px;color:var(--gray-500);margin-top:2px}
 .tog{border:1px solid var(--gray-300);border-radius:var(--radius);padding:8px 14px;font-size:13px;cursor:pointer;transition:all .15s;color:var(--gray-600);display:inline-block;margin:3px}
@@ -132,6 +134,15 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .cb{width:18px;height:18px;border:1.5px solid var(--gray-300);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:transparent;margin-top:1px;transition:all .15s}
 .ci.checked .cb{background:var(--brand);border-color:var(--brand);color:#fff}
 .divider{height:1px;background:var(--gray-100);margin:16px 0}
+.perm-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.perm-admin{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.perm-financeiro{background:#DBEAFE;color:#1D4ED8;border:1px solid #BFDBFE}
+.perm-recepcao{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0}
+.prof-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:20px;text-align:center}
+.prof-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin:0 auto 12px}
+.agenda-col{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden}
+.agenda-col-header{padding:14px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px}
+.agenda-col-body{padding:12px 16px}
 @media(max-width:768px){:root{--sidebar-w:0px}.sidebar{transform:translateX(-240px);transition:transform .3s}.sidebar.open{transform:translateX(0);width:240px}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.auth-left{display:none}.auth-right{flex:1}.fg2,.fg3{grid-template-columns:1fr}}
 </style>
 </head>
@@ -146,8 +157,8 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="auth-feats">
       <div class="auth-feat"><div class="auth-feat-icon">📋</div><div class="auth-feat-text">Ficha de anamnese específica para prótese</div></div>
       <div class="auth-feat"><div class="auth-feat-icon">💬</div><div class="auth-feat-text">Lembretes automáticos via WhatsApp</div></div>
-      <div class="auth-feat"><div class="auth-feat-icon">📅</div><div class="auth-feat-text">Agenda online — celular e computador</div></div>
-      <div class="auth-feat"><div class="auth-feat-icon">💳</div><div class="auth-feat-text">Pagamentos com Mercado Pago</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">📅</div><div class="auth-feat-text">Agenda por profissional</div></div>
+      <div class="auth-feat"><div class="auth-feat-icon">💳</div><div class="auth-feat-text">Controle financeiro individual</div></div>
     </div>
   </div>
   <div class="auth-right">
@@ -157,7 +168,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="l-email" placeholder="seu@email.com"></div>
       <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="l-pass" placeholder="••••••••"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Lembrar de mim</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Lembrar</label>
         <a href="#" style="font-size:13px;color:var(--brand);text-decoration:none">Esqueci a senha</a>
       </div>
       <button class="btn btn-lg btn-primary" style="width:100%;margin-bottom:10px" onclick="doLogin()">Entrar</button>
@@ -173,16 +184,11 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="auth-brand"><div class="auth-mark">BF</div><span class="auth-bname">BarberFlow</span></div>
     <div class="auth-h">14 dias grátis. Sem cartão.</div>
     <div class="auth-sub">Crie sua conta em menos de 2 minutos.</div>
-    <div class="auth-feats">
-      <div class="auth-feat"><div class="auth-feat-icon">✅</div><div class="auth-feat-text">Configuração em minutos</div></div>
-      <div class="auth-feat"><div class="auth-feat-icon">📱</div><div class="auth-feat-text">Celular ou computador</div></div>
-      <div class="auth-feat"><div class="auth-feat-icon">🔒</div><div class="auth-feat-text">Dados seguros e protegidos</div></div>
-    </div>
   </div>
   <div class="auth-right">
     <div class="auth-wrap">
       <div class="auth-title">Criar conta grátis</div>
-      <div class="auth-desc">Comece seu teste de 14 dias agora.</div>
+      <div class="auth-desc">Comece seu teste de 14 dias.</div>
       <div class="fg2">
         <div class="fg"><label class="fl">Nome</label><input class="fi" id="r-nome" placeholder="João"></div>
         <div class="fg"><label class="fl">Sobrenome</label><input class="fi" id="r-sob" placeholder="Silva"></div>
@@ -206,29 +212,31 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="nav-label">Principal</div>
       <div class="nav-item active" onclick="sv('dashboard',this)"><span class="nav-icon">🏠</span>Dashboard</div>
       <div class="nav-item" onclick="sv('agenda',this)"><span class="nav-icon">📅</span>Agenda</div>
-      <div class="nav-item" onclick="sv('clientes',this)"><span class="nav-icon">👥</span>Clientes</div>
-      <div class="nav-item" onclick="sv('anamnese',this)"><span class="nav-icon">📋</span>Anamnese</div>
-      <div class="nav-label" style="margin-top:8px">Financeiro</div>
-      <div class="nav-item" onclick="sv('pagamentos',this)"><span class="nav-icon">💳</span>Pagamentos</div>
-      <div class="nav-item" onclick="sv('relatorios',this)"><span class="nav-icon">📊</span>Relatórios</div>
-      <div class="nav-label" style="margin-top:8px">Gestão</div>
-      <div class="nav-item" onclick="sv('equipe',this)"><span class="nav-icon">💈</span>Equipe</div>
-      <div class="nav-item" onclick="sv('whatsapp',this)"><span class="nav-icon">💬</span>WhatsApp</div>
-      <div class="nav-item" onclick="sv('config',this)"><span class="nav-icon">⚙️</span>Configurações</div>
+      <div class="nav-item nav-clientes" onclick="sv('clientes',this)"><span class="nav-icon">👥</span>Clientes</div>
+      <div class="nav-item nav-anamnese" onclick="sv('anamnese',this)"><span class="nav-icon">📋</span>Anamnese</div>
+      <div class="nav-label nav-financeiro" style="margin-top:8px">Financeiro</div>
+      <div class="nav-item nav-financeiro" onclick="sv('pagamentos',this)"><span class="nav-icon">💳</span>Pagamentos</div>
+      <div class="nav-item nav-financeiro" onclick="sv('relatorios',this)"><span class="nav-icon">📊</span>Relatórios</div>
+      <div class="nav-label nav-admin" style="margin-top:8px">Gestão</div>
+      <div class="nav-item nav-admin" onclick="sv('equipe',this)"><span class="nav-icon">💈</span>Equipe</div>
+      <div class="nav-item nav-admin" onclick="sv('whatsapp',this)"><span class="nav-icon">💬</span>WhatsApp</div>
+      <div class="nav-item nav-admin" onclick="sv('config',this)"><span class="nav-icon">⚙️</span>Configurações</div>
     </nav>
-    <div class="sb-user" onclick="doLogout()">
+    <div class="sb-user">
       <div class="u-av" id="u-av">--</div>
-      <div><div class="u-name" id="u-name">Carregando...</div><div class="u-role" id="u-role">Plano Starter</div></div>
-      <span style="margin-left:auto;color:var(--gray-400);font-size:13px" title="Sair">↩</span>
+      <div style="flex:1"><div class="u-name" id="u-name">Carregando...</div><div class="u-role" id="u-role">--</div></div>
+      <button class="btn btn-sm btn-ghost" onclick="doLogout()" title="Sair" style="padding:6px">↩</button>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="topbar-title" id="tt">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="topbar-title" id="tt">Dashboard</div>
+      </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="chip">✦ Profissional</span>
-        <button class="btn btn-sm btn-primary" onclick="om('m-ag')">+ Novo agendamento</button>
+        <span class="chip" id="perm-chip">✦ Admin</span>
+        <button class="btn btn-sm btn-primary nav-agenda-btn" onclick="om('m-ag')">+ Novo agendamento</button>
       </div>
     </header>
 
@@ -236,56 +244,39 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="view active" id="view-dashboard">
       <div class="ph">
         <div><div class="pt" id="d-greet">Olá! 👋</div><div class="ps" id="d-date"></div></div>
-        <button class="btn btn-md btn-primary" onclick="om('m-ag')">+ Novo agendamento</button>
+        <button class="btn btn-md btn-primary nav-agenda-btn" onclick="om('m-ag')">+ Novo agendamento</button>
       </div>
-      <div class="stats-row">
+      <div class="stats-row" id="dash-stats">
         <div class="stat-box"><div class="stat-lbl">Hoje</div><div class="stat-val" id="s-hoje">0</div><div class="stat-sub">agendamentos</div></div>
         <div class="stat-box"><div class="stat-lbl">Clientes</div><div class="stat-val" id="s-cli">0</div><div class="stat-sub">cadastrados</div></div>
         <div class="stat-box"><div class="stat-lbl">Este mês</div><div class="stat-val" id="s-mes">0</div><div class="stat-sub">procedimentos</div></div>
         <div class="stat-box"><div class="stat-lbl">Faturamento</div><div class="stat-val" style="font-size:20px" id="s-fat">R$0</div><div class="stat-sub">este mês</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
-        <div class="card">
-          <div class="sh"><div class="st">Agenda de hoje</div><button class="btn btn-sm btn-outline" onclick="sv('agenda',document.querySelector('[onclick*=agenda]'))">Ver todos</button></div>
-          <div id="d-agenda"><div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Carregando...</div></div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:16px">
-          <div class="card">
-            <div class="st" style="margin-bottom:12px">Ações rápidas</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="om('m-ag')"><span style="font-size:20px">📅</span><span>Agendar</span></button>
-              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="om('m-cli')"><span style="font-size:20px">👤</span><span>Cliente</span></button>
-              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="sv('anamnese',document.querySelector('[onclick*=anamnese]'))"><span style="font-size:20px">📋</span><span>Anamnese</span></button>
-              <button class="btn btn-sm btn-outline" style="flex-direction:column;padding:14px;gap:5px;height:auto" onclick="sv('equipe',document.querySelector('[onclick*=equipe]'))"><span style="font-size:20px">💈</span><span>Equipe</span></button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Agenda por profissional (admin) ou agenda própria (profissional) -->
+      <div id="dash-body"></div>
     </div>
 
     <!-- AGENDA -->
     <div class="view" id="view-agenda">
-      <div class="ph"><div><div class="pt">Agenda</div><div class="ps">Gerencie seus agendamentos</div></div><button class="btn btn-md btn-primary" onclick="om('m-ag')">+ Novo agendamento</button></div>
-      <div class="card"><div class="sh"><div class="st" id="ag-title">Hoje</div></div><div id="ag-lista"><div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Carregando...</div></div></div></div>
+      <div class="ph"><div><div class="pt">Agenda</div><div class="ps" id="ag-sub">Seus agendamentos</div></div><button class="btn btn-md btn-primary" onclick="om('m-ag')">+ Novo agendamento</button></div>
+      <div class="card"><div class="sh"><div class="st" id="ag-title">Hoje</div></div><div id="ag-lista"></div></div>
     </div>
 
     <!-- CLIENTES -->
     <div class="view" id="view-clientes">
       <div class="ph"><div><div class="pt">Clientes</div><div class="ps" id="cli-count">0 clientes</div></div><button class="btn btn-md btn-primary" onclick="om('m-cli')">+ Novo cliente</button></div>
-      <div class="sb-row">🔍 <input type="text" placeholder="Buscar por nome ou telefone..." id="s-cli-inp" oninput="filtrarCli()"></div>
-      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Cadastro</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Carregando...</div></div></td></tr></tbody></table></div>
+      <div class="sb-row">🔍 <input type="text" placeholder="Buscar..." id="s-cli-inp" oninput="filtrarCli()"></div>
+      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Cadastro</th><th></th></tr></thead><tbody id="tb-cli"></tbody></table></div>
     </div>
 
     <!-- PERFIL CLIENTE -->
     <div class="view" id="view-perfil">
       <div class="ph">
         <div style="display:flex;align-items:center;gap:14px">
-          <button class="btn btn-sm btn-ghost" onclick="sv('clientes',document.querySelector('[onclick*=clientes]'))">← Voltar</button>
+          <button class="btn btn-sm btn-ghost" onclick="sv('clientes',document.querySelector('.nav-clientes'))">← Voltar</button>
           <div><div class="pt" id="p-nome">Cliente</div><div class="ps" id="p-meta"></div></div>
         </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-md btn-outline" onclick="om('m-ag')">Agendar</button>
-        </div>
+        <button class="btn btn-md btn-primary" onclick="om('m-ag')">Agendar</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px">
         <div style="display:flex;flex-direction:column;gap:16px">
@@ -295,10 +286,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
             <div style="font-size:13px;color:var(--gray-500);margin-bottom:12px" id="p-contato"></div>
             <div id="p-badges"></div>
           </div>
-          <div class="card">
-            <div class="st" style="margin-bottom:12px">Informações</div>
-            <div id="p-info" style="font-size:13.5px;color:var(--gray-600);line-height:1.8"></div>
-          </div>
+          <div class="card"><div class="st" style="margin-bottom:12px">Informações</div><div id="p-info" style="font-size:13.5px;color:var(--gray-600);line-height:1.8"></div></div>
         </div>
         <div class="card">
           <div class="tabs">
@@ -324,46 +312,27 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
               <div class="fg"><label class="fl">Há quanto tempo</label><select class="fs" id="an-tempo"><option>Menos de 1 ano</option><option>1 a 3 anos</option><option>3 a 5 anos</option><option>Mais de 5 anos</option></select></div>
             </div>
             <div class="fg"><label class="fl">Escala de Norwood</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
-            <div class="fg"><label class="fl">Experiência anterior</label><div id="tg-exp"><span class="tog active" onclick="selTog('tg-exp',this)">Nunca usou</span><span class="tog" onclick="selTog('tg-exp',this)">Já usou prótese</span><span class="tog" onclick="selTog('tg-exp',this)">Fez transplante</span></div></div>
           </div>
         </div>
         <div class="ab">
           <div class="abh"><span style="font-size:18px">💊</span><div class="abt">Saúde</div></div>
           <div class="abb">
             <div class="fg2">
-              <div class="fg"><label class="fl">Alergias conhecidas</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
+              <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
               <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med" placeholder="Ex: Finasterida..."></div>
             </div>
-            <div class="fg"><label class="fl">Tipo de pele do couro cabeludo</label><div id="tg-pele"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
-            <div class="fg"><label class="fl">Condições de saúde</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Diabetes</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Hipertensão</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Dermatite seborreica</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Psoríase no couro</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Sensibilidade a adesivos</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Em quimioterapia</span></div>
-              </div>
-            </div>
+            <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
           </div>
         </div>
         <div class="ab">
           <div class="abh"><span style="font-size:18px">🎯</span><div class="abt">Preferências</div></div>
           <div class="abb">
             <div class="fg3">
-              <div class="fg"><label class="fl">Material preferido</label><div id="tg-mat"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
+              <div class="fg"><label class="fl">Material</label><div id="tg-mat"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
               <div class="fg"><label class="fl">Fixação</label><div id="tg-fix"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
-              <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span><span class="tog" onclick="selTog('tg-esp',this)">Às vezes</span></div></div>
+              <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span></div></div>
             </div>
-            <div class="fg"><label class="fl">Tipo de prótese preferida</label>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-                <div class="ci checked" onclick="togCI(this)"><div class="cb">✓</div><span style="font-size:13px">Full Lace</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Lace Front</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Monofilamento</span></div>
-                <div class="ci" onclick="togCI(this)"><div class="cb"></div><span style="font-size:13px">Micropele</span></div>
-              </div>
-            </div>
-            <div class="fg"><label class="fl">Observações adicionais</label><textarea class="ft" id="an-obs" placeholder="Informações importantes sobre o cliente..."></textarea></div>
+            <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs" placeholder="Informações importantes..."></textarea></div>
           </div>
         </div>
       </div>
@@ -371,20 +340,16 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- PAGAMENTOS -->
     <div class="view" id="view-pagamentos">
-      <div class="ph"><div><div class="pt">Pagamentos</div><div class="ps">Gateways de pagamento</div></div></div>
+      <div class="ph"><div><div class="pt">Pagamentos</div><div class="ps" id="pag-sub">Seu faturamento</div></div></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
-        <div class="stat-box"><div class="stat-lbl">Recebido este mês</div><div class="stat-val" style="font-size:22px" id="pg-total">R$0</div></div>
+        <div class="stat-box"><div class="stat-lbl">Confirmado</div><div class="stat-val" style="font-size:22px" id="pg-total">R$0</div></div>
         <div class="stat-box"><div class="stat-lbl">Pendente</div><div class="stat-val" style="font-size:22px" id="pg-pend">R$0</div></div>
         <div class="stat-box"><div class="stat-lbl">Total agendamentos</div><div class="stat-val" id="pg-qt">0</div></div>
       </div>
       <div class="card">
-        <div class="st" style="margin-bottom:14px">Gateways disponíveis</div>
+        <div class="st" style="margin-bottom:14px">Gateways de pagamento</div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;background:#009EE3;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">MP</div><div><div style="font-weight:600">Mercado Pago</div><div style="font-size:12px;color:var(--gray-500)">Pix, cartão, boleto</div></div></div>
-          <button class="btn btn-sm btn-outline">Configurar</button>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius)">
-          <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;background:#00A859;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">AP</div><div><div style="font-weight:600">App Max</div><div style="font-size:12px;color:var(--gray-500)">Cobranças recorrentes</div></div></div>
           <button class="btn btn-sm btn-outline">Configurar</button>
         </div>
       </div>
@@ -392,21 +357,23 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- RELATORIOS -->
     <div class="view" id="view-relatorios">
-      <div class="ph"><div><div class="pt">Relatórios</div></div></div>
+      <div class="ph"><div><div class="pt">Relatórios</div><div class="ps" id="rel-sub">Seu desempenho</div></div></div>
       <div class="stats-row">
         <div class="stat-box"><div class="stat-lbl">Agendamentos</div><div class="stat-val" id="r-ag">0</div></div>
         <div class="stat-box"><div class="stat-lbl">Clientes</div><div class="stat-val" id="r-cl">0</div></div>
         <div class="stat-box"><div class="stat-lbl">Faturamento</div><div class="stat-val" style="font-size:18px" id="r-fat">R$0</div></div>
         <div class="stat-box"><div class="stat-lbl">Ticket médio</div><div class="stat-val" style="font-size:18px" id="r-tkt">R$0</div></div>
       </div>
+      <div class="card" id="rel-prof-breakdown" style="display:none">
+        <div class="st" style="margin-bottom:16px">Desempenho por profissional</div>
+        <div id="rel-prof-lista"></div>
+      </div>
     </div>
 
     <!-- EQUIPE -->
     <div class="view" id="view-equipe">
       <div class="ph"><div><div class="pt">Equipe</div><div class="ps" id="eq-count">0 profissionais</div></div><button class="btn btn-md btn-primary" onclick="om('m-eq')">+ Adicionar profissional</button></div>
-      <div id="eq-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-        <div class="empty"><div class="empty-icon">💈</div><div class="empty-title">Carregando...</div></div>
-      </div>
+      <div id="eq-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px"></div>
     </div>
 
     <!-- WHATSAPP -->
@@ -415,15 +382,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="card">
         <div class="st" style="margin-bottom:12px">Lembretes automáticos</div>
         <div style="background:var(--gray-50);border-radius:var(--radius);padding:16px;border-left:3px solid var(--accent);margin-bottom:16px">
-          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">A integração com WhatsApp via Z-API será ativada em breve. Quando configurado, lembretes serão enviados automaticamente para seus clientes antes dos agendamentos.</p>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:8px">
-          <div><div style="font-weight:600;font-size:14px">Lembrete de consulta</div><div style="font-size:12px;color:var(--gray-500)">Enviado 2h antes do agendamento</div></div>
-          <span class="badge b-yellow">Em breve</span>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--gray-200);border-radius:var(--radius)">
-          <div><div style="font-weight:600;font-size:14px">Pós-atendimento</div><div style="font-size:12px;color:var(--gray-500)">Enviado após o atendimento</div></div>
-          <span class="badge b-yellow">Em breve</span>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Integração com Z-API em breve. Lembretes serão enviados automaticamente antes dos agendamentos.</p>
         </div>
       </div>
     </div>
@@ -444,13 +403,12 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         <div class="card">
           <div class="st" style="margin-bottom:12px">Plano atual</div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--brand-light);border-radius:var(--radius);padding:14px;border:1px solid rgba(13,110,253,.2)">
-            <div><div style="font-weight:600;color:var(--brand)">Plano Profissional</div><div style="font-size:12px;color:var(--gray-500);margin-top:3px">R$89/mês · 14 dias grátis</div></div>
+            <div><div style="font-weight:600;color:var(--brand)">Plano Profissional</div><div style="font-size:12px;color:var(--gray-500);margin-top:3px">R$89/mês</div></div>
             <button class="btn btn-sm btn-outline">Gerenciar</button>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -476,6 +434,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="mh"><div class="mt">Novo agendamento</div><button class="mc" onclick="cm('m-ag')">✕</button></div>
     <div class="mb">
       <div class="fg"><label class="fl">Cliente *</label><select class="fs" id="ag-cli"><option value="">Selecionar cliente...</option></select></div>
+      <div class="fg"><label class="fl">Profissional *</label><select class="fs" id="ag-prof"><option value="">Selecionar profissional...</option></select></div>
       <div class="fg"><label class="fl">Serviço *</label>
         <select class="fs" id="ag-serv">
           <option value="">Selecionar serviço...</option>
@@ -501,20 +460,35 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="modal">
     <div class="mh"><div class="mt">Novo profissional</div><button class="mc" onclick="cm('m-eq')">✕</button></div>
     <div class="mb">
+      <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px;margin-bottom:16px;font-size:13px;color:var(--brand)">
+        💡 O profissional receberá um e-mail para criar sua senha e acessar o sistema com seu próprio login.
+      </div>
       <div class="fg2">
         <div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="eq-nome" placeholder="Nome do profissional"></div>
         <div class="fg"><label class="fl">Telefone</label><input class="fi" id="eq-tel" placeholder="(11) 9 9999-9999"></div>
       </div>
       <div class="fg2">
-        <div class="fg"><label class="fl">E-mail</label><input class="fi" id="eq-email" placeholder="email@exemplo.com"></div>
-        <div class="fg"><label class="fl">Cargo / Função</label><input class="fi" id="eq-cargo" placeholder="Ex: Barbeiro especialista"></div>
+        <div class="fg"><label class="fl">E-mail *</label><input class="fi" id="eq-email" type="email" placeholder="profissional@email.com"></div>
+        <div class="fg"><label class="fl">Cargo</label><input class="fi" id="eq-cargo" placeholder="Ex: Barbeiro especialista"></div>
       </div>
-      <div class="fg"><label class="fl">Permissão</label>
+      <div class="fg">
+        <label class="fl">Permissão de acesso *</label>
         <select class="fs" id="eq-perm">
-          <option value="editor">Editor — ver e editar agendamentos</option>
-          <option value="viewer">Visualizador — só ver</option>
-          <option value="admin">Admin — acesso total</option>
+          <option value="admin">👑 Admin — acesso total ao sistema</option>
+          <option value="financeiro">💰 Financeiro — vê relatórios e pagamentos</option>
+          <option value="recepcao" selected>📅 Recepção — agenda e clientes</option>
         </select>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:6px" id="perm-desc">Recepção: pode criar/editar agendamentos e clientes. Não acessa financeiro.</div>
+      </div>
+      <div class="fg"><label class="fl">Cor de identificação</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="cor-picker">
+          <div onclick="selCor(this)" data-cor="#0D6EFD" style="width:28px;height:28px;border-radius:50%;background:#0D6EFD;cursor:pointer;border:3px solid #0D6EFD"></div>
+          <div onclick="selCor(this)" data-cor="#00C48C" style="width:28px;height:28px;border-radius:50%;background:#00C48C;cursor:pointer"></div>
+          <div onclick="selCor(this)" data-cor="#7C3AED" style="width:28px;height:28px;border-radius:50%;background:#7C3AED;cursor:pointer"></div>
+          <div onclick="selCor(this)" data-cor="#EF4444" style="width:28px;height:28px;border-radius:50%;background:#EF4444;cursor:pointer"></div>
+          <div onclick="selCor(this)" data-cor="#F59E0B" style="width:28px;height:28px;border-radius:50%;background:#F59E0B;cursor:pointer"></div>
+          <div onclick="selCor(this)" data-cor="#EC4899" style="width:28px;height:28px;border-radius:50%;background:#EC4899;cursor:pointer"></div>
+        </div>
       </div>
       <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="eq-obs" placeholder="Especialidades, informações..."></textarea></div>
     </div>
@@ -525,336 +499,506 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 <div class="toast" id="toast"></div>
 
 <script>
-const SURL = 'https://owanynpsbutuhcaclkif.supabase.co';
-const SKEY = 'sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
-const sb = supabase.createClient(SURL, SKEY);
+const SURL='https://owanynpsbutuhcaclkif.supabase.co';
+const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
+const sb=supabase.createClient(SURL,SKEY);
 
-let CU = null, CP = null, allCli = [], perfilId = null;
+let CU=null,CP=null,CE=null,allCli=[],allProf=[],corSel='#0D6EFD';
+// CP = profile (dono), CE = equipe (profissional)
 
-async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { CU = session.user; await loadProfile(); go('app'); loadDash(); }
+// PERMISSOES
+const PERMS={
+  admin:{label:'Admin',badge:'perm-admin',verFinanceiro:true,verAdmin:true,verClientes:true,verAnamnese:true},
+  financeiro:{label:'Financeiro',badge:'perm-financeiro',verFinanceiro:true,verAdmin:false,verClientes:false,verAnamnese:false},
+  recepcao:{label:'Recepção',badge:'perm-recepcao',verFinanceiro:false,verAdmin:false,verClientes:true,verAnamnese:true}
+};
+
+async function init(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){CU=session.user;await loadUserContext();go('app');loadDash();}
   else go('login');
 }
 
-async function doLogin() {
-  const e = v('l-email'), p = v('l-pass'), err = id('l-err');
-  err.style.display = 'none';
-  if (!e || !p) { err.textContent = 'Preencha e-mail e senha.'; err.style.display = 'block'; return; }
-  const { data, error } = await sb.auth.signInWithPassword({ email: e, password: p });
-  if (error) { err.textContent = 'E-mail ou senha incorretos.'; err.style.display = 'block'; return; }
-  CU = data.user; await loadProfile(); go('app'); loadDash();
+async function loadUserContext(){
+  if(!CU)return;
+  // Verifica se é dono (profile) ou profissional (equipe)
+  const {data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
+  if(prof){
+    CP=prof;CE=null;
+    applyPermissions('admin'); // dono tem acesso total
+    setUserUI(prof.nome,'Admin — Proprietário','#0D6EFD');
+    if(prof.nome_barbearia)id('c-barb').value=prof.nome_barbearia;
+    if(prof.nome)id('c-nome').value=prof.nome;
+    if(prof.telefone)id('c-tel').value=prof.telefone;
+  } else {
+    // É um profissional da equipe
+    const {data:eq}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).single();
+    if(eq){
+      CE=eq;CP=null;
+      // Busca o profile do dono
+      const {data:owner}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();
+      if(owner)CP=owner;
+      applyPermissions(eq.permissao||'recepcao');
+      setUserUI(eq.nome,PERMS[eq.permissao||'recepcao'].label,eq.cor||'#0D6EFD');
+    }
+  }
+  await loadProfissionaisSelect();
 }
 
-async function doRegister() {
-  const nome = v('r-nome'), sob = v('r-sob'), barb = v('r-barb'), email = v('r-email'), tel = v('r-tel'), pass = v('r-pass');
-  const err = id('r-err'); err.style.display = 'none';
-  if (!nome || !email || !pass) { err.textContent = 'Preencha todos os campos obrigatórios.'; err.style.display = 'block'; return; }
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
-  if (data.user) {
-    await sb.from('profiles').insert({ id: data.user.id, nome: nome + ' ' + sob, email, telefone: tel, nome_barbearia: barb, plano: 'starter' });
-    CU = data.user; await loadProfile(); go('app'); loadDash();
-    toast('Conta criada! Bem-vindo ao BarberFlow ✓', 'ok');
+function getOwnerId(){return CE?CE.user_id:CU?.id;}
+
+function applyPermissions(perm){
+  const p=PERMS[perm]||PERMS.recepcao;
+  // Mostrar/ocultar menus
+  document.querySelectorAll('.nav-financeiro').forEach(el=>el.classList.toggle('hidden',!p.verFinanceiro));
+  document.querySelectorAll('.nav-admin').forEach(el=>el.classList.toggle('hidden',!p.verAdmin));
+  document.querySelectorAll('.nav-clientes').forEach(el=>el.classList.toggle('hidden',!p.verClientes));
+  document.querySelectorAll('.nav-anamnese').forEach(el=>el.classList.toggle('hidden',!p.verAnamnese));
+  // Chip de permissão
+  const chip=id('perm-chip');
+  const labels={admin:'👑 Admin',financeiro:'💰 Financeiro',recepcao:'📅 Recepção'};
+  chip.textContent=labels[perm]||'👤 Usuário';
+}
+
+function setUserUI(nome,role,cor){
+  const ini=(nome||'U').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  id('u-av').textContent=ini;
+  id('u-av').style.background=cor+'22';
+  id('u-av').style.color=cor;
+  id('u-name').textContent=nome||'Usuário';
+  id('u-role').textContent=role;
+}
+
+async function doLogin(){
+  const e=v('l-email'),p=v('l-pass'),err=id('l-err');
+  err.style.display='none';
+  if(!e||!p){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
+  const {data,error}=await sb.auth.signInWithPassword({email:e,password:p});
+  if(error){err.textContent='E-mail ou senha incorretos.';err.style.display='block';return;}
+  CU=data.user;await loadUserContext();go('app');loadDash();
+}
+
+async function doRegister(){
+  const nome=v('r-nome'),sob=v('r-sob'),barb=v('r-barb'),email=v('r-email'),tel=v('r-tel'),pass=v('r-pass');
+  const err=id('r-err');err.style.display='none';
+  if(!nome||!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
+  const {data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  if(data.user){
+    await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'starter'});
+    CU=data.user;await loadUserContext();go('app');loadDash();
+    toast('Conta criada! Bem-vindo ao BarberFlow ✓','ok');
   }
 }
 
-async function doLogout() { await sb.auth.signOut(); CU = null; CP = null; go('login'); }
+async function doLogout(){await sb.auth.signOut();CU=null;CP=null;CE=null;go('login');}
 
-async function loadProfile() {
-  if (!CU) return;
-  const { data } = await sb.from('profiles').select('*').eq('id', CU.id).single();
-  if (data) {
-    CP = data;
-    const ini = (data.nome || 'U').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
-    id('u-av').textContent = ini; id('u-name').textContent = data.nome || 'Usuário';
-    id('u-role').textContent = 'Plano ' + (data.plano || 'Starter');
-    if (data.nome_barbearia) id('c-barb').value = data.nome_barbearia;
-    if (data.nome) id('c-nome').value = data.nome;
-    if (data.telefone) id('c-tel').value = data.telefone;
-  }
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));id('page-'+p).classList.add('active');}
+
+function sv(name,el){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  const view=id('view-'+name);if(view)view.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
+  const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil do Cliente',anamnese:'Anamnese',pagamentos:'Pagamentos',relatorios:'Relatórios',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
+  id('tt').textContent=tmap[name]||name;
+  if(name==='clientes')loadCli();
+  if(name==='agenda')loadAgenda();
+  if(name==='anamnese')loadCliSel();
+  if(name==='relatorios')loadRel();
+  if(name==='equipe')loadEquipe();
+  if(name==='pagamentos')loadPag();
 }
 
-function go(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); id('page-' + p).classList.add('active'); }
+// DASHBOARD
+async function loadDash(){
+  if(!CU)return;
+  const now=new Date();const h=now.getHours();
+  const greet=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const nm=CE?CE.nome:CP?.nome||'';
+  id('d-greet').textContent=greet+(nm?', '+nm.split(' ')[0]:'')+'! 👋';
+  id('d-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const ownId=getOwnerId();
+  const hoje=now.toISOString().split('T')[0];
+  const mesI=hoje.substring(0,7)+'-01';
 
-function sv(name, el) {
-  document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-  const view = id('view-' + name); if (view) view.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); if (el) el.classList.add('active');
-  const tmap = { dashboard:'Dashboard', agenda:'Agenda', clientes:'Clientes', perfil:'Perfil do Cliente', anamnese:'Anamnese', pagamentos:'Pagamentos', relatorios:'Relatórios', equipe:'Equipe', whatsapp:'WhatsApp', config:'Configurações' };
-  id('tt').textContent = tmap[name] || name;
-  if (name === 'clientes') loadCli();
-  if (name === 'agenda') loadAgenda();
-  if (name === 'anamnese') loadCliSel();
-  if (name === 'relatorios') loadRel();
-  if (name === 'equipe') loadEquipe();
-  if (name === 'pagamentos') loadPag();
-}
+  let agQuery=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59');
+  if(CE)agQuery=agQuery.eq('profissional_id',CE.id);
 
-async function loadDash() {
-  if (!CU) return;
-  const now = new Date(); const h = now.getHours();
-  const greet = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
-  const nm = CP ? CP.nome.split(' ')[0] : '';
-  id('d-greet').textContent = greet + (nm ? ', ' + nm : '') + '! 👋';
-  id('d-date').textContent = now.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  const hoje = now.toISOString().split('T')[0];
-  const mesI = hoje.substring(0,7) + '-01';
-  const [{ count: cAg }, { count: cCl }, { count: cMes }, { data: ags }] = await Promise.all([
-    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',CU.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59'),
-    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',CU.id),
-    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',CU.id).gte('data_hora',mesI),
-    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',CU.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora')
+  const [{count:cAg},{count:cCl},{count:cMes}]=await Promise.all([
+    agQuery,
+    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',mesI)
   ]);
-  id('s-hoje').textContent = cAg||0; id('s-cli').textContent = cCl||0; id('s-mes').textContent = cMes||0;
-  const el = id('d-agenda');
-  if (!ags || !ags.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>'; return; }
-  el.innerHTML = ags.map(a => {
-    const hr = new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const bc = a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
+  id('s-hoje').textContent=cAg||0;id('s-cli').textContent=cCl||0;id('s-mes').textContent=cMes||0;
+
+  // Dashboard body: admin vê por profissional, outros veem agenda própria
+  if(!CE){
+    await loadDashAdmin(hoje,ownId);
+  } else {
+    await loadDashProf(hoje,ownId);
+  }
+}
+
+async function loadDashAdmin(hoje,ownId){
+  const {data:profs}=await sb.from('equipe').select('*').eq('user_id',ownId).order('nome');
+  const {data:ags}=await sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
+
+  // Calcular faturamento
+  const {data:fat}=await sb.from('agendamentos').select('valor').eq('user_id',ownId).gte('data_hora',hoje.substring(0,7)+'-01');
+  const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  id('s-fat').textContent='R$'+total.toFixed(0);
+
+  let html='';
+  if(!profs||!profs.length){
+    // Sem profissionais cadastrados — mostra agenda geral
+    html='<div class="card"><div class="sh"><div class="st">Agenda de hoje</div></div>';
+    if(!ags||!ags.length){html+='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>';}
+    else html+=renderAgs(ags);
+    html+='</div>';
+  } else {
+    html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">';
+    profs.forEach(p=>{
+      const cor=p.cor||'#0D6EFD';
+      const pAgs=(ags||[]).filter(a=>a.profissional_id===p.id);
+      const ini=p.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+      html+=`<div class="agenda-col">
+        <div class="agenda-col-header">
+          <div style="width:32px;height:32px;border-radius:50%;background:${cor}22;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:${cor}">${ini}</div>
+          <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${p.nome}</div><div style="font-size:11px;color:var(--gray-400)">${pAgs.length} hoje</div></div>
+          <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:100px;background:${cor}22;color:${cor}">${PERMS[p.permissao||'recepcao']?.label||p.permissao}</span>
+        </div>
+        <div class="agenda-col-body">`;
+      if(!pAgs.length){html+='<div style="text-align:center;padding:16px;color:var(--gray-400);font-size:13px">Livre hoje</div>';}
+      else{
+        pAgs.forEach(a=>{
+          const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+          const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
+          html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--gray-100)">
+            <div style="font-size:12px;font-weight:700;color:var(--gray-700);min-width:40px">${hr}</div>
+            <div style="flex:1;font-size:13px;font-weight:500">${a.clientes?.nome||'Cliente'}</div>
+            <span class="badge ${bc}" style="font-size:10px">${a.status||'aguardando'}</span>
+          </div>`;
+        });
+      }
+      html+=`</div></div>`;
+    });
+    html+='</div>';
+    // Também mostra agendamentos sem profissional
+    const semProf=(ags||[]).filter(a=>!a.profissional_id);
+    if(semProf.length){
+      html+=`<div class="card" style="margin-top:16px"><div class="sh"><div class="st">Sem profissional atribuído</div></div>${renderAgs(semProf)}</div>`;
+    }
+  }
+  id('dash-body').innerHTML=html;
+}
+
+async function loadDashProf(hoje,ownId){
+  const {data:ags}=await sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
+  const {data:fat}=await sb.from('agendamentos').select('valor').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje.substring(0,7)+'-01');
+  const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  id('s-fat').textContent='R$'+total.toFixed(0);
+  let html='<div class="card"><div class="sh"><div class="st">Minha agenda de hoje</div></div>';
+  if(!ags||!ags.length)html+='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>';
+  else html+=renderAgs(ags);
+  html+='</div>';
+  id('dash-body').innerHTML=html;
+}
+
+function renderAgs(ags){
+  return ags.map(a=>{
+    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
     return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${a.status||'aguardando'}</span></div>`;
   }).join('');
 }
 
-async function loadCli() {
-  if (!CU) return;
-  const { data } = await sb.from('clientes').select('*').eq('user_id',CU.id).order('nome');
-  allCli = data || []; id('cli-count').textContent = allCli.length + ' clientes cadastrados'; renderCli(allCli);
+// AGENDA
+async function loadAgenda(){
+  if(!CU)return;
+  const ownId=getOwnerId();
+  const hoje=new Date().toISOString().split('T')[0];
+  id('ag-title').textContent='Hoje — '+new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
+  let q=sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
+  if(CE)q=q.eq('profissional_id',CE.id);
+  const {data}=await q;
+  const el=id('ag-lista');
+  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>';return;}
+  el.innerHTML=data.map(a=>{
+    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
+    const cor=a.equipe?.cor||'#94A3B8';
+    const profNome=a.equipe?.nome?`<span style="font-size:10px;padding:2px 7px;border-radius:100px;background:${cor}22;color:${cor};font-weight:600">${a.equipe.nome}</span>`:'';
+    return `<div class="ar">
+      <div class="at"><div class="ah">${hr}</div></div>
+      <div class="adiv"></div>
+      <div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profNome}</div><div class="atp">${a.profissional||'—'}</div></div>
+      <span class="badge ${bc}">${a.status||'aguardando'}</span>
+      <button class="btn btn-sm btn-success" onclick="confirmarAg('${a.id}')">✓</button>
+      <button class="btn btn-sm btn-danger" onclick="cancelarAg('${a.id}')">✕</button>
+    </div>`;
+  }).join('');
 }
 
-function renderCli(lista) {
-  const tb = id('tb-cli');
-  if (!lista.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Nenhum cliente ainda</div><p style="font-size:13px;color:var(--gray-400)">Clique em "+ Novo cliente" para começar</p></div></td></tr>'; return; }
-  tb.innerHTML = lista.map(c => {
-    const ini = c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-    const dt = c.created_at ? new Date(c.created_at).toLocaleDateString('pt-BR') : '—';
+async function confirmarAg(agId){await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);toast('Confirmado ✓','ok');loadAgenda();loadDash();}
+async function cancelarAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
+
+async function salvarAg(){
+  if(!CU)return;
+  const ownId=getOwnerId();
+  const cliId=v('ag-cli'),profId=v('ag-prof'),servStr=v('ag-serv'),data=v('ag-data'),hora=v('ag-hora');
+  if(!cliId||!servStr||!data||!hora){toast('Preencha todos os campos!','err');return;}
+  const [servNome,preco]=servStr.split('|');
+  const {error}=await sb.from('agendamentos').insert({
+    user_id:ownId,cliente_id:cliId,profissional_id:profId||null,
+    profissional:servNome,data_hora:`${data}T${hora}:00`,
+    status:'aguardando',valor:parseFloat(preco)||0,observacoes:v('ag-obs')
+  });
+  if(error){toast('Erro: '+error.message,'err');return;}
+  cm('m-ag');toast('Agendamento criado ✓','ok');loadDash();loadAgenda();
+}
+
+// CLIENTES
+async function loadCli(){
+  if(!CU)return;
+  const {data}=await sb.from('clientes').select('*').eq('user_id',getOwnerId()).order('nome');
+  allCli=data||[];id('cli-count').textContent=allCli.length+' clientes';renderCli(allCli);
+}
+
+function renderCli(lista){
+  const tb=id('tb-cli');
+  if(!lista.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
+  tb.innerHTML=lista.map(c=>{
+    const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    const dt=c.created_at?new Date(c.created_at).toLocaleDateString('pt-BR'):'—';
     return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${dt}</td><td><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button></td></tr>`;
   }).join('');
 }
 
-function filtrarCli() {
-  const q = v('s-cli-inp').toLowerCase();
-  renderCli(allCli.filter(c => c.nome.toLowerCase().includes(q) || (c.telefone||'').includes(q)));
+function filtrarCli(){const q=v('s-cli-inp').toLowerCase();renderCli(allCli.filter(c=>c.nome.toLowerCase().includes(q)||(c.telefone||'').includes(q)));}
+
+async function salvarCli(){
+  if(!CU)return;
+  const nome=v('nc-nome');if(!nome){toast('Nome é obrigatório!','err');return;}
+  const {error}=await sb.from('clientes').insert({user_id:getOwnerId(),nome,telefone:v('nc-tel'),email:v('nc-email'),data_nascimento:v('nc-nasc')||null,observacoes:v('nc-obs')});
+  if(error){toast('Erro: '+error.message,'err');return;}
+  cm('m-cli');toast('Cliente cadastrado ✓','ok');
+  ['nc-nome','nc-tel','nc-email','nc-obs'].forEach(x=>id(x).value='');
+  loadCli();loadCliSel();loadDash();
 }
 
-async function salvarCli() {
-  if (!CU) return;
-  const nome = v('nc-nome'); if (!nome) { toast('Nome é obrigatório!', 'err'); return; }
-  const { error } = await sb.from('clientes').insert({ user_id:CU.id, nome, telefone:v('nc-tel'), email:v('nc-email'), data_nascimento:v('nc-nasc')||null, observacoes:v('nc-obs') });
-  if (error) { toast('Erro: ' + error.message, 'err'); return; }
-  cm('m-cli'); toast('Cliente cadastrado ✓', 'ok');
-  ['nc-nome','nc-tel','nc-email','nc-obs'].forEach(x => id(x).value='');
-  loadCli(); loadCliSel(); loadDash();
+async function verPerfil(cid){
+  const {data:c}=await sb.from('clientes').select('*').eq('id',cid).single();
+  if(!c)return;
+  const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+  const {count:nv}=await sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('cliente_id',cid);
+  id('p-nome').textContent=c.nome;id('p-nome2').textContent=c.nome;
+  id('p-meta').textContent=(nv||0)+' visitas';id('p-av').textContent=ini;
+  id('p-contato').textContent=[c.telefone,c.email].filter(Boolean).join(' · ')||'Sem contato';
+  id('p-badges').innerHTML=`<span class="badge b-blue">${nv||0} visitas</span>`;
+  id('p-info').innerHTML=[c.data_nascimento?`<div><strong>Nascimento:</strong> ${new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR')}</div>`:'',c.observacoes?`<div><strong>Obs:</strong> ${c.observacoes}</div>`:'',`<div><strong>Cadastrado em:</strong> ${new Date(c.created_at).toLocaleDateString('pt-BR')}</div>`].join('');
+  await loadHistorico(cid);await loadAnamPerfil(cid);
+  sv('perfil',null);
 }
 
-async function verPerfil(cid) {
-  perfilId = cid;
-  const { data: c } = await sb.from('clientes').select('*').eq('id', cid).single();
-  if (!c) return;
-  const ini = c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-  const { count: nv } = await sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('cliente_id',cid);
-  id('p-nome').textContent = c.nome; id('p-nome2').textContent = c.nome;
-  id('p-meta').textContent = (nv||0) + ' visitas';
-  id('p-av').textContent = ini;
-  id('p-contato').textContent = [c.telefone, c.email].filter(Boolean).join(' · ') || 'Sem contato';
-  id('p-badges').innerHTML = `<span class="badge b-blue">${nv||0} visitas</span>`;
-  id('p-info').innerHTML = [
-    c.data_nascimento ? `<div><strong>Nascimento:</strong> ${new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR')}</div>` : '',
-    c.observacoes ? `<div><strong>Obs:</strong> ${c.observacoes}</div>` : '',
-    `<div><strong>Cadastrado em:</strong> ${new Date(c.created_at).toLocaleDateString('pt-BR')}</div>`
-  ].join('');
-  await loadHistorico(cid);
-  await loadAnamPerfil(cid);
-  sv('perfil', null);
-}
-
-async function loadHistorico(cid) {
-  const { data } = await sb.from('agendamentos').select('*').eq('cliente_id',cid).order('data_hora',{ascending:false});
-  const el = id('p-historico');
-  if (!data || !data.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Sem histórico ainda</div></div>'; return; }
-  el.innerHTML = data.map(a => {
-    const dt = new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});
-    const bc = a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
-    return `<div class="ar"><div class="at" style="min-width:64px"><div style="font-size:12px;font-weight:600;color:var(--gray-700)">${dt}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.profissional||'Serviço'}</div><div class="atp">${a.observacoes||''}</div></div>${a.valor ? `<div style="font-size:13px;font-weight:600;color:var(--brand)">R$${a.valor}</div>` : ''}<span class="badge ${bc}">${a.status||'aguardando'}</span></div>`;
+async function loadHistorico(cid){
+  const {data}=await sb.from('agendamentos').select('*,equipe(nome)').eq('cliente_id',cid).order('data_hora',{ascending:false});
+  const el=id('p-historico');
+  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Sem histórico</div></div>';return;}
+  el.innerHTML=data.map(a=>{
+    const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});
+    const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
+    return `<div class="ar"><div class="at" style="min-width:64px"><div style="font-size:12px;font-weight:600;color:var(--gray-700)">${dt}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.profissional||'Serviço'}</div><div class="atp">${a.equipe?.nome?'com '+a.equipe.nome:''}</div></div>${a.valor?`<div style="font-size:13px;font-weight:600;color:var(--brand)">R$${a.valor}</div>`:''}<span class="badge ${bc}">${a.status||'aguardando'}</span></div>`;
   }).join('');
 }
 
-async function loadAnamPerfil(cid) {
-  const { data } = await sb.from('anamneses').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(1);
-  const el = id('p-anam');
-  if (!data || !data.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem anamnese ainda</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="sv(\'anamnese\',document.querySelector(\'[onclick*=anamnese]\'))">Preencher anamnese</button></div>'; return; }
-  const a = data[0];
-  el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">
-    ${a.tipo_alopecia ? `<div><strong>Tipo de alopecia:</strong><br>${a.tipo_alopecia}</div>` : ''}
-    ${a.norwood ? `<div><strong>Escala Norwood:</strong><br>Grau ${a.norwood}</div>` : ''}
-    ${a.tipo_pele ? `<div><strong>Tipo de pele:</strong><br>${a.tipo_pele}</div>` : ''}
-    ${a.material_pref ? `<div><strong>Material preferido:</strong><br>${a.material_pref}</div>` : ''}
-    ${a.fixacao_pref ? `<div><strong>Fixação preferida:</strong><br>${a.fixacao_pref}</div>` : ''}
-    ${a.alergias ? `<div><strong>Alergias:</strong><br>${a.alergias}</div>` : ''}
-    ${a.observacoes ? `<div style="grid-column:1/-1"><strong>Observações:</strong><br>${a.observacoes}</div>` : ''}
-  </div>`;
+async function loadAnamPerfil(cid){
+  const {data}=await sb.from('anamneses').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(1);
+  const el=id('p-anam');
+  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem anamnese</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="sv(\'anamnese\',document.querySelector(\'.nav-anamnese\'))">Preencher</button></div>';return;}
+  const a=data[0];
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">${[['Tipo de alopecia',a.tipo_alopecia],['Escala Norwood',a.norwood?'Grau '+a.norwood:null],['Tipo de pele',a.tipo_pele],['Material preferido',a.material_pref],['Fixação',a.fixacao_pref],['Alergias',a.alergias]].filter(x=>x[1]).map(x=>`<div><strong>${x[0]}:</strong><br>${x[1]}</div>`).join('')}${a.observacoes?`<div style="grid-column:1/-1"><strong>Obs:</strong><br>${a.observacoes}</div>`:''}</div>`;
 }
 
-function pTab(tab, el) {
-  document.querySelectorAll('#view-perfil .tab').forEach(x => x.classList.remove('active')); el.classList.add('active');
-  id('p-historico').style.display = tab === 'historico' ? 'block' : 'none';
-  id('p-anam').style.display = tab === 'anam' ? 'block' : 'none';
+function pTab(tab,el){
+  document.querySelectorAll('#view-perfil .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  id('p-historico').style.display=tab==='historico'?'block':'none';
+  id('p-anam').style.display=tab==='anam'?'block':'none';
 }
 
-async function loadAgenda() {
-  if (!CU) return;
-  const hoje = new Date().toISOString().split('T')[0];
-  id('ag-title').textContent = 'Hoje — ' + new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
-  const { data } = await sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',CU.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
-  const el = id('ag-lista');
-  if (!data || !data.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>'; return; }
-  el.innerHTML = data.map(a => {
-    const hr = new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const bc = a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'—'}</div></div><span class="badge ${bc}">${a.status||'aguardando'}</span><button class="btn btn-sm btn-success" onclick="confirmarAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancelarAg('${a.id}')">✕</button></div>`;
-  }).join('');
-}
-
-async function confirmarAg(agId) {
-  await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);
-  toast('Agendamento confirmado ✓','ok'); loadAgenda(); loadDash();
-}
-async function cancelarAg(agId) {
-  await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);
-  toast('Agendamento cancelado','err'); loadAgenda(); loadDash();
-}
-
-async function salvarAg() {
-  if (!CU) return;
-  const cliId = v('ag-cli'), servStr = v('ag-serv'), data = v('ag-data'), hora = v('ag-hora');
-  if (!cliId || !servStr || !data || !hora) { toast('Preencha todos os campos!', 'err'); return; }
-  const [servNome, preco] = servStr.split('|');
-  const { error } = await sb.from('agendamentos').insert({ user_id:CU.id, cliente_id:cliId, profissional:servNome, data_hora:`${data}T${hora}:00`, status:'aguardando', valor:parseFloat(preco)||0, observacoes:v('ag-obs') });
-  if (error) { toast('Erro: '+error.message,'err'); return; }
-  cm('m-ag'); toast('Agendamento criado ✓','ok'); loadDash(); loadAgenda();
-}
-
-async function loadCliSel() {
-  if (!CU) return;
-  const { data } = await sb.from('clientes').select('id,nome').eq('user_id',CU.id).order('nome');
-  ['ag-cli','an-cli'].forEach(sid => {
-    const sel = id(sid); if (!sel) return;
-    sel.innerHTML = '<option value="">Selecionar cliente...</option>';
-    (data||[]).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; sel.appendChild(o); });
+async function loadCliSel(){
+  if(!CU)return;
+  const {data}=await sb.from('clientes').select('id,nome').eq('user_id',getOwnerId()).order('nome');
+  ['ag-cli','an-cli'].forEach(sid=>{
+    const sel=id(sid);if(!sel)return;
+    sel.innerHTML='<option value="">Selecionar cliente...</option>';
+    (data||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.nome;sel.appendChild(o);});
   });
 }
 
-async function salvarAnam() {
-  const cliId = v('an-cli'); if (!cliId) { toast('Selecione um cliente!','err'); return; }
-  const norwood = document.querySelector('#norwood .sc-btn.active')?.textContent;
-  const pele = document.querySelector('#tg-pele .tog.active')?.textContent;
-  const mat = document.querySelector('#tg-mat .tog.active')?.textContent;
-  const fix = document.querySelector('#tg-fix .tog.active')?.textContent;
-  const esp = document.querySelector('#tg-esp .tog.active')?.textContent;
-  const conds = [...document.querySelectorAll('.ci.checked span')].map(x => x.textContent);
-  const { error } = await sb.from('anamneses').insert({
-    cliente_id:cliId, tipo_alopecia:v('an-tipo'), tempo_alopecia:v('an-tempo'),
-    norwood: norwood ? ['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1 : null,
-    alergias:v('an-alergia'), medicamentos:v('an-med'), tipo_pele:pele,
-    material_pref:mat, fixacao_pref:fix, pratica_esportes:esp,
-    condicoes_saude:conds, observacoes:v('an-obs')
+async function loadProfissionaisSelect(){
+  if(!CU)return;
+  const {data}=await sb.from('equipe').select('id,nome,cor').eq('user_id',getOwnerId()).order('nome');
+  allProf=data||[];
+  const sel=id('ag-prof');if(!sel)return;
+  sel.innerHTML='<option value="">Sem profissional específico</option>';
+  (data||[]).forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.nome;sel.appendChild(o);});
+  // Se for profissional logado, pré-seleciona ele mesmo
+  if(CE){sel.value=CE.id;sel.disabled=true;}
+}
+
+async function salvarAnam(){
+  const cliId=v('an-cli');if(!cliId){toast('Selecione um cliente!','err');return;}
+  const norwood=document.querySelector('#norwood .sc-btn.active')?.textContent;
+  const pele=document.querySelector('#tg-pele .tog.active')?.textContent;
+  const mat=document.querySelector('#tg-mat .tog.active')?.textContent;
+  const fix=document.querySelector('#tg-fix .tog.active')?.textContent;
+  const {error}=await sb.from('anamneses').insert({
+    cliente_id:cliId,tipo_alopecia:v('an-tipo'),tempo_alopecia:v('an-tempo'),
+    norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,
+    alergias:v('an-alergia'),medicamentos:v('an-med'),tipo_pele:pele,
+    material_pref:mat,fixacao_pref:fix,observacoes:v('an-obs')
   });
-  if (error) { toast('Erro: '+error.message,'err'); return; }
+  if(error){toast('Erro: '+error.message,'err');return;}
   toast('Ficha de anamnese salva ✓','ok');
 }
 
-async function loadEquipe() {
-  if (!CU) return;
-  const { data } = await sb.from('equipe').select('*').eq('user_id',CU.id).order('nome');
-  const lista = data || [];
-  id('eq-count').textContent = lista.length + ' profissionais';
-  const el = id('eq-grid');
-  let html = lista.map(e => {
-    const ini = e.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-    const pc = e.permissao==='admin'?'b-purple':e.permissao==='editor'?'b-blue':'b-gray';
-    return `<div class="card" style="text-align:center">
-      <div class="av" style="width:56px;height:56px;font-size:18px;margin:0 auto 12px">${ini}</div>
-      <div style="font-weight:600;font-size:15px;margin-bottom:4px">${e.nome}</div>
-      <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px">${e.cargo||'Profissional'}</div>
-      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px"><span class="badge ${pc}">${e.permissao||'editor'}</span><span class="badge b-green">Ativo</span></div>
-      ${e.telefone?`<div style="font-size:12px;color:var(--gray-500)">${e.telefone}</div>`:''}
+// EQUIPE
+async function loadEquipe(){
+  if(!CU)return;
+  const {data}=await sb.from('equipe').select('*').eq('user_id',getOwnerId()).order('nome');
+  const lista=data||[];id('eq-count').textContent=lista.length+' profissionais';
+  const el=id('eq-grid');
+  let html=lista.map(e=>{
+    const ini=e.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    const cor=e.cor||'#0D6EFD';
+    const perm=e.permissao||'recepcao';
+    const permLabels={admin:'👑 Admin',financeiro:'💰 Financeiro',recepcao:'📅 Recepção'};
+    const permColors={admin:'perm-admin',financeiro:'perm-financeiro',recepcao:'perm-recepcao'};
+    return `<div class="prof-card">
+      <div class="prof-av" style="background:${cor}22;color:${cor}">${ini}</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:4px">${e.nome}</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">${e.cargo||'Profissional'}</div>
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px">
+        <span class="perm-badge ${permColors[perm]}">${permLabels[perm]}</span>
+      </div>
+      ${e.email?`<div style="font-size:12px;color:var(--gray-500);margin-bottom:4px">📧 ${e.email}</div>`:''}
+      ${e.telefone?`<div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">📱 ${e.telefone}</div>`:''}
+      ${e.auth_user_id?'<span class="badge b-green" style="margin-bottom:12px">✓ Acesso ativo</span>':'<span class="badge b-yellow" style="margin-bottom:12px">⏳ Aguardando acesso</span>'}
       <div class="divider"></div>
-      <button class="btn btn-sm btn-danger" onclick="excluirEq('${e.id}')">Remover</button>
+      <div style="display:flex;gap:6px;justify-content:center">
+        <button class="btn btn-sm btn-outline" onclick="enviarAcesso('${e.id}','${e.email||''}','${e.nome}')">Enviar acesso</button>
+        <button class="btn btn-sm btn-danger" onclick="excluirEq('${e.id}')">Remover</button>
+      </div>
     </div>`;
   }).join('');
-  html += `<div class="card" style="text-align:center;border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;cursor:pointer" onclick="om('m-eq')">
+  html+=`<div class="prof-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;cursor:pointer;border-color:var(--gray-300)" onclick="om('m-eq')">
     <div style="font-size:32px;color:var(--gray-300);margin-bottom:8px">+</div>
-    <div style="font-size:14px;font-weight:500;color:var(--gray-500)">Adicionar profissional</div>
+    <div style="font-size:14px;font-weight:500;color:var(--gray-400)">Adicionar profissional</div>
   </div>`;
-  el.innerHTML = html;
+  el.innerHTML=html;
 }
 
-async function salvarEq() {
-  if (!CU) return;
-  const nome = v('eq-nome'); if (!nome) { toast('Nome é obrigatório!','err'); return; }
-  const { error } = await sb.from('equipe').insert({ user_id:CU.id, nome, telefone:v('eq-tel'), email:v('eq-email'), cargo:v('eq-cargo'), permissao:v('eq-perm'), observacoes:v('eq-obs') });
-  if (error) { toast('Erro: '+error.message,'err'); return; }
-  cm('m-eq'); toast('Profissional cadastrado ✓','ok');
-  ['eq-nome','eq-tel','eq-email','eq-cargo','eq-obs'].forEach(x => id(x).value='');
-  loadEquipe();
+async function salvarEq(){
+  if(!CU)return;
+  const nome=v('eq-nome'),email=v('eq-email');
+  if(!nome||!email){toast('Nome e e-mail são obrigatórios!','err');return;}
+  const perm=v('eq-perm');
+  const {error}=await sb.from('equipe').insert({
+    user_id:getOwnerId(),nome,telefone:v('eq-tel'),email,
+    cargo:v('eq-cargo'),permissao:perm,cor:corSel,observacoes:v('eq-obs')
+  });
+  if(error){toast('Erro: '+error.message,'err');return;}
+  cm('m-eq');toast('Profissional cadastrado! Envie o acesso para ele ✓','ok');
+  ['eq-nome','eq-tel','eq-email','eq-cargo','eq-obs'].forEach(x=>id(x).value='');
+  loadEquipe();await loadProfissionaisSelect();
 }
 
-async function excluirEq(eqId) {
-  if (!confirm('Remover este profissional?')) return;
+async function enviarAcesso(eqId,email,nome){
+  if(!email){toast('Profissional sem e-mail cadastrado!','err');return;}
+  // Envia convite via Supabase Auth
+  const {error}=await sb.auth.admin?.inviteUserByEmail?.(email)||{error:null};
+  // Como não temos acesso admin aqui, orientamos o profissional a criar conta
+  toast(`Instrua ${nome} a criar conta em barberflow-blush.vercel.app com o e-mail ${email}`,'ok');
+}
+
+async function excluirEq(eqId){
+  if(!confirm('Remover este profissional?'))return;
   await sb.from('equipe').delete().eq('id',eqId);
-  toast('Profissional removido','ok'); loadEquipe();
+  toast('Profissional removido','ok');loadEquipe();
 }
 
-async function loadRel() {
-  if (!CU) return;
-  const [{ count:ca },{ count:cc },{ data:fat }] = await Promise.all([
-    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',CU.id),
-    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',CU.id),
-    sb.from('agendamentos').select('valor').eq('user_id',CU.id)
-  ]);
-  const total = (fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  id('r-ag').textContent=ca||0; id('r-cl').textContent=cc||0;
+// RELATORIOS
+async function loadRel(){
+  if(!CU)return;
+  const ownId=getOwnerId();
+  let agQ=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId);
+  let fatQ=sb.from('agendamentos').select('valor,profissional_id,equipe(nome)').eq('user_id',ownId);
+  if(CE){agQ=agQ.eq('profissional_id',CE.id);fatQ=fatQ.eq('profissional_id',CE.id);}
+  const [{count:ca},{count:cc},{ data:fat}]=await Promise.all([agQ,sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),fatQ]);
+  const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  id('r-ag').textContent=ca||0;id('r-cl').textContent=cc||0;
   id('r-fat').textContent='R$'+total.toFixed(0);
   id('r-tkt').textContent='R$'+(ca>0?total/ca:0).toFixed(0);
+  // Admin: breakdown por profissional
+  if(!CE&&allProf.length){
+    const breakdown=id('rel-prof-breakdown');breakdown.style.display='block';
+    const byProf={};(fat||[]).forEach(a=>{const pid=a.profissional_id||'sem';if(!byProf[pid])byProf[pid]={nome:a.equipe?.nome||'Sem profissional',total:0,qt:0};byProf[pid].total+=a.valor||0;byProf[pid].qt++;});
+    id('rel-prof-lista').innerHTML=Object.values(byProf).sort((a,b)=>b.total-a.total).map(p=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)"><div style="flex:1;font-weight:500">${p.nome}</div><div style="font-size:13px;color:var(--gray-500)">${p.qt} atendimentos</div><div style="font-size:15px;font-weight:700;color:var(--brand)">R$${p.total.toFixed(0)}</div></div>`).join('');
+  }
 }
 
-async function loadPag() {
-  if (!CU) return;
-  const { data } = await sb.from('agendamentos').select('valor,status').eq('user_id',CU.id);
-  const conf = (data||[]).filter(a=>a.status==='confirmado').reduce((s,a)=>s+(a.valor||0),0);
-  const pend = (data||[]).filter(a=>a.status!=='confirmado'&&a.status!=='cancelado').reduce((s,a)=>s+(a.valor||0),0);
+// PAGAMENTOS
+async function loadPag(){
+  if(!CU)return;
+  const ownId=getOwnerId();
+  let q=sb.from('agendamentos').select('valor,status').eq('user_id',ownId);
+  if(CE)q=q.eq('profissional_id',CE.id);
+  const {data}=await q;
+  const conf=(data||[]).filter(a=>a.status==='confirmado').reduce((s,a)=>s+(a.valor||0),0);
+  const pend=(data||[]).filter(a=>a.status!=='confirmado'&&a.status!=='cancelado').reduce((s,a)=>s+(a.valor||0),0);
   id('pg-total').textContent='R$'+conf.toFixed(0);
   id('pg-pend').textContent='R$'+pend.toFixed(0);
   id('pg-qt').textContent=(data||[]).length;
 }
 
-async function salvarCfg() {
-  if (!CU) return;
-  const { error } = await sb.from('profiles').update({ nome_barbearia:v('c-barb'), nome:v('c-nome'), telefone:v('c-tel') }).eq('id',CU.id);
-  if (error) { toast('Erro ao salvar!','err'); return; }
-  toast('Configurações salvas ✓','ok'); await loadProfile();
+async function salvarCfg(){
+  if(!CU||!CP)return;
+  const {error}=await sb.from('profiles').update({nome_barbearia:v('c-barb'),nome:v('c-nome'),telefone:v('c-tel')}).eq('id',CU.id);
+  if(error){toast('Erro!','err');return;}
+  toast('Salvo ✓','ok');await loadUserContext();
 }
 
-function om(mid) {
-  if (mid==='m-ag' || mid==='m-cli') loadCliSel();
-  if (mid==='m-ag') { const h = new Date().toISOString().split('T')[0]; id('ag-data').value = h; }
+// MODAL HELPERS
+function om(mid){
+  if(mid==='m-ag'||mid==='m-cli')loadCliSel();
+  if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfissionaisSelect();}
   id(mid).classList.add('open');
 }
-function cm(mid) { id(mid).classList.remove('open'); }
-document.querySelectorAll('.mo').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+function cm(mid){id(mid).classList.remove('open');}
+document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
-function selTog(gid, el) { document.querySelectorAll('#'+gid+' .tog').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
-function selSc(gid, el) { document.querySelectorAll('#'+gid+' .sc-btn').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
-function togCI(el) { el.classList.toggle('checked'); el.querySelector('.cb').textContent = el.classList.contains('checked') ? '✓' : ''; }
+// Descrição de permissão
+id('eq-perm')?.addEventListener('change',function(){
+  const descs={admin:'Admin: acesso total — vê tudo, edita tudo.',financeiro:'Financeiro: vê relatórios e pagamentos. Não agenda.',recepcao:'Recepção: cria/edita agendamentos e clientes. Não vê financeiro.'};
+  id('perm-desc').textContent=descs[this.value]||'';
+});
 
-function toast(msg, type='ok') {
-  const t = id('toast'); t.textContent = msg;
-  t.className = 'toast show ' + (type==='ok'?'t-ok':'t-err');
-  setTimeout(()=>t.classList.remove('show'), 3500);
+function selCor(el){
+  document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');
+  el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;
 }
 
-function id(x) { return document.getElementById(x); }
-function v(x) { return (id(x)?.value||'').trim(); }
+function selTog(gid,el){document.querySelectorAll('#'+gid+' .tog').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
+function selSc(gid,el){document.querySelectorAll('#'+gid+' .sc-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
+function togCI(el){el.classList.toggle('checked');el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';}
+
+function toast(msg,type='ok'){
+  const t=id('toast');t.textContent=msg;
+  t.className='toast show '+(type==='ok'?'t-ok':'t-err');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+function id(x){return document.getElementById(x);}
+function v(x){return(id(x)?.value||'').trim();}
 
 init();
 </script>
