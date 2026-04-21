@@ -679,11 +679,21 @@ async function doRegister(){
   const err=id('r-err');err.style.display='none';
   if(!nome||!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
   if(pass.length<8){err.textContent='Senha com mínimo 8 caracteres.';err.style.display='block';return;}
+  // Verifica se o e-mail já é de um profissional cadastrado na equipe
+  const {data:eqCheck}=await sb.from('equipe').select('id,user_id').eq('email',email).single();
   const {data,error}=await sb.auth.signUp({email,password:pass});
   if(error){err.textContent=error.message;err.style.display='block';return;}
   if(data.user){
-    await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'trial'});
-    CU=data.user;await loadCtx();go('app');loadDash();toast('Conta criada! Bem-vindo ✓','ok');
+    if(eqCheck){
+      // É um profissional da equipe — vincula o auth_user_id
+      await sb.from('equipe').update({auth_user_id:data.user.id}).eq('id',eqCheck.id);
+      toast('Acesso ativado! Bem-vindo ✓','ok');
+    } else {
+      // É um novo dono — cria profile
+      await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'trial'});
+      toast('Conta criada! Bem-vindo ✓','ok');
+    }
+    CU=data.user;await loadCtx();go('app');loadDash();
   }
 }
 
