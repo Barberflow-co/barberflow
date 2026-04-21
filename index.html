@@ -1062,7 +1062,7 @@ async function carregarAnamAg(cliId){
   prev.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
   const {data}=await sb.from('anamneses').select('*').eq('cliente_id',cliId).order('created_at',{ascending:false}).limit(1);
   if(!data||!data.length){
-    prev.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:16px"><div style="font-size:20px;margin-bottom:8px">📋</div><div style="font-size:13px">Sem anamnese cadastrada</div><button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="cm('m-ag');sv('anamnese',null)">Preencher agora</button></div>';
+    prev.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:16px"><div style="font-size:20px;margin-bottom:8px">📋</div><div style="font-size:13px">Sem anamnese cadastrada</div><button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="cm(&quot;m-ag&quot;);sv(&quot;anamnese&quot;,null)">Preencher agora</button></div>';
     return;
   }
   const a=data[0];
