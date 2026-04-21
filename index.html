@@ -907,11 +907,7 @@ async function loadAgenda(){
     profPanel.innerHTML=allProf.map(p=>{
       const cor=p.cor||'#0D6EFD';
       const sel=agProfsSel.includes(p.id);
-      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:13px">
-        <input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)" style="accent-color:${cor}">
-        <span style="width:10px;height:10px;border-radius:50%;background:${cor};display:inline-block"></span>
-        ${p.nome}
-      </label>`;
+      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:13px"><input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)" style="accent-color:${cor}"><span style="width:10px;height:10px;border-radius:50%;background:${cor};display:inline-block"></span> ${p.nome}</label>`;
     }).join('');
   } else {
     profPanel.innerHTML='<div style="font-size:13px;color:var(--gray-400)">Visualizando sua agenda</div>';
