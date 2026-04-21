@@ -768,16 +768,57 @@ async function loadDashAdmin(hoje,ownId){
 }
 
 async function loadDashProf(hoje,ownId){
-  const {data:ags}=await sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
+  const mesI=hoje.substring(0,7)+'-01';
+  const [{data:ags},{count:cMes},{data:fat}]=await Promise.all([
+    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',mesI),
+    sb.from('agendamentos').select('valor').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',mesI)
+  ]);
+  id('s-cli').textContent='—';
+  id('s-mes').textContent=cMes||0;
+  const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  id('s-fat').textContent='R$'+fat2.toFixed(0);
   id('dash-body').innerHTML='<div class="card"><div class="sh"><div class="st">Minha agenda de hoje</div></div>'+(ags&&ags.length?renderAgs(ags):'<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>')+'</div>';
 }
 
 function renderAgs(ags){
   return ags.map(a=>{
     const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${a.status||'aguardando'}</span><button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button></div>`;
+    const st=a.status||'aguardando';
+    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
+    const stLabel=st==='aguardando'?'Aguardando':st==='confirmado'?'Confirmado':st==='em_atendimento'?'Em atendimento':st==='finalizado'?'Finalizado':'Cancelado';
+    let btns='';
+    if(st==='aguardando'){
+      btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    } else if(st==='confirmado'){
+      btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    } else if(st==='em_atendimento'){
+      btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
+    }
+    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${stLabel}</span>${btns}</div>`;
   }).join('');
+}
+
+async function iniciarAg(agId){
+  await sb.from('agendamentos').update({status:'em_atendimento'}).eq('id',agId);
+  toast('Cliente em atendimento! ▶','ok');loadAgenda();loadDash();
+}
+
+async function finalizarAg(agId,cliId,servico){
+  await sb.from('agendamentos').update({status:'finalizado'}).eq('id',agId);
+  // Abre modal de comanda pré-preenchido
+  await loadCliSels();await loadProfsBD();await loadServsBD();
+  cmdItens=[];
+  // Pré-seleciona cliente
+  if(cliId){id('cmd-cli').value=cliId;}
+  if(CE){id('cmd-prof').value=CE.id;}
+  // Adiciona o serviço do agendamento se existir
+  const sv2=allServs.find(s=>s.nome===servico);
+  if(sv2){cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0});}
+  renderCmdItens();
+  id('m-comanda').classList.add('open');
+  toast('Atendimento finalizado! Feche a comanda ✓','ok');
+  loadAgenda();loadDash();
 }
 
 async function loadAgenda(){
@@ -789,10 +830,16 @@ async function loadAgenda(){
   if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>';return;}
   el.innerHTML=data.map(a=>{
     const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';
+    const st=a.status||'aguardando';
+    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
+    const stLabel=st==='aguardando'?'Aguardando':st==='confirmado'?'Confirmado':st==='em_atendimento'?'Em atendimento':st==='finalizado'?'Finalizado':'Cancelado';
     const cor=a.equipe?.cor||'#94A3B8';
     const profTag=a.equipe?.nome?`<span style="font-size:10px;padding:2px 7px;border-radius:100px;background:${cor}22;color:${cor};font-weight:600">${a.equipe.nome}</span>`:'';
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${a.status||'aguardando'}</span><button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button></div>`;
+    let btns='';
+    if(st==='aguardando') btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    else if(st==='confirmado') btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    else if(st==='em_atendimento') btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
+    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span>${btns}</div>`;
   }).join('');
 }
 
