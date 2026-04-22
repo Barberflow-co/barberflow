@@ -1125,6 +1125,24 @@ document.addEventListener('click',e=>{
   if(lista&&!lista.contains(e.target)&&e.target!==id('ag-cli-busca'))lista.style.display='none';
 });
 
+async function loadServsBD(){
+  if(!CU)return;const{data}=await sb.from('servicos').select('*').eq('user_id',getOwn()).eq('ativo',true).order('nome');
+  allServs=data||[];
+  ['ag-serv','cmd-serv'].forEach(sid=>{const sel=id(sid);if(!sel)return;sel.innerHTML='<option value="">'+( sid==='ag-serv'?'Selecionar serviço...':'+ Adicionar serviço...')+'</option>';allServs.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.nome+(s.preco?` · R$${s.preco}`:'');sel.appendChild(o);});});
+}
+
+async function loadProfsBD(){
+  if(!CU)return;const{data}=await sb.from('equipe').select('*').eq('user_id',getOwn()).order('nome');
+  allProf=data||[];
+  ['ag-prof','cmd-prof'].forEach(sid=>{const sel=id(sid);if(!sel)return;sel.innerHTML='<option value="">Selecionar...</option>';allProf.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.nome;sel.appendChild(o);});});
+  if(CE){const sel=id('ag-prof');if(sel){sel.value=CE.id;sel.disabled=true;}}
+}
+
+async function loadCliSels(){
+  if(!CU)return;const{data}=await sb.from('clientes').select('id,nome').eq('user_id',getOwn()).order('nome');
+  ['ag-cli','an-cli','cmd-cli'].forEach(sid=>{const sel=id(sid);if(!sel)return;sel.innerHTML='<option value="">Selecionar...</option>';(data||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.nome;sel.appendChild(o);});});
+}
+
 function id(x){return document.getElementById(x);}
 function v(x){return(id(x)?.value||'').trim();}
 
