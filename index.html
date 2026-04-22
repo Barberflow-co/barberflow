@@ -1125,6 +1125,9 @@ document.addEventListener('click',e=>{
   if(lista&&!lista.contains(e.target)&&e.target!==id('ag-cli-busca'))lista.style.display='none';
 });
 
+function id(x){return document.getElementById(x);}
+function v(x){return(id(x)?.value||'').trim();}
+
 init();
 </script>
 </body>
