@@ -610,6 +610,21 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-eq')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarEq()">Cadastrar profissional</button></div>
 </div></div>
 
+<div class="mo" id="m-cli-edit"><div class="modal">
+  <div class="mh"><div class="mt">Editar cliente</div><button class="mc" onclick="cm('m-cli-edit')">✕</button></div>
+  <div class="mb">
+    <div class="fg2">
+      <div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="ec-nome" placeholder="Nome do cliente"></div>
+      <div class="fg"><label class="fl">Telefone / WhatsApp</label><input class="fi" id="ec-tel" placeholder="(11) 9 9999-9999"></div>
+      <div class="fg"><label class="fl">E-mail</label><input class="fi" id="ec-email" placeholder="email@exemplo.com"></div>
+      <div class="fg"><label class="fl">Data de nascimento</label><input class="fi" id="ec-nasc" type="date"></div>
+    </div>
+    <div class="fg"><label class="fl">Como nos conheceu</label><select class="fs" id="ec-canal"><option value="">Selecionar...</option><option>Instagram</option><option>Indicação</option><option>Google</option><option>Outro</option></select></div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="ec-obs" placeholder="Informações do cliente..." style="min-height:60px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-cli-edit')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarEditCli()">Salvar alterações</button></div>
+</div></div>
+
 <div class="mo" id="m-serv"><div class="modal">
   <div class="mh"><div class="mt">Novo serviço</div><button class="mc" onclick="cm('m-serv')">✕</button></div>
   <div class="mb">
@@ -1137,9 +1152,36 @@ async function loadCli(){
 function renderCli(lista){
   const tb=id('tb-cli');
   if(!lista.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const dt=c.created_at?new Date(c.created_at).toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${dt}</td><td><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button></td></tr>`;}).join('');
+  tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const dt=c.created_at?new Date(c.created_at).toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${dt}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">✏️ Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button></td></tr>`;}).join('');
 }
 function filtrarCli(){const q=v('s-cli-inp').toLowerCase();renderCli(allCli.filter(c=>c.nome.toLowerCase().includes(q)||(c.telefone||'').includes(q)));}
+
+let cliEditId=null;
+async function editarCli(cid){
+  const{data:c}=await sb.from('clientes').select('*').eq('id',cid).single();
+  if(!c)return;
+  cliEditId=cid;
+  id('ec-nome').value=c.nome||'';
+  id('ec-tel').value=c.telefone||'';
+  id('ec-email').value=c.email||'';
+  id('ec-nasc').value=c.data_nascimento||'';
+  id('ec-canal').value=c.canal||'';
+  id('ec-obs').value=c.observacoes||'';
+  id('m-cli-edit').classList.add('open');
+}
+
+async function salvarEditCli(){
+  if(!cliEditId)return;
+  const nome=id('ec-nome').value.trim();
+  if(!nome){toast('Nome é obrigatório!','err');return;}
+  const{error}=await sb.from('clientes').update({
+    nome,telefone:id('ec-tel').value.trim(),email:id('ec-email').value.trim(),
+    data_nascimento:id('ec-nasc').value||null,canal:id('ec-canal').value,
+    observacoes:id('ec-obs').value.trim()
+  }).eq('id',cliEditId);
+  if(error){toast('Erro: '+error.message,'err');return;}
+  cm('m-cli-edit');toast('Cliente atualizado ✓','ok');cliEditId=null;loadCli();
+}
 
 async function salvarCli(){
   if(!CU)return;const nome=v('nc-nome');if(!nome){toast('Nome é obrigatório!','err');return;}
