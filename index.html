@@ -255,7 +255,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="nav-item" onclick="sv('agenda',this)"><span class="nav-icon">📅</span>Agenda</div>
       <div class="nav-label nav-cli-lbl" style="margin-top:8px">Clientes</div>
       <div class="nav-item nav-clientes" onclick="sv('clientes',this)"><span class="nav-icon">👥</span>Listagem</div>
-      <div class="nav-item nav-anamnese" onclick="sv('anamnese',this)"><span class="nav-icon">📋</span>Anamnese</div>
+
       <div class="nav-item nav-clientes" onclick="sv('aniversarios',this)"><span class="nav-icon">🎂</span>Aniversários</div>
       <div class="nav-label nav-fin-lbl" style="margin-top:8px">Financeiro</div>
       <div class="nav-item nav-financeiro" onclick="sv('comandas',this)"><span class="nav-icon">🧾</span>Comandas</div>
@@ -342,7 +342,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <button class="btn btn-sm btn-ghost" onclick="sv('clientes',document.querySelector('.nav-clientes'))">← Voltar</button>
           <div><div class="pt" id="p-nome">Cliente</div><div class="ps" id="p-meta"></div></div>
         </div>
-        <button class="btn btn-md btn-primary" onclick="om('m-ag')">Agendar</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-md" onclick="om('m-ag')">📅 Agendar</button>
+          <button class="btn btn-primary btn-md" onclick="abrirAnamModal()">📋 Anamnese</button>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px">
         <div style="display:flex;flex-direction:column;gap:16px">
@@ -689,6 +692,39 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
   </div>
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-lanc')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarLanc()">Salvar</button></div>
+</div></div>
+
+<div class="mo" id="m-anam"><div class="modal" style="max-width:820px">
+  <div class="mh">
+    <div><div class="mt">📋 Ficha de Anamnese</div><div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="m-anam-cliente"></div></div>
+    <button class="mc" onclick="cm('m-anam')">✕</button>
+  </div>
+  <div class="mb" style="max-height:70vh;overflow-y:auto">
+    <input type="hidden" id="an-cli">
+    <div class="ab"><div class="abh"><span style="font-size:18px">🔬</span><div class="abt">Histórico de alopecia</div></div><div class="abb">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Tipo de alopecia</label><select class="fs" id="an-tipo"><option value="">Selecionar...</option><option>Alopecia androgenética</option><option>Alopecia areata</option><option>Alopecia totalis</option><option>Quimioterapia/radioterapia</option><option>Tricotilomania</option><option>Outra</option></select></div>
+        <div class="fg"><label class="fl">Há quanto tempo</label><select class="fs" id="an-tempo"><option>Menos de 1 ano</option><option>1 a 3 anos</option><option>3 a 5 anos</option><option>Mais de 5 anos</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">Escala de Norwood</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
+    </div></div>
+    <div class="ab"><div class="abh"><span style="font-size:18px">💊</span><div class="abt">Saúde</div></div><div class="abb">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
+        <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med" placeholder="Ex: Finasterida..."></div>
+      </div>
+      <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
+    </div></div>
+    <div class="ab"><div class="abh"><span style="font-size:18px">🎯</span><div class="abt">Preferências</div></div><div class="abb">
+      <div class="fg3">
+        <div class="fg"><label class="fl">Material</label><div id="tg-mat"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
+        <div class="fg"><label class="fl">Fixação</label><div id="tg-fix"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
+        <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span></div></div>
+      </div>
+      <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs" placeholder="Informações importantes..." style="min-height:70px"></textarea></div>
+    </div></div>
+  </div>
+  <div class="mf"><button class="btn btn-ghost btn-md" onclick="cm('m-anam')">Fechar</button><button class="btn btn-primary btn-md" onclick="salvarAnam()">💾 Salvar ficha</button></div>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -1191,6 +1227,7 @@ async function salvarCli(){
 }
 
 async function verPerfil(cid){
+  window._perfilCid=cid;
   const{data:c}=await sb.from('clientes').select('*').eq('id',cid).single();if(!c)return;
   const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   const{count:nv}=await sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('cliente_id',cid);
@@ -1221,8 +1258,38 @@ function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>
 // ============================================================
 // ANAMNESE
 // ============================================================
+let anamCliId=null;
+async function abrirAnamModal(){
+  // pega o cliente atual do perfil
+  const nomeEl=id('p-nome');
+  if(!nomeEl||!nomeEl.textContent||nomeEl.textContent==='Cliente'){toast('Abra o perfil de um cliente primeiro!','err');return;}
+  // pega o id do cliente atual via variável global
+  if(!window._perfilCid){toast('Selecione um cliente primeiro!','err');return;}
+  anamCliId=window._perfilCid;
+  id('m-anam-cliente').textContent='Cliente: '+nomeEl.textContent;
+  id('an-cli').value=anamCliId;
+  // Tenta carregar anamnese existente
+  const{data}=await sb.from('anamneses').select('*').eq('cliente_id',anamCliId).order('created_at',{ascending:false}).limit(1);
+  if(data&&data.length){
+    const a=data[0];
+    // Preenche campos
+    if(id('an-tipo'))id('an-tipo').value=a.tipo_alopecia||'';
+    if(id('an-tempo'))id('an-tempo').value=a.tempo_alopecia||'Menos de 1 ano';
+    if(id('an-alergia'))id('an-alergia').value=a.alergias||'';
+    if(id('an-med'))id('an-med').value=a.medicamentos||'';
+    if(id('an-obs'))id('an-obs').value=a.observacoes||'';
+    // Norwood
+    if(a.norwood){const nw=['I','II','III','IV','V','VI','VII'];document.querySelectorAll('#norwood .sc-btn').forEach((b,i)=>{b.classList.toggle('active',i===a.norwood-1);});}
+    // Toggles
+    if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.tipo_pele));
+    if(a.material_pref)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.material_pref));
+    if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.fixacao_pref));
+  }
+  id('m-anam').classList.add('open');
+}
+
 async function salvarAnam(){
-  const cliId=v('an-cli');if(!cliId){toast('Selecione um cliente!','err');return;}
+  const cliId=id('an-cli')?.value||anamCliId;if(!cliId){toast('Selecione um cliente!','err');return;}
   const norwood=document.querySelector('#norwood .sc-btn.active')?.textContent;
   const pele=document.querySelector('#tg-pele .tog.active')?.textContent;
   const mat=document.querySelector('#tg-mat .tog.active')?.textContent;
