@@ -861,7 +861,7 @@ function renderAgs(ags){
     } else if(st==='em_atendimento'){
       btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
     }
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${stLabel}</span>${btns}</div>`;
+    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
   }).join('');
 }
 
@@ -986,7 +986,7 @@ async function loadAgenda(){
     if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='em_atendimento')btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
-    return `<div class="ar" style="cursor:pointer" onclick="editarAg('${a.id}')"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
+    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
   }).join('');
 }
 
