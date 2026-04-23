@@ -986,7 +986,7 @@ async function loadAgenda(){
     if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='em_atendimento')btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span>${btns}</div>`;
+    return `<div class="ar" style="cursor:pointer" onclick="editarAg('${a.id}')"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
   }).join('');
 }
 
@@ -994,7 +994,8 @@ function renderSlotEv(a){
   const st=a.status||'aguardando';
   const nome=a.clientes?.nome||'Cliente';
   const serv=a.profissional||'';
-  return `<div class="ag-slot-ev ${st}" onclick="event.stopPropagation();confAg('${a.id}')" title="${nome} — ${serv}">${nome.split(' ')[0]}</div>`;
+  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  return `<div class="ag-slot-ev ${st}" onclick="event.stopPropagation();editarAg('${a.id}')" title="${nome} — ${serv}\n${hr} · Clique para editar">${nome.split(' ')[0]}<div style="font-size:9px;opacity:.8">${serv.substring(0,12)}</div></div>`;
 }
 
 function toggleProfSel(profId,checked){
@@ -1207,15 +1208,59 @@ async function loadAniversarios(){
 async function confAg(agId){await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);toast('Confirmado ✓','ok');loadAgenda();loadDash();}
 async function cancAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
 
+let agEditId=null;
+async function editarAg(agId){
+  const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,telefone)').eq('id',agId).single();
+  if(!a)return;
+  agEditId=agId;
+  // Carrega selects
+  await loadCliSels();await loadProfsBD();await loadServsBD();
+  // Preenche o modal
+  id('m-ag-titulo').textContent='Editar agendamento';
+  id('ag-cli').value=a.cliente_id||'';
+  id('ag-cli-busca').value=a.clientes?.nome||'';
+  if(a.clientes){
+    id('ag-cli-selecionado').style.display='flex';
+    id('ag-cli-nome-sel').textContent=a.clientes.nome||'';
+    id('ag-cli-tel-sel').textContent=a.clientes.telefone||'';
+  }
+  const dt=new Date(a.data_hora);
+  id('ag-data').value=dt.toISOString().split('T')[0];
+  id('ag-hora').value=(dt.getHours()<10?'0':'')+dt.getHours()+':'+(dt.getMinutes()<10?'0':'')+dt.getMinutes();
+  id('ag-prof').value=a.profissional_id||'';
+  id('ag-valor').value=a.valor||'';
+  id('ag-status').value=a.status||'aguardando';
+  id('ag-obs').value=a.observacoes||'';
+  // Seleciona o serviço pelo nome
+  const sv2=allServs.find(s=>s.nome===a.profissional);
+  if(sv2)id('ag-serv').value=sv2.id;
+  // Atualiza botão
+  id('m-ag').querySelector('.mf .btn-primary').textContent='Salvar alterações';
+  // Carrega anamnese
+  if(a.cliente_id)await carregarAnamAg(a.cliente_id);
+  id('m-ag').classList.add('open');
+}
+
 async function salvarAg(){
   const ownId=getOwn();const cliId=v('ag-cli'),data=v('ag-data'),hora=v('ag-hora');
   if(!cliId||!data||!hora){toast('Preencha os campos obrigatórios!','err');return;}
   const profId=v('ag-prof');const servId=v('ag-serv');
   const sv2=allServs.find(s=>s.id===servId);
-  const servNome=sv2?sv2.nome:servId;const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
-  const{error}=await sb.from('agendamentos').insert({user_id:ownId,cliente_id:cliId,profissional_id:profId||null,profissional:servNome,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')});
+  const servNome=sv2?sv2.nome:(servId||v('ag-serv'));
+  const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
+  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
+  let error;
+  if(agEditId){
+    ({error}=await sb.from('agendamentos').update(dados).eq('id',agEditId));
+    if(!error)toast('Agendamento atualizado ✓','ok');
+  } else {
+    ({error}=await sb.from('agendamentos').insert({user_id:ownId,...dados}));
+    if(!error)toast('Agendamento criado ✓','ok');
+  }
   if(error){toast('Erro: '+error.message,'err');return;}
-  cm('m-ag');toast('Agendamento criado ✓','ok');loadDash();loadAgenda();limpar('m-ag');
+  agEditId=null;
+  id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';
+  cm('m-ag');loadDash();loadAgenda();limpar('m-ag');
 }
 
 // ============================================================
@@ -1391,6 +1436,7 @@ function om(mid){
   if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfsBD();loadServsBD();}
   if(mid==='m-comanda'){loadProfsBD();cmdItens=[];renderCmdItens();}
   if(mid==='m-eq'){eqEditId=null;id('m-eq').querySelector('.mt').textContent='Novo profissional';id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';}
+  if(mid==='m-ag'){agEditId=null;id('m-ag-titulo').textContent='Novo agendamento';id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';limparCliAg();}
   id(mid).classList.add('open');
 }
 function cm(mid){id(mid).classList.remove('open');}
