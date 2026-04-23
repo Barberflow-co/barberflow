@@ -701,6 +701,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   </div>
   <div class="mb" style="max-height:70vh;overflow-y:auto">
     <input type="hidden" id="an-cli">
+    <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">👤</span>
+      <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--brand);margin-bottom:2px">Cliente</div><div style="font-size:15px;font-weight:700;color:var(--gray-900)" id="an-cli-nome">—</div></div>
+    </div>
     <div class="ab"><div class="abh"><span style="font-size:18px">🔬</span><div class="abt">Histórico de alopecia</div></div><div class="abb">
       <div class="fg2">
         <div class="fg"><label class="fl">Tipo de alopecia</label><select class="fs" id="an-tipo"><option value="">Selecionar...</option><option>Alopecia androgenética</option><option>Alopecia areata</option><option>Alopecia totalis</option><option>Quimioterapia/radioterapia</option><option>Tricotilomania</option><option>Outra</option></select></div>
@@ -1266,7 +1270,8 @@ async function abrirAnamModal(){
   // pega o id do cliente atual via variável global
   if(!window._perfilCid){toast('Selecione um cliente primeiro!','err');return;}
   anamCliId=window._perfilCid;
-  id('m-anam-cliente').textContent='Cliente: '+nomeEl.textContent;
+  id('m-anam-cliente').textContent=nomeEl.textContent;
+  id('an-cli-nome').textContent=nomeEl.textContent;
   id('an-cli').value=anamCliId;
   // Tenta carregar anamnese existente
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',anamCliId).order('created_at',{ascending:false}).limit(1);
@@ -1294,9 +1299,21 @@ async function salvarAnam(){
   const pele=document.querySelector('#tg-pele .tog.active')?.textContent;
   const mat=document.querySelector('#tg-mat .tog.active')?.textContent;
   const fix=document.querySelector('#tg-fix .tog.active')?.textContent;
-  const{error}=await sb.from('anamneses').insert({cliente_id:cliId,tipo_alopecia:v('an-tipo'),tempo_alopecia:v('an-tempo'),norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,alergias:v('an-alergia'),medicamentos:v('an-med'),tipo_pele:pele,material_pref:mat,fixacao_pref:fix,observacoes:v('an-obs')});
+  // Verifica se já existe anamnese para atualizar ou inserir nova
+  const{data:exist}=await sb.from('anamneses').select('id').eq('cliente_id',cliId).limit(1);
+  let error;
+  const dados={cliente_id:cliId,tipo_alopecia:v('an-tipo'),tempo_alopecia:v('an-tempo'),norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,alergias:v('an-alergia'),medicamentos:v('an-med'),tipo_pele:pele,material_pref:mat,fixacao_pref:fix,observacoes:v('an-obs')};
+  if(exist&&exist.length){
+    ({error}=await sb.from('anamneses').update(dados).eq('id',exist[0].id));
+  } else {
+    ({error}=await sb.from('anamneses').insert(dados));
+  }
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Ficha de anamnese salva ✓','ok');
+  toast('Ficha salva com sucesso ✓','ok');
+  // Fecha o modal automaticamente
+  cm('m-anam');
+  // Atualiza a aba de anamnese no perfil do cliente
+  if(cliId)await loadAnamPerfil(cliId);
 }
 
 // ============================================================
