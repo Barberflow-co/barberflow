@@ -1264,56 +1264,76 @@ function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>
 // ============================================================
 let anamCliId=null;
 async function abrirAnamModal(){
-  // pega o cliente atual do perfil
   const nomeEl=id('p-nome');
   if(!nomeEl||!nomeEl.textContent||nomeEl.textContent==='Cliente'){toast('Abra o perfil de um cliente primeiro!','err');return;}
-  // pega o id do cliente atual via variável global
   if(!window._perfilCid){toast('Selecione um cliente primeiro!','err');return;}
   anamCliId=window._perfilCid;
   id('m-anam-cliente').textContent=nomeEl.textContent;
   id('an-cli-nome').textContent=nomeEl.textContent;
   id('an-cli').value=anamCliId;
-  // Tenta carregar anamnese existente
+
+  // *** LIMPA TODOS OS CAMPOS PRIMEIRO ***
+  if(id('an-tipo'))id('an-tipo').value='';
+  if(id('an-tempo'))id('an-tempo').value='Menos de 1 ano';
+  if(id('an-alergia'))id('an-alergia').value='';
+  if(id('an-med'))id('an-med').value='';
+  if(id('an-obs'))id('an-obs').value='';
+  // Limpa Norwood
+  document.querySelectorAll('#norwood .sc-btn').forEach(b=>b.classList.remove('active'));
+  // Reseta toggles para padrão
+  document.querySelectorAll('#tg-pele .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('#tg-mat .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('#tg-fix .tog').forEach((t,i)=>t.classList.toggle('active',i===1));
+  document.querySelectorAll('#tg-esp .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
+
+  // Carrega anamnese existente do cliente específico
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',anamCliId).order('created_at',{ascending:false}).limit(1);
   if(data&&data.length){
     const a=data[0];
-    // Preenche campos
     if(id('an-tipo'))id('an-tipo').value=a.tipo_alopecia||'';
     if(id('an-tempo'))id('an-tempo').value=a.tempo_alopecia||'Menos de 1 ano';
     if(id('an-alergia'))id('an-alergia').value=a.alergias||'';
     if(id('an-med'))id('an-med').value=a.medicamentos||'';
     if(id('an-obs'))id('an-obs').value=a.observacoes||'';
-    // Norwood
-    if(a.norwood){const nw=['I','II','III','IV','V','VI','VII'];document.querySelectorAll('#norwood .sc-btn').forEach((b,i)=>{b.classList.toggle('active',i===a.norwood-1);});}
-    // Toggles
-    if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.tipo_pele));
-    if(a.material_pref)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.material_pref));
-    if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent===a.fixacao_pref));
+    if(a.norwood)document.querySelectorAll('#norwood .sc-btn').forEach((b,i)=>b.classList.toggle('active',i===a.norwood-1));
+    if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_pele));
+    if(a.material_pref)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.material_pref));
+    if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.fixacao_pref));
   }
   id('m-anam').classList.add('open');
 }
 
 async function salvarAnam(){
-  const cliId=id('an-cli')?.value||anamCliId;if(!cliId){toast('Selecione um cliente!','err');return;}
+  const cliId=anamCliId||id('an-cli')?.value;
+  if(!cliId){toast('Erro: cliente não identificado!','err');return;}
   const norwood=document.querySelector('#norwood .sc-btn.active')?.textContent;
-  const pele=document.querySelector('#tg-pele .tog.active')?.textContent;
-  const mat=document.querySelector('#tg-mat .tog.active')?.textContent;
-  const fix=document.querySelector('#tg-fix .tog.active')?.textContent;
-  // Verifica se já existe anamnese para atualizar ou inserir nova
+  const pele=document.querySelector('#tg-pele .tog.active')?.textContent?.trim();
+  const mat=document.querySelector('#tg-mat .tog.active')?.textContent?.trim();
+  const fix=document.querySelector('#tg-fix .tog.active')?.textContent?.trim();
+  const dados={
+    cliente_id:cliId,
+    tipo_alopecia:id('an-tipo')?.value||null,
+    tempo_alopecia:id('an-tempo')?.value||null,
+    norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,
+    alergias:id('an-alergia')?.value||null,
+    medicamentos:id('an-med')?.value||null,
+    tipo_pele:pele||null,
+    material_pref:mat||null,
+    fixacao_pref:fix||null,
+    observacoes:id('an-obs')?.value||null
+  };
+  // Verifica se já existe anamnese para atualizar ou criar nova
   const{data:exist}=await sb.from('anamneses').select('id').eq('cliente_id',cliId).limit(1);
   let error;
-  const dados={cliente_id:cliId,tipo_alopecia:v('an-tipo'),tempo_alopecia:v('an-tempo'),norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,alergias:v('an-alergia'),medicamentos:v('an-med'),tipo_pele:pele,material_pref:mat,fixacao_pref:fix,observacoes:v('an-obs')};
   if(exist&&exist.length){
     ({error}=await sb.from('anamneses').update(dados).eq('id',exist[0].id));
   } else {
     ({error}=await sb.from('anamneses').insert(dados));
   }
-  if(error){toast('Erro: '+error.message,'err');return;}
+  if(error){toast('Erro ao salvar: '+error.message,'err');return;}
   toast('Ficha salva com sucesso ✓','ok');
-  // Fecha o modal automaticamente
   cm('m-anam');
-  // Atualiza a aba de anamnese no perfil do cliente
-  if(cliId)await loadAnamPerfil(cliId);
+  await loadAnamPerfil(cliId);
 }
 
 // ============================================================
