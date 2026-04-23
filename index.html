@@ -683,6 +683,7 @@ const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
 let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
+let agDataAtual=new Date(),agProfsSel=[];
 
 const PERMS={
   admin:{label:'👑 Admin',fin:true,adm:true,cli:true,anam:true},
