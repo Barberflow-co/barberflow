@@ -844,7 +844,7 @@ function sv(name,el){
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',anamnese:'Anamnese',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
   id('tt').textContent=tmap[name]||name;
-  if(name==='clientes')loadCli();if(name==='agenda')loadAgenda();if(name==='anamnese')loadCliSels();
+  if(name==='clientes')loadCli();if(name==='agenda')loadAgenda();
   if(name==='relatorios')loadRel();if(name==='equipe')loadEquipe();if(name==='pagamentos')loadPag();
   if(name==='servicos')loadServicos();if(name==='estoque')loadEstoque();if(name==='comandas')loadComandas();
   if(name==='caixa')loadCaixa();if(name==='aniversarios')loadAniversarios();
@@ -1115,7 +1115,7 @@ async function carregarAnamAg(cliId){
   prev.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
   const {data}=await sb.from('anamneses').select('*').eq('cliente_id',cliId).order('created_at',{ascending:false}).limit(1);
   if(!data||!data.length){
-    prev.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:16px"><div style="font-size:20px;margin-bottom:8px">📋</div><div style="font-size:13px">Sem anamnese cadastrada</div><button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="cm(&quot;m-ag&quot;);sv(&quot;anamnese&quot;,null)">Preencher agora</button></div>';
+    prev.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:16px"><div style="font-size:20px;margin-bottom:8px">📋</div><div style="font-size:13px">Sem anamnese cadastrada</div></div>';
     return;
   }
   const a=data[0];
@@ -1252,7 +1252,7 @@ async function loadHistorico(cid){
 async function loadAnamPerfil(cid){
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(1);
   const el=id('p-anam');
-  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem anamnese</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="sv(\'anamnese\',null)">Preencher</button></div>';return;}
+  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem anamnese cadastrada</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="abrirAnamModal()">📋 Preencher anamnese</button></div>';return;}
   const a=data[0];
   el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">${[['Tipo de alopecia',a.tipo_alopecia],['Norwood',a.norwood?'Grau '+a.norwood:null],['Tipo de pele',a.tipo_pele],['Material',a.material_pref],['Fixação',a.fixacao_pref],['Alergias',a.alergias]].filter(x=>x[1]).map(x=>`<div><strong>${x[0]}:</strong><br>${x[1]}</div>`).join('')}${a.observacoes?`<div style="grid-column:1/-1"><strong>Obs:</strong> ${a.observacoes}</div>`:''}</div>`;
 }
