@@ -566,11 +566,17 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </div>
       <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="ag-obs" placeholder="Informações adicionais..." style="min-height:55px"></textarea></div>
     </div>
-    <!-- Coluna direita: anamnese do cliente -->
+    <!-- Coluna direita: anamnese + histórico -->
     <div>
-      <div class="st" style="margin-bottom:12px">📋 Anamnese do cliente</div>
-      <div id="ag-anam-preview" style="background:var(--gray-50);border-radius:var(--radius);padding:14px;min-height:280px;font-size:13px;color:var(--gray-500);display:flex;align-items:center;justify-content:center;text-align:center">
+      <div style="display:flex;border-bottom:1px solid var(--gray-200);margin-bottom:12px">
+        <div class="tab active" id="ag-tab-anam" onclick="agTab('anam')" style="padding:7px 14px;font-size:13px">📋 Anamnese</div>
+        <div class="tab" id="ag-tab-hist" onclick="agTab('hist')" style="padding:7px 14px;font-size:13px">🕐 Últimos atendimentos</div>
+      </div>
+      <div id="ag-anam-preview" style="background:var(--gray-50);border-radius:var(--radius);padding:14px;min-height:260px;font-size:13px;color:var(--gray-500);display:flex;align-items:center;justify-content:center;text-align:center">
         <div><div style="font-size:24px;margin-bottom:8px">📋</div><div>Selecione um cliente para ver a anamnese</div></div>
+      </div>
+      <div id="ag-hist-preview" style="display:none;min-height:260px">
+        <div style="text-align:center;color:var(--gray-400);padding:20px"><div style="font-size:24px;margin-bottom:8px">🕐</div><div>Selecione um cliente para ver o histórico</div></div>
       </div>
     </div>
   </div>
@@ -1106,8 +1112,52 @@ async function selecionarCliAg(cliId,nome,tel){
   sel.style.display='flex';
   id('ag-cli-nome-sel').textContent=nome;
   id('ag-cli-tel-sel').textContent=tel||'';
-  // Carrega anamnese do cliente
+  // Carrega anamnese e histórico do cliente
   await carregarAnamAg(cliId);
+  await carregarHistoricoAg(cliId);
+  // Volta para aba anamnese por padrão
+  agTab('anam');
+}
+
+function agTab(tab){
+  id('ag-tab-anam').classList.toggle('active',tab==='anam');
+  id('ag-tab-hist').classList.toggle('active',tab==='hist');
+  id('ag-anam-preview').style.display=tab==='anam'?'block':'none';
+  id('ag-hist-preview').style.display=tab==='hist'?'block':'none';
+}
+
+async function carregarHistoricoAg(cliId){
+  const el=id('ag-hist-preview');
+  el.innerHTML='<div style="text-align:center;padding:16px;color:var(--gray-400)">Carregando...</div>';
+  const{data}=await sb.from('agendamentos')
+    .select('*,equipe(nome,cor)')
+    .eq('cliente_id',cliId)
+    .neq('status','cancelado')
+    .order('data_hora',{ascending:false})
+    .limit(5);
+  if(!data||!data.length){
+    el.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:20px"><div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px">Nenhum atendimento anterior</div></div>';
+    return;
+  }
+  el.innerHTML=data.map(a=>{
+    const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});
+    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const cor=a.equipe?.cor||'#94A3B8';
+    const st=a.status||'aguardando';
+    const bc=st==='finalizado'?'b-blue':st==='confirmado'?'b-green':'b-yellow';
+    const profTag=a.equipe?.nome?`<span style="font-size:10px;padding:2px 8px;border-radius:100px;background:${cor}22;color:${cor};font-weight:600">${a.equipe.nome}</span>`:'<span style="font-size:10px;color:var(--gray-400)">Sem profissional</span>';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+      <div style="min-width:70px;text-align:center;background:var(--gray-50);border-radius:8px;padding:5px">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-800)">${dt}</div>
+        <div style="font-size:11px;color:var(--gray-400)">${hr}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.profissional||'Serviço'}</div>
+        <div style="margin-top:3px">${profTag}</div>
+      </div>
+      ${a.valor?`<div style="font-size:13px;font-weight:700;color:var(--brand)">R$${a.valor}</div>`:''}
+    </div>`;
+  }).join('')+`<div style="text-align:center;padding:8px;font-size:12px;color:var(--gray-400)">${data.length} atendimento${data.length>1?'s':''} recente${data.length>1?'s':''}</div>`;
 }
 
 async function carregarAnamAg(cliId){
@@ -1382,8 +1432,8 @@ async function editarAg(agId){
   if(sv2)id('ag-serv').value=sv2.id;
   // Atualiza botão
   id('m-ag').querySelector('.mf .btn-primary').textContent='Salvar alterações';
-  // Carrega anamnese
-  if(a.cliente_id)await carregarAnamAg(a.cliente_id);
+  // Carrega anamnese e histórico
+  if(a.cliente_id){await carregarAnamAg(a.cliente_id);await carregarHistoricoAg(a.cliente_id);agTab('anam');}
   id('m-ag').classList.add('open');
 }
 
@@ -1582,7 +1632,7 @@ function om(mid){
   if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfsBD();loadServsBD();}
   if(mid==='m-comanda'){loadProfsBD();cmdItens=[];renderCmdItens();}
   if(mid==='m-eq'){eqEditId=null;id('m-eq').querySelector('.mt').textContent='Novo profissional';id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';}
-  if(mid==='m-ag'){agEditId=null;id('m-ag-titulo').textContent='Novo agendamento';id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';limparCliAg();}
+  if(mid==='m-ag'){agEditId=null;id('m-ag-titulo').textContent='Novo agendamento';id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';limparCliAg();agTab('anam');}
   id(mid).classList.add('open');
 }
 function cm(mid){id(mid).classList.remove('open');}
