@@ -1610,6 +1610,115 @@ async function loadCliSels(){
 function id(x){return document.getElementById(x);}
 function v(x){return(id(x)?.value||'').trim();}
 
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    CU=session.user;
+    await loadCtx();
+    go('app');
+    try{
+      const lastPage=localStorage.getItem('bf_page');
+      if(lastPage&&lastPage!=='dashboard'){
+        setTimeout(()=>{
+          const navItem=document.querySelector(`[onclick*="sv('${lastPage}'"]`);
+          sv(lastPage,navItem);
+        },100);
+      } else {
+        loadDash();
+      }
+    }catch(e){loadDash();}
+  } else {
+    go('login');
+  }
+}
+
+async function loadCtx(){
+  if(!CU)return;
+  const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
+  if(prof){
+    CP=prof;CE=null;applyPerm('admin');
+    setUI(prof.nome||'Admin','Admin — Proprietário','#0D6EFD');
+    if(prof.nome_barbearia)id('c-barb').value=prof.nome_barbearia;
+    if(prof.nome)id('c-nome').value=prof.nome;
+    if(prof.telefone)id('c-tel').value=prof.telefone;
+  } else {
+    const{data:eq}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).single();
+    if(eq){CE=eq;const{data:ow}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();if(ow)CP=ow;applyPerm(eq.permissao||'profissional');setUI(eq.nome,PERMS[eq.permissao||'profissional']?.label||'',eq.cor||'#0D6EFD');}
+  }
+  await loadServsBD();await loadProfsBD();await loadCliSels();
+}
+
+function getOwn(){return CE?CE.user_id:CU?.id;}
+
+const PERMS={
+  admin:{label:'👑 Admin',fin:true,adm:true,cli:true,anam:true},
+  financeiro:{label:'💰 Financeiro',fin:true,adm:false,cli:false,anam:false},
+  recepcao:{label:'📅 Recepção',fin:false,adm:false,cli:true,anam:true},
+  profissional:{label:'💈 Profissional',fin:false,adm:false,cli:false,anam:false}
+};
+
+function applyPerm(perm){
+  const p=PERMS[perm]||PERMS.profissional;
+  id('perm-chip').textContent=p.label;
+  const hide=(sel,show)=>document.querySelectorAll(sel).forEach(el=>el.classList.toggle('hidden',!show));
+  hide('.nav-financeiro',p.fin);hide('.nav-fin-lbl',p.fin);
+  hide('.nav-admin',p.adm);hide('.nav-adm-lbl',p.adm);
+  hide('.nav-clientes',p.cli||p.anam);hide('.nav-cli-lbl',p.cli||p.anam);
+  hide('.nav-anamnese',p.anam);
+}
+
+function setUI(nome,role,cor){
+  const ini=(nome||'U').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  id('u-av').textContent=ini;id('u-av').style.background=cor+'22';id('u-av').style.color=cor;
+  id('u-name').textContent=nome||'Usuário';id('u-role').textContent=role;
+}
+
+async function doLogin(){
+  const e=v('l-email'),p=v('l-pass'),err=id('l-err');err.style.display='none';
+  if(!e||!p){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
+  const{data,error}=await sb.auth.signInWithPassword({email:e,password:p});
+  if(error){err.textContent='E-mail ou senha incorretos.';err.style.display='block';return;}
+  CU=data.user;await loadCtx();go('app');loadDash();
+}
+
+async function doRegister(){
+  const nome=v('r-nome'),sob=v('r-sob'),barb=v('r-barb'),email=v('r-email'),tel=v('r-tel'),pass=v('r-pass');
+  const err=id('r-err');err.style.display='none';
+  if(!nome||!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
+  if(pass.length<8){err.textContent='Senha com mínimo 8 caracteres.';err.style.display='block';return;}
+  const{data:eqCheck}=await sb.from('equipe').select('id,user_id').eq('email',email).single();
+  const{data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  if(data.user){
+    if(eqCheck){
+      await sb.from('equipe').update({auth_user_id:data.user.id}).eq('id',eqCheck.id);
+      toast('Acesso ativado! Bem-vindo ✓','ok');
+    } else {
+      await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'trial'});
+      toast('Conta criada! Bem-vindo ✓','ok');
+    }
+    CU=data.user;await loadCtx();go('app');loadDash();
+  }
+}
+
+async function doForgot(){
+  const email=v('forgot-email');if(!email){toast('Digite seu e-mail!','err');return;}
+  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+  if(error){toast('Erro: '+error.message,'err');return;}
+  id('forgot-form').style.display='none';id('forgot-ok').style.display='block';
+}
+
+async function doLogout(){await sb.auth.signOut();CU=null;CP=null;CE=null;go('login');}
+
+async function alterarSenha(){
+  const s=v('c-senha'),s2=v('c-senha2');
+  if(!s||s!==s2){toast('As senhas não conferem!','err');return;}
+  if(s.length<8){toast('Mínimo 8 caracteres!','err');return;}
+  const{error}=await sb.auth.updateUser({password:s});
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Senha alterada ✓','ok');id('c-senha').value='';id('c-senha2').value='';
+}
+
 init();
 </script>
 </body>
