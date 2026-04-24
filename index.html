@@ -158,6 +158,58 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .cli-result-item:last-child{border-bottom:none}
 .cli-result-new{padding:10px 14px;cursor:pointer;color:var(--brand);font-size:13px;font-weight:500;border-top:1px solid var(--gray-200)}
 .cli-result-new:hover{background:var(--brand-light)}
+/* AGENDA ESTILO GENDO */
+.ag-layout{display:grid;grid-template-columns:220px 1fr;gap:0;height:calc(100vh - 120px);border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.ag-sidebar{border-right:1px solid var(--gray-200);display:flex;flex-direction:column;background:#fff}
+.ag-mini-cal{padding:12px}
+.ag-mini-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ag-mini-cal-month{font-size:13px;font-weight:600;color:var(--gray-800)}
+.ag-mini-cal-nav{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;padding:2px 6px;border-radius:4px}
+.ag-mini-cal-nav:hover{background:var(--gray-100)}
+.ag-mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.ag-mini-day-name{text-align:center;font-size:10px;font-weight:600;color:var(--gray-400);padding:3px 0}
+.ag-mini-day{text-align:center;padding:4px 2px;font-size:12px;cursor:pointer;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin:1px auto;transition:all .15s}
+.ag-mini-day:hover{background:var(--gray-100)}
+.ag-mini-day.selected{background:var(--brand);color:#fff;font-weight:600}
+.ag-mini-day.today:not(.selected){color:var(--brand);font-weight:700}
+.ag-mini-day.other-month{color:var(--gray-300)}
+.ag-mini-day.has-ev::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin:-2px auto 0}
+.ag-profs-section{padding:12px;border-top:1px solid var(--gray-100);flex:1;overflow-y:auto}
+.ag-profs-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray-400);margin-bottom:10px}
+.ag-prof-item{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:13px}
+.ag-prof-cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--gray-300);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ag-prof-cb.checked{border-color:var(--brand);background:var(--brand)}
+.ag-prof-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ag-main{display:flex;flex-direction:column;overflow:hidden}
+.ag-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--gray-200);background:#fff;flex-shrink:0}
+.ag-view-tabs{display:flex;gap:4px}
+.ag-view-tab{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--gray-500);transition:all .15s}
+.ag-view-tab:hover{background:var(--gray-100)}
+.ag-view-tab.active{background:var(--brand);color:#fff}
+.ag-nav{display:flex;align-items:center;gap:8px}
+.ag-nav-btn{background:var(--gray-100);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.ag-nav-btn:hover{background:var(--gray-200)}
+.ag-date-label{font-size:14px;font-weight:600;color:var(--gray-800);min-width:200px;text-align:center}
+.ag-today-btn{padding:5px 12px;border:1px solid var(--gray-300);border-radius:6px;background:#fff;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.ag-today-btn:hover{background:var(--gray-50)}
+.ag-grade-wrap{flex:1;overflow-y:auto;overflow-x:hidden}
+.ag-grade-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.ag-grade-time{width:60px;padding:0 8px;font-size:11px;font-weight:600;color:var(--gray-400);text-align:right;vertical-align:top;padding-top:4px;border-bottom:1px solid var(--gray-100);white-space:nowrap}
+.ag-grade-cell{border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:48px;cursor:pointer;transition:background .1s;vertical-align:top;padding:2px}
+.ag-grade-cell:hover{background:var(--brand-light)}
+.ag-grade-col-header{padding:8px 12px;text-align:center;font-size:12px;font-weight:600;background:var(--gray-50);border-bottom:2px solid var(--gray-200);border-left:1px solid var(--gray-200)}
+.ag-ev{border-radius:6px;padding:3px 7px;font-size:12px;font-weight:500;cursor:pointer;margin:1px;overflow:hidden;transition:opacity .15s}
+.ag-ev:hover{opacity:.85}
+.ag-ev.aguardando{background:var(--brand);color:#fff}
+.ag-ev.confirmado{background:#166534;color:#fff}
+.ag-ev.em_atendimento{background:var(--purple);color:#fff}
+.ag-ev.finalizado{background:var(--gray-400);color:#fff}
+.ag-ev.cancelado{background:var(--danger);color:#fff;opacity:.6}
+/* Semana */
+.ag-week-day{text-align:center;padding:8px 4px;font-size:12px;border-left:1px solid var(--gray-200);background:var(--gray-50)}
+.ag-week-day.today{color:var(--brand);font-weight:700}
+.ag-week-day-num{font-size:20px;font-weight:700;display:block;margin-bottom:2px}
+
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #page-loading.hide{opacity:0;pointer-events:none}
@@ -315,31 +367,37 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
 
     <!-- AGENDA -->
-    <div class="view" id="view-agenda">
-      <div class="ph">
-        <div style="display:flex;align-items:center;gap:12px">
-          <button class="btn btn-sm btn-ghost" onclick="agNav(-1)">‹</button>
-          <div><div class="pt" id="ag-title">Hoje</div><div class="ps" id="ag-date-sub"></div></div>
-          <button class="btn btn-sm btn-ghost" onclick="agNav(1)">›</button>
-          <button class="btn btn-sm btn-outline" onclick="agHoje()">Hoje</button>
+    <div class="view" id="view-agenda" style="padding:0;height:calc(100vh - 60px)">
+      <!-- Topbar da agenda -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--gray-200);background:#fff">
+        <div class="ag-view-tabs">
+          <div class="ag-view-tab active" id="ag-tab-diario" onclick="agSetView('diario')">Diário</div>
+          <div class="ag-view-tab" id="ag-tab-semanal" onclick="agSetView('semanal')">Semanal</div>
         </div>
-        <button class="btn btn-md btn-primary" onclick="abrirAgModal(null,null)">+ Novo agendamento</button>
+        <div class="ag-nav">
+          <button class="ag-nav-btn" onclick="agNav(-1)">‹</button>
+          <div class="ag-date-label" id="ag-date-label">Hoje</div>
+          <button class="ag-nav-btn" onclick="agNav(1)">›</button>
+          <button class="ag-today-btn" onclick="agHoje()">Hoje</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="abrirAgModal(null,null)">+ Novo agendamento</button>
       </div>
-      <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start">
-        <!-- Profissionais filtro -->
-        <div class="card" id="ag-profs-panel">
-          <div class="st" style="margin-bottom:12px">Profissionais</div>
-          <div id="ag-prof-filtro"></div>
+      <!-- Layout principal -->
+      <div class="ag-layout">
+        <!-- Sidebar: mini calendário + profissionais -->
+        <div class="ag-sidebar">
+          <div class="ag-mini-cal" id="ag-mini-cal"></div>
+          <div class="ag-profs-section">
+            <div class="ag-profs-title">Profissionais</div>
+            <div id="ag-prof-filtro"></div>
+          </div>
         </div>
-        <!-- Grade de horários -->
-        <div class="card" style="padding:0;overflow:hidden">
-          <div id="ag-grade"></div>
+        <!-- Grade principal -->
+        <div class="ag-main">
+          <div class="ag-grade-wrap">
+            <div id="ag-grade"></div>
+          </div>
         </div>
-      </div>
-      <!-- Lista de agendamentos do dia -->
-      <div class="card" style="margin-top:14px">
-        <div class="sh"><div class="st" id="ag-lista-title">Agendamentos do dia</div></div>
-        <div id="ag-lista"></div>
       </div>
     </div>
 
@@ -759,385 +817,236 @@ const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
 let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
-let agDataAtual=new Date(),agProfsSel=[];
+let agDataAtual=new Date(),agProfsSel=[],agView='diario';
 
-const PERMS={
-  admin:{label:'👑 Admin',fin:true,adm:true,cli:true,anam:true},
-  financeiro:{label:'💰 Financeiro',fin:true,adm:false,cli:false,anam:false},
-  recepcao:{label:'📅 Recepção',fin:false,adm:false,cli:true,anam:true},
-  profissional:{label:'💈 Profissional',fin:false,adm:false,cli:false,anam:false}
-};
-
-async function init(){
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){CU=session.user;await loadCtx();go('app');loadDash();}
-  else go('login');
+function agSetView(v){
+  agView=v;
+  id('ag-tab-diario').classList.toggle('active',v==='diario');
+  id('ag-tab-semanal').classList.toggle('active',v==='semanal');
+  loadAgenda();
 }
 
-async function loadCtx(){
-  if(!CU)return;
-  const {data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
-  if(prof){
-    CP=prof;CE=null;applyPerm('admin');
-    setUI(prof.nome,'Admin — Proprietário','#0D6EFD');
-    if(prof.nome_barbearia)id('c-barb').value=prof.nome_barbearia;
-    if(prof.nome)id('c-nome').value=prof.nome;
-    if(prof.telefone)id('c-tel').value=prof.telefone;
-  } else {
-    const {data:eq}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).single();
-    if(eq){CE=eq;const {data:ow}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();if(ow)CP=ow;applyPerm(eq.permissao||'profissional');setUI(eq.nome,PERMS[eq.permissao||'profissional']?.label||'',eq.cor||'#0D6EFD');}
+function agHoje(){agDataAtual=new Date();loadAgenda();}
+function agNav(dir){
+  if(agView==='semanal')agDataAtual.setDate(agDataAtual.getDate()+dir*7);
+  else agDataAtual.setDate(agDataAtual.getDate()+dir);
+  loadAgenda();
+}
+
+function renderMiniCal(){
+  const el=id('ag-mini-cal');if(!el)return;
+  const d=agDataAtual;
+  const y=d.getFullYear(),m=d.getMonth();
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const dias=['D','S','T','Q','Q','S','S'];
+  const first=new Date(y,m,1).getDay();
+  const total=new Date(y,m+1,0).getDate();
+  const hoje=new Date();
+  let html=`<div class="ag-mini-cal-header">
+    <button class="ag-mini-cal-nav" onclick="miniCalNav(-1)">‹</button>
+    <div class="ag-mini-cal-month">${meses[m]} ${y}</div>
+    <button class="ag-mini-cal-nav" onclick="miniCalNav(1)">›</button>
+  </div><div class="ag-mini-cal-grid">`;
+  dias.forEach(dn=>html+=`<div class="ag-mini-day-name">${dn}</div>`);
+  for(let i=0;i<first;i++)html+=`<div class="ag-mini-day other-month"></div>`;
+  for(let day=1;day<=total;day++){
+    const isToday=day===hoje.getDate()&&m===hoje.getMonth()&&y===hoje.getFullYear();
+    const isSel=day===agDataAtual.getDate()&&m===agDataAtual.getMonth()&&y===agDataAtual.getFullYear();
+    html+=`<div class="ag-mini-day${isSel?' selected':isToday?' today':''}" onclick="miniCalSel(${day},${m},${y})">${day}</div>`;
   }
-  await loadServsBD();await loadProfsBD();await loadCliSels();
+  html+='</div>';
+  el.innerHTML=html;
 }
 
-function getOwn(){return CE?CE.user_id:CU?.id;}
-
-function applyPerm(perm){
-  const p=PERMS[perm]||PERMS.profissional;
-  id('perm-chip').textContent=p.label;
-  const hide=(sel,show)=>document.querySelectorAll(sel).forEach(el=>el.classList.toggle('hidden',!show));
-  hide('.nav-financeiro',p.fin);hide('.nav-fin-lbl',p.fin);
-  hide('.nav-admin',p.adm);hide('.nav-adm-lbl',p.adm);
-  hide('.nav-clientes',p.cli||p.anam);hide('.nav-cli-lbl',p.cli||p.anam);
-  hide('.nav-anamnese',p.anam);
+function miniCalNav(dir){
+  const d=agDataAtual;
+  agDataAtual=new Date(d.getFullYear(),d.getMonth()+dir,1);
+  loadAgenda();
 }
-
-function setUI(nome,role,cor){
-  const ini=(nome||'U').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
-  id('u-av').textContent=ini;id('u-av').style.background=cor+'22';id('u-av').style.color=cor;
-  id('u-name').textContent=nome||'Usuário';id('u-role').textContent=role;
-}
-
-async function doLogin(){
-  const e=v('l-email'),p=v('l-pass'),err=id('l-err');err.style.display='none';
-  if(!e||!p){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
-  const {data,error}=await sb.auth.signInWithPassword({email:e,password:p});
-  if(error){err.textContent='E-mail ou senha incorretos.';err.style.display='block';return;}
-  CU=data.user;await loadCtx();go('app');loadDash();
-}
-
-async function doRegister(){
-  const nome=v('r-nome'),sob=v('r-sob'),barb=v('r-barb'),email=v('r-email'),tel=v('r-tel'),pass=v('r-pass');
-  const err=id('r-err');err.style.display='none';
-  if(!nome||!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
-  if(pass.length<8){err.textContent='Senha com mínimo 8 caracteres.';err.style.display='block';return;}
-  // Verifica se o e-mail já é de um profissional cadastrado na equipe
-  const {data:eqCheck}=await sb.from('equipe').select('id,user_id').eq('email',email).single();
-  const {data,error}=await sb.auth.signUp({email,password:pass});
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  if(data.user){
-    if(eqCheck){
-      // É um profissional da equipe — vincula o auth_user_id
-      await sb.from('equipe').update({auth_user_id:data.user.id}).eq('id',eqCheck.id);
-      toast('Acesso ativado! Bem-vindo ✓','ok');
-    } else {
-      // É um novo dono — cria profile
-      await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'trial'});
-      toast('Conta criada! Bem-vindo ✓','ok');
-    }
-    CU=data.user;await loadCtx();go('app');loadDash();
-  }
-}
-
-async function doForgot(){
-  const email=v('forgot-email');if(!email){toast('Digite seu e-mail!','err');return;}
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
-  if(error){toast('Erro: '+error.message,'err');return;}
-  id('forgot-form').style.display='none';id('forgot-ok').style.display='block';
-}
-
-async function doLogout(){await sb.auth.signOut();CU=null;CP=null;CE=null;go('login');}
-
-async function alterarSenha(){
-  const s=v('c-senha'),s2=v('c-senha2');
-  if(!s||s!==s2){toast('As senhas não conferem!','err');return;}
-  if(s.length<8){toast('Mínimo 8 caracteres!','err');return;}
-  const {error}=await sb.auth.updateUser({password:s});
-  if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Senha alterada com sucesso ✓','ok');id('c-senha').value='';id('c-senha2').value='';
-}
-
-function go(p){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  id('page-'+p).classList.add('active');
-  // Esconde tela de loading
-  const loading=id('page-loading');
-  if(loading){loading.classList.add('hide');setTimeout(()=>loading.style.display='none',400);}
-}
-
-function sv(name,el){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
-  const view=id('view-'+name);if(view)view.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
-  const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',anamnese:'Anamnese',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
-  id('tt').textContent=tmap[name]||name;
-  if(name==='clientes')loadCli();if(name==='agenda')loadAgenda();
-  if(name==='relatorios')loadRel();if(name==='equipe')loadEquipe();if(name==='pagamentos')loadPag();
-  if(name==='servicos')loadServicos();if(name==='estoque')loadEstoque();if(name==='comandas')loadComandas();
-  if(name==='caixa')loadCaixa();if(name==='aniversarios')loadAniversarios();
-}
-
-async function loadDash(){
-  if(!CU)return;
-  const now=new Date();const h=now.getHours();
-  const gr=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
-  const nm=CE?CE.nome.split(' ')[0]:CP?.nome?.split(' ')[0]||'';
-  id('d-greet').textContent=`${gr}${nm?', '+nm:''}! 👋`;
-  id('d-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const ownId=getOwn();const hoje=now.toISOString().split('T')[0];const mesI=hoje.substring(0,7)+'-01';
-  let agQ=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59');
-  if(CE)agQ=agQ.eq('profissional_id',CE.id);
-  const [{count:cAg},{count:cCl},{count:cMes},{data:fat}]=await Promise.all([agQ,sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',mesI),sb.from('agendamentos').select('valor').eq('user_id',ownId).gte('data_hora',mesI)]);
-  id('s-hoje').textContent=cAg||0;id('s-cli').textContent=cCl||0;id('s-mes').textContent=cMes||0;
-  const tot=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);id('s-fat').textContent='R$'+tot.toFixed(0);
-  if(!CE)await loadDashAdmin(hoje,ownId);else await loadDashProf(hoje,ownId);
-}
-
-async function loadDashAdmin(hoje,ownId){
-  const [{data:profs},{data:ags}]=await Promise.all([sb.from('equipe').select('*').eq('user_id',ownId).order('nome'),sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora')]);
-  let html='';
-  if(!profs||!profs.length){
-    html='<div class="card"><div class="sh"><div class="st">Agenda de hoje</div></div>'+(ags&&ags.length?renderAgs(ags):'<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>')+'</div>';
-  } else {
-    html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">';
-    profs.forEach(p=>{
-      const cor=p.cor||'#0D6EFD';const pAgs=(ags||[]).filter(a=>a.profissional_id===p.id);
-      const ini=p.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-      html+=`<div class="agenda-col"><div class="agenda-col-header"><div style="width:32px;height:32px;border-radius:50%;background:${cor}22;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:${cor}">${ini}</div><div style="flex:1"><div style="font-weight:600;font-size:13px">${p.nome}</div><div style="font-size:11px;color:var(--gray-400)">${pAgs.length} hoje</div></div></div><div class="agenda-col-body">`;
-      if(!pAgs.length)html+='<div style="text-align:center;padding:14px;color:var(--gray-400);font-size:13px">Livre hoje</div>';
-      else pAgs.forEach(a=>{const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});const bc=a.status==='confirmado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)"><div style="font-size:12px;font-weight:700;color:var(--gray-700);min-width:38px">${hr}</div><div style="flex:1;font-size:13px;font-weight:500">${a.clientes?.nome||'Cliente'}</div><span class="badge ${bc}" style="font-size:10px">${a.status||'aguard.'}</span></div>`;});
-      html+='</div></div>';
-    });
-    const semProf=(ags||[]).filter(a=>!a.profissional_id);
-    if(semProf.length)html+=`<div class="agenda-col"><div class="agenda-col-header"><div style="width:32px;height:32px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:12px">?</div><div style="flex:1"><div style="font-weight:600;font-size:13px">Sem profissional</div></div></div><div class="agenda-col-body">${semProf.map(a=>{const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});return`<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)"><div style="font-size:12px;font-weight:700;min-width:38px">${hr}</div><div style="font-size:13px">${a.clientes?.nome||'Cliente'}</div></div>`;}).join('')}</div></div>`;
-    html+='</div>';
-  }
-  id('dash-body').innerHTML=html;
-}
-
-async function loadDashProf(hoje,ownId){
-  const mesI=hoje.substring(0,7)+'-01';
-  const [{data:ags},{count:cMes},{data:fat}]=await Promise.all([
-    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
-    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',mesI),
-    sb.from('agendamentos').select('valor').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',mesI)
-  ]);
-  id('s-cli').textContent='—';
-  id('s-mes').textContent=cMes||0;
-  const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  id('s-fat').textContent='R$'+fat2.toFixed(0);
-  id('dash-body').innerHTML='<div class="card"><div class="sh"><div class="st">Minha agenda de hoje</div></div>'+(ags&&ags.length?renderAgs(ags):'<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>')+'</div>';
-}
-
-function renderAgs(ags){
-  return ags.map(a=>{
-    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const st=a.status||'aguardando';
-    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
-    const stLabel=st==='aguardando'?'Aguardando':st==='confirmado'?'Confirmado':st==='em_atendimento'?'Em atendimento':st==='finalizado'?'Finalizado':'Cancelado';
-    let btns='';
-    if(st==='aguardando'){
-      btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
-    } else if(st==='confirmado'){
-      btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
-    } else if(st==='em_atendimento'){
-      btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
-    }
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'Serviço'}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
-  }).join('');
-}
-
-async function iniciarAg(agId){
-  await sb.from('agendamentos').update({status:'em_atendimento'}).eq('id',agId);
-  toast('Cliente em atendimento! ▶','ok');loadAgenda();loadDash();
-}
-
-async function finalizarAg(agId,cliId,servico){
-  await sb.from('agendamentos').update({status:'finalizado'}).eq('id',agId);
-  // Abre modal de comanda pré-preenchido
-  await loadCliSels();await loadProfsBD();await loadServsBD();
-  cmdItens=[];
-  // Pré-seleciona cliente
-  if(cliId){id('cmd-cli').value=cliId;}
-  if(CE){id('cmd-prof').value=CE.id;}
-  // Adiciona o serviço do agendamento se existir
-  const sv2=allServs.find(s=>s.nome===servico);
-  if(sv2){cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0});}
-  renderCmdItens();
-  id('m-comanda').classList.add('open');
-  toast('Atendimento finalizado! Feche a comanda ✓','ok');
-  loadAgenda();loadDash();
+function miniCalSel(day,m,y){
+  agDataAtual=new Date(y,m,day);
+  loadAgenda();
 }
 
 async function loadAgenda(){
   if(!CU)return;
   const ownId=getOwn();
+  renderMiniCal();
+  // Label de data
   const d=agDataAtual;
-  const dateStr=d.toISOString().split('T')[0];
-  const label=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  id('ag-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);
-  id('ag-lista-title').textContent='Agendamentos de '+d.toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
-
-  // Busca agendamentos do dia
-  let q=sb.from('agendamentos').select('*,clientes(nome,telefone),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',dateStr+'T00:00').lte('data_hora',dateStr+'T23:59').order('data_hora');
-  if(CE)q=q.eq('profissional_id',CE.id);
-  const {data:ags}=await q;
-
-  // Monta filtro de profissionais
-  const profPanel=id('ag-prof-filtro');
-  if(!CE&&allProf.length){
-    if(!agProfsSel.length)agProfsSel=allProf.map(p=>p.id);
-    profPanel.innerHTML=allProf.map(p=>{
-      const cor=p.cor||'#0D6EFD';
-      const sel=agProfsSel.includes(p.id);
-      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:13px"><input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)" style="accent-color:${cor}"><span style="width:10px;height:10px;border-radius:50%;background:${cor};display:inline-block"></span> ${p.nome}</label>`;
-    }).join('');
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  if(agView==='diario'){
+    id('ag-date-label').textContent=`${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
   } else {
-    profPanel.innerHTML='<div style="font-size:13px;color:var(--gray-400)">Visualizando sua agenda</div>';
+    // Semana: pega segunda a domingo
+    const dow=d.getDay();
+    const seg=new Date(d);seg.setDate(d.getDate()-dow+1);
+    const dom=new Date(seg);dom.setDate(seg.getDate()+6);
+    id('ag-date-label').textContent=`${seg.getDate()} ${meses[seg.getMonth()].substring(0,3)} — ${dom.getDate()} ${meses[dom.getMonth()].substring(0,3)} ${dom.getFullYear()}`;
   }
 
-  // Monta grade de horários
-  const profs=CE?[CE]:(allProf.filter(p=>agProfsSel.includes(p.id)));
-  const cols=profs.length||1;
-  const grade=id('ag-grade');
-  
-  let html='<div class="ag-grade-wrap"><table style="width:100%;border-collapse:collapse">';
-  // Header com nomes dos profissionais
-  html+='<thead><tr><th style="width:60px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)"></th>';
-  if(CE){
-    html+=`<th class="ag-col-header">${CE.nome}</th>`;
-  } else if(allProf.length){
-    profs.forEach(p=>{
-      const cor=p.cor||'#0D6EFD';
-      html+=`<th class="ag-col-header"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${cor};display:inline-block"></span>${p.nome}</span></th>`;
-    });
-  } else {
-    html+='<th class="ag-col-header">Agenda</th>';
-  }
-  html+='</tr></thead><tbody>';
-
-  // Linhas de horários (07:00 às 22:00)
-  for(let h=7;h<=22;h++){
-    for(let m=0;m<60;m+=30){
-      const hrStr=(h<10?'0':'')+h+':'+(m===0?'00':'30');
-      const hrFull=dateStr+'T'+hrStr+':00';
-      html+=`<tr><td style="width:60px;font-size:11px;font-weight:600;color:var(--gray-400);text-align:right;padding:0 8px;border-bottom:1px solid var(--gray-100);vertical-align:top;padding-top:4px;white-space:nowrap">${m===0?hrStr:''}</td>`;
-      
-      if(CE){
-        // Profissional logado - mostra só coluna dele
-        const evs=(ags||[]).filter(a=>{
-          const ah=new Date(a.data_hora);
-          return ah.getHours()===h&&ah.getMinutes()===m;
-        });
-        html+=`<td class="ag-slot" onclick="abrirAgModal('${hrFull}',null)" style="border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:50px;padding:2px">`;
-        evs.forEach(a=>html+=renderSlotEv(a));
-        html+='</td>';
-      } else if(allProf.length){
-        profs.forEach(p=>{
-          const evs=(ags||[]).filter(a=>{
-            const ah=new Date(a.data_hora);
-            return ah.getHours()===h&&ah.getMinutes()===m&&a.profissional_id===p.id;
-          });
-          html+=`<td class="ag-slot" onclick="abrirAgModal('${hrFull}','${p.id}')" style="border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:50px;padding:2px">`;
-          evs.forEach(a=>html+=renderSlotEv(a));
-          html+='</td>';
-        });
-      } else {
-        const evs=(ags||[]).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&ah.getMinutes()===m;});
-        html+=`<td class="ag-slot" onclick="abrirAgModal('${hrFull}',null)" style="border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:50px;padding:2px">`;
-        evs.forEach(a=>html+=renderSlotEv(a));
-        html+='</td>';
-      }
-      html+='</tr>';
+  // Profissionais
+  await loadProfsBD();
+  if(!agProfsSel.length)agProfsSel=allProf.map(p=>p.id);
+  const pfEl=id('ag-prof-filtro');
+  if(pfEl){
+    if(!CE&&allProf.length){
+      pfEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12.5px;color:var(--gray-500);cursor:pointer;margin-bottom:6px" onclick="toggleTodosProfs()">
+        <div class="ag-prof-cb ${agProfsSel.length===allProf.length?'checked':''}" id="cb-todos" style="background:${agProfsSel.length===allProf.length?'var(--brand)':'#fff'}">
+          ${agProfsSel.length===allProf.length?'<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>':''}
+        </div>
+        Todos os profissionais
+      </div>`+allProf.map(p=>{
+        const sel=agProfsSel.includes(p.id);
+        const cor=p.cor||'#0D6EFD';
+        return `<div class="ag-prof-item" onclick="toggleProfSel('${p.id}',!${sel})">
+          <div class="ag-prof-cb ${sel?'checked':''}" style="background:${sel?cor:'#fff'};border-color:${sel?cor:'var(--gray-300)'}">
+            ${sel?`<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>`:''}
+          </div>
+          <div class="ag-prof-dot" style="background:${cor}"></div>
+          <span>${p.nome}</span>
+        </div>`;
+      }).join('');
+    } else {
+      pfEl.innerHTML=`<div style="font-size:12.5px;color:var(--gray-400)">Visualizando sua agenda</div>`;
     }
   }
-  html+='</tbody></table></div>';
-  grade.innerHTML=html;
 
-  // Lista de agendamentos abaixo
-  const el=id('ag-lista');
-  if(!ags||!ags.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento</div><div class="empty-sub">Clique em um horário na grade acima para agendar</div></div>';return;}
-  el.innerHTML=ags.map(a=>{
-    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const st=a.status||'aguardando';
-    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
-    const stLabel={aguardando:'Aguardando',confirmado:'Confirmado',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cancelado'}[st]||st;
-    const cor=a.equipe?.cor||'#94A3B8';
-    const profTag=a.equipe?.nome?`<span style="font-size:10px;padding:2px 7px;border-radius:100px;background:${cor}22;color:${cor};font-weight:600">${a.equipe.nome}</span>`:'';
-    let btns='';
-    if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓ Confirmar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
-    else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶ Iniciar</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
-    else if(st==='em_atendimento')btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅ Finalizar</button>`;
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'} ${profTag}</div><div class="atp">${a.profissional||'—'} ${a.valor?'· R$'+a.valor:''}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" title="Editar" style="padding:5px 8px">✏️</button>${btns}</div>`;
-  }).join('');
+  // Busca agendamentos
+  let dateStart,dateEnd;
+  if(agView==='semanal'){
+    const dow=d.getDay();
+    const seg=new Date(d);seg.setDate(d.getDate()-dow+1);
+    const dom=new Date(seg);dom.setDate(seg.getDate()+6);
+    dateStart=seg.toISOString().split('T')[0];
+    dateEnd=dom.toISOString().split('T')[0];
+  } else {
+    dateStart=d.toISOString().split('T')[0];
+    dateEnd=dateStart;
+  }
+  let q=sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',dateStart+'T00:00').lte('data_hora',dateEnd+'T23:59').order('data_hora');
+  if(CE)q=q.eq('profissional_id',CE.id);
+  const{data:ags}=await q;
+
+  if(agView==='diario'){
+    renderGradeDiaria(ags||[],d);
+  } else {
+    renderGradeSemanal(ags||[],d);
+  }
 }
 
-function renderSlotEv(a){
-  const st=a.status||'aguardando';
-  const nome=a.clientes?.nome||'Cliente';
-  const serv=a.profissional||'';
-  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  return `<div class="ag-slot-ev ${st}" onclick="event.stopPropagation();editarAg('${a.id}')" title="${nome} — ${serv}\n${hr} · Clique para editar">${nome.split(' ')[0]}<div style="font-size:9px;opacity:.8">${serv.substring(0,12)}</div></div>`;
+function toggleTodosProfs(){
+  if(agProfsSel.length===allProf.length)agProfsSel=[];
+  else agProfsSel=allProf.map(p=>p.id);
+  loadAgenda();
 }
-
 function toggleProfSel(profId,checked){
   if(checked){if(!agProfsSel.includes(profId))agProfsSel.push(profId);}
   else{agProfsSel=agProfsSel.filter(p=>p!==profId);}
   loadAgenda();
 }
 
-// Abre modal de agendamento com hora e profissional pré-selecionados
-function abrirAgModal(hrFull, profId){
-  id('m-ag-titulo').textContent='Novo agendamento';
-  id('ag-cli-busca').value='';
-  id('ag-cli').value='';
-  id('ag-cli-selecionado').style.display='none';
-  id('ag-anam-preview').innerHTML='<div style="text-align:center;color:var(--gray-500);padding:20px"><div style="font-size:24px;margin-bottom:8px">📋</div><div>Selecione um cliente para ver a anamnese</div></div>';
-  if(hrFull){
-    const d=new Date(hrFull);
-    id('ag-data').value=d.toISOString().split('T')[0];
-    id('ag-hora').value=(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()===0?'00':'30');
+function renderGradeDiaria(ags,d){
+  const el=id('ag-grade');if(!el)return;
+  const profs=CE?[CE]:allProf.filter(p=>agProfsSel.includes(p.id));
+  const cols=profs.length||1;
+  const dateStr=d.toISOString().split('T')[0];
+
+  let html='<table class="ag-grade-table"><thead><tr><th style="width:60px;background:var(--gray-50);border-bottom:2px solid var(--gray-200)"></th>';
+  if(CE){
+    html+=`<th class="ag-grade-col-header">${CE.nome}</th>`;
+  } else if(profs.length){
+    profs.forEach(p=>{
+      const cor=p.cor||'#0D6EFD';
+      html+=`<th class="ag-grade-col-header"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${cor};display:inline-block"></span>${p.nome.toUpperCase()}</span></th>`;
+    });
   } else {
-    id('ag-data').value=new Date().toISOString().split('T')[0];
-    id('ag-hora').value='09:00';
+    html+='<th class="ag-grade-col-header">Agenda</th>';
   }
-  if(profId){id('ag-prof').value=profId;}
-  else if(CE){id('ag-prof').value=CE.id;id('ag-prof').disabled=true;}
-  loadServsBD();loadProfsBD();
-  id('m-ag').classList.add('open');
-}
+  html+='</tr></thead><tbody>';
 
-// Busca de cliente com autocomplete
-let buscaTimer=null;
-async function buscarCliente(q){
-  clearTimeout(buscaTimer);
-  const lista=id('ag-cli-lista');
-  if(!q||q.length<2){lista.style.display='none';return;}
-  buscaTimer=setTimeout(async()=>{
-    const {data}=await sb.from('clientes').select('id,nome,telefone').eq('user_id',getOwn()).ilike('nome','%'+q+'%').limit(8);
-    if(!data||!data.length){
-      lista.innerHTML=`<div class="cli-result-new" onclick="cadastrarEAgendar('${q}')">+ Cadastrar "${q}" como novo cliente</div>`;
-    } else {
-      lista.innerHTML=data.map(c=>`<div class="cli-result-item" onclick="selecionarCliAg('${c.id}','${c.nome}','${c.telefone||''}')"><div style="font-weight:500">${c.nome}</div><div style="font-size:12px;color:var(--gray-400)">${c.telefone||'Sem telefone'}</div></div>`).join('')
-        +`<div class="cli-result-new" onclick="cadastrarEAgendar('${q}')">+ Cadastrar "${q}" como novo cliente</div>`;
+  for(let h=7;h<=22;h++){
+    for(let m2=0;m2<60;m2+=30){
+      const hrStr=(h<10?'0':'')+h+':'+(m2===0?'00':'30');
+      const hrFull=dateStr+'T'+hrStr+':00';
+      html+=`<tr><td class="ag-grade-time">${m2===0?hrStr:''}</td>`;
+      if(CE){
+        const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2;});
+        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+        evs.forEach(a=>html+=renderEvCell(a));
+        html+='</td>';
+      } else if(profs.length){
+        profs.forEach(p=>{
+          const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2&&a.profissional_id===p.id;});
+          html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}','${p.id}')">`;
+          evs.forEach(a=>html+=renderEvCell(a));
+          html+='</td>';
+        });
+      } else {
+        const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2;});
+        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+        evs.forEach(a=>html+=renderEvCell(a));
+        html+='</td>';
+      }
+      html+='</tr>';
     }
-    lista.style.display='block';
-  },300);
+  }
+  html+='</tbody></table>';
+  el.innerHTML=html;
+
+  // Scroll para horário atual
+  setTimeout(()=>{
+    const now=new Date();
+    const target=el.querySelector(`[onclick*="T${(now.getHours()<10?'0':'')+now.getHours()}:"]`);
+    if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
 }
 
-async function selecionarCliAg(cliId,nome,tel){
-  id('ag-cli').value=cliId;
-  id('ag-cli-busca').value=nome;
-  id('ag-cli-lista').style.display='none';
-  const sel=id('ag-cli-selecionado');
-  sel.style.display='flex';
-  id('ag-cli-nome-sel').textContent=nome;
-  id('ag-cli-tel-sel').textContent=tel||'';
-  // Carrega anamnese e histórico do cliente
-  await carregarAnamAg(cliId);
-  await carregarHistoricoAg(cliId);
-  // Volta para aba anamnese por padrão
-  agTab('anam');
+function renderGradeSemanal(ags,d){
+  const el=id('ag-grade');if(!el)return;
+  const dow=d.getDay();
+  const seg=new Date(d);seg.setDate(d.getDate()-dow+1);
+  const dias2=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const hoje=new Date();
+
+  let html='<table class="ag-grade-table"><thead><tr><th style="width:60px;background:var(--gray-50);border-bottom:2px solid var(--gray-200)"></th>';
+  for(let i=0;i<7;i++){
+    const dt=new Date(seg);dt.setDate(seg.getDate()+i);
+    const isToday=dt.toDateString()===hoje.toDateString();
+    const isSel=dt.toDateString()===agDataAtual.toDateString();
+    html+=`<th class="ag-week-day${isToday?' today':''}">
+      <span style="font-size:11px;font-weight:500;color:var(--gray-400)">${dias2[i]}</span>
+      <span class="ag-week-day-num" style="${isSel?'background:var(--brand);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin:2px auto':''}" onclick="miniCalSel(${dt.getDate()},${dt.getMonth()},${dt.getFullYear()})">${dt.getDate()}</span>
+    </th>`;
+  }
+  html+='</tr></thead><tbody>';
+
+  for(let h=7;h<=22;h++){
+    const hrStr=(h<10?'0':'')+h+':00';
+    html+=`<tr><td class="ag-grade-time">${hrStr}</td>`;
+    for(let i=0;i<7;i++){
+      const dt=new Date(seg);dt.setDate(seg.getDate()+i);
+      const dateStr=dt.toISOString().split('T')[0];
+      const hrFull=dateStr+'T'+hrStr+':00';
+      const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.toDateString()===dt.toDateString()&&ah.getHours()===h;});
+      html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+      evs.forEach(a=>html+=renderEvCell(a));
+      html+='</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table>';
+  el.innerHTML=html;
+}
+
+function renderEvCell(a){
+  const st=a.status||'aguardando';
+  const nome=a.clientes?.nome||'Cliente';
+  const serv=a.profissional||'';
+  const cor=a.equipe?.cor;
+  const style=cor&&st==='aguardando'?`background:${cor};color:#fff`:'';
+  return `<div class="ag-ev ${st}" style="${style}" onclick="event.stopPropagation();editarAg('${a.id}')" title="${nome} — ${serv}">${nome.split(' ')[0]}<div style="font-size:10px;opacity:.85">${serv.substring(0,14)}</div></div>`;
 }
 
 function agTab(tab){
