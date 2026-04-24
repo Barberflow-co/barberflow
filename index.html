@@ -195,10 +195,13 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .ag-grade-wrap{flex:1;overflow-y:auto;overflow-x:hidden}
 .ag-grade-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .ag-grade-time{width:60px;padding:0 8px;font-size:11px;font-weight:600;color:var(--gray-400);text-align:right;vertical-align:top;padding-top:4px;border-bottom:1px solid var(--gray-100);white-space:nowrap}
-.ag-grade-cell{border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:48px;cursor:pointer;transition:background .1s;vertical-align:top;padding:2px}
+.ag-grade-cell{border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);min-height:56px;cursor:pointer;transition:background .1s;vertical-align:top;padding:2px;position:relative}
+.ag-grade-cell.drag-over{background:var(--brand-light)!important;border:2px dashed var(--brand)}
 .ag-grade-cell:hover{background:var(--brand-light)}
 .ag-grade-col-header{padding:8px 12px;text-align:center;font-size:12px;font-weight:600;background:var(--gray-50);border-bottom:2px solid var(--gray-200);border-left:1px solid var(--gray-200)}
-.ag-ev{border-radius:6px;padding:3px 7px;font-size:12px;font-weight:500;cursor:pointer;margin:1px;overflow:hidden;transition:opacity .15s}
+.ag-ev{border-radius:6px;padding:5px 8px;font-size:12px;font-weight:500;cursor:grab;margin:1px;overflow:hidden;transition:opacity .15s;user-select:none}
+.ag-ev:active{cursor:grabbing;opacity:.7}
+.ag-ev.dragging{opacity:.4}
 .ag-ev:hover{opacity:.85}
 .ag-ev.aguardando{background:var(--brand);color:#fff}
 .ag-ev.confirmado{background:#166534;color:#fff}
@@ -380,7 +383,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <button class="ag-nav-btn" onclick="agNav(1)">›</button>
           <button class="ag-today-btn" onclick="agHoje()">Hoje</button>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="abrirAgModal(null,null)">+ Novo agendamento</button>
+        <button class="btn btn-primary btn-sm" onclick="om('m-ag')">+ Novo agendamento</button>
       </div>
       <!-- Layout principal -->
       <div class="ag-layout">
@@ -612,7 +615,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg">
         <label class="fl">Cliente *</label>
         <div style="position:relative">
-          <input class="fi" id="ag-cli-busca" placeholder="Buscar ou cadastrar cliente..." oninput="buscarCliente(this.value)" autocomplete="off">
+          <input class="fi" id="ag-cli-busca" placeholder="Buscar ou cadastrar cliente..." oninput="buscarCliente(this.value)" autocomplete="off" onkeydown="if(event.key==='Escape')id('ag-cli-lista').style.display='none'">
           <div id="ag-cli-lista" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;max-height:200px;overflow-y:auto"></div>
         </div>
         <input type="hidden" id="ag-cli">
@@ -973,19 +976,19 @@ function renderGradeDiaria(ags,d){
       html+=`<tr><td class="ag-grade-time">${m2===0?hrStr:''}</td>`;
       if(CE){
         const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2;});
-        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)" ondragover="agDragOver(event,'${hrFull}',null)" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}',null)">`;
         evs.forEach(a=>html+=renderEvCell(a));
         html+='</td>';
       } else if(profs.length){
         profs.forEach(p=>{
           const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2&&a.profissional_id===p.id;});
-          html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}','${p.id}')">`;
+          html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}','${p.id}')" ondragover="agDragOver(event,'${hrFull}','${p.id}')" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}','${p.id}')">`;
           evs.forEach(a=>html+=renderEvCell(a));
           html+='</td>';
         });
       } else {
         const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.getHours()===h&&Math.floor(ah.getMinutes()/30)*30===m2;});
-        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+        html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)" ondragover="agDragOver(event,'${hrFull}',null)" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}',null)">`;
         evs.forEach(a=>html+=renderEvCell(a));
         html+='</td>';
       }
@@ -1030,7 +1033,7 @@ function renderGradeSemanal(ags,d){
       const dateStr=dt.toISOString().split('T')[0];
       const hrFull=dateStr+'T'+hrStr+':00';
       const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.toDateString()===dt.toDateString()&&ah.getHours()===h;});
-      html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)">`;
+      html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)" ondragover="agDragOver(event,'${hrFull}',null)" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}',null)">`;
       evs.forEach(a=>html+=renderEvCell(a));
       html+='</td>';
     }
@@ -1046,7 +1049,51 @@ function renderEvCell(a){
   const serv=a.profissional||'';
   const cor=a.equipe?.cor;
   const style=cor&&st==='aguardando'?`background:${cor};color:#fff`:'';
-  return `<div class="ag-ev ${st}" style="${style}" onclick="event.stopPropagation();editarAg('${a.id}')" title="${nome} — ${serv}">${nome.split(' ')[0]}<div style="font-size:10px;opacity:.85">${serv.substring(0,14)}</div></div>`;
+  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  return `<div class="ag-ev ${st}" style="${style}" 
+    draggable="true"
+    ondragstart="agDragStart(event,'${a.id}')"
+    ondragend="agDragEnd(event)"
+    onclick="event.stopPropagation();editarAg('${a.id}')" 
+    title="${nome} — ${serv} (${hr})">
+    <div style="font-size:11px;opacity:.75;margin-bottom:1px">${hr}</div>
+    <div style="font-weight:600">${nome.split(' ')[0]}</div>
+    <div style="font-size:10px;opacity:.85">${serv.substring(0,16)}</div>
+  </div>`;
+}
+
+// Drag & Drop
+let dragAgId=null;
+function agDragStart(e,agId){
+  dragAgId=agId;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function agDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.ag-grade-cell.drag-over').forEach(c=>c.classList.remove('drag-over'));
+}
+function agDragOver(e,hrFull,profId){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  const cell=e.currentTarget;
+  document.querySelectorAll('.ag-grade-cell.drag-over').forEach(c=>c.classList.remove('drag-over'));
+  cell.classList.add('drag-over');
+}
+function agDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+async function agDrop(e,hrFull,profId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!dragAgId)return;
+  const dados={data_hora:hrFull};
+  if(profId)dados.profissional_id=profId;
+  const{error}=await sb.from('agendamentos').update(dados).eq('id',dragAgId);
+  if(error){toast('Erro ao mover: '+error.message,'err');return;}
+  toast('Agendamento movido ✓','ok');
+  dragAgId=null;
+  loadAgenda();
 }
 
 function agTab(tab){
