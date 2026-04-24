@@ -1411,12 +1411,25 @@ async function salvarAnam(){
 // ANIVERSÁRIOS
 // ============================================================
 async function loadAniversarios(){
-  if(!CU)return;const mes=new Date().getMonth()+1;
+  if(!CU)return;
+  const now=new Date();
+  const mes=now.getMonth()+1;
+  const diaHoje=now.getDate();
   const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).not('data_nascimento','is',null);
-  const aniv=(data||[]).filter(c=>new Date(c.data_nascimento).getMonth()+1===mes).sort((a,b)=>new Date(a.data_nascimento).getDate()-new Date(b.data_nascimento).getDate());
+  const hoje=(data||[]).filter(c=>{const d=new Date(c.data_nascimento+'T12:00');return d.getDate()===diaHoje&&d.getMonth()+1===mes;});
+  const restante=(data||[]).filter(c=>{const d=new Date(c.data_nascimento+'T12:00');return d.getMonth()+1===mes&&d.getDate()!==diaHoje;}).sort((a,b)=>new Date(a.data_nascimento+'T12:00').getDate()-new Date(b.data_nascimento+'T12:00').getDate());
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const el=id('aniv-lista');
-  if(!aniv.length){el.innerHTML='<div class="empty"><div class="empty-icon">🎂</div><div class="empty-title">Nenhum aniversário este mês</div></div>';return;}
-  el.innerHTML='<div class="tw"><table><thead><tr><th>Cliente</th><th>Data</th><th>Telefone</th><th></th></tr></thead><tbody>'+aniv.map(c=>{const d=new Date(c.data_nascimento);const hj=d.getDate()===new Date().getDate();return`<tr><td style="font-weight:500">${c.nome}${hj?' 🎂':''}</td><td>${d.getDate()}/${(d.getMonth()+1).toString().padStart(2,'0')}</td><td>${c.telefone||'—'}</td><td><button class="btn btn-sm btn-success" onclick="window.open('https://wa.me/55${(c.telefone||'').replace(/\\D/g,'')}?text=Feliz+aniversário!','_blank')">Enviar WhatsApp</button></td></tr>`;}).join('')+'</tbody></table></div>';
+  let html='';
+  if(hoje.length){
+    html+=`<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;border:1px solid #FCD34D"><div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#92400E;margin-bottom:14px">🎂 Aniversariantes de HOJE — ${diaHoje.toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</div>${hoje.map(c=>{const tel=(c.telefone||'').replace(/\D/g,'');const nome1=encodeURIComponent(c.nome.split(' ')[0]);return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(146,64,14,.15)"><div style="width:40px;height:40px;border-radius:50%;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div><div style="flex:1"><div style="font-weight:600;font-size:14px;color:#92400E">${c.nome}</div><div style="font-size:12px;color:#B45309">${c.telefone||'Sem telefone'}</div></div><button class="btn btn-sm" style="background:#25D366;color:#fff;font-weight:600" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+🎂+Feliz+aniversário!+Que+seu+dia+seja+incrível!','_blank')">🎉 Parabenizar</button></div>`;}).join('')}</div>`;
+  }
+  if(restante.length){
+    const diasFaltam=c=>new Date(c.data_nascimento+'T12:00').getDate()-diaHoje;
+    html+=`<div class="card"><div style="font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:14px">📅 Próximos aniversários em ${meses[mes-1]}</div><div class="tw"><table><thead><tr><th>Cliente</th><th>Data</th><th>Dias restantes</th><th>Telefone</th><th></th></tr></thead><tbody>${restante.map(c=>{const d=new Date(c.data_nascimento+'T12:00');const df=d.getDate()-diaHoje;const tel=(c.telefone||'').replace(/\D/g,'');const nome1=encodeURIComponent(c.nome.split(' ')[0]);return`<tr><td style="font-weight:500">${c.nome}</td><td>${d.getDate().toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</td><td><span class="badge b-yellow">${df>0?'Em '+df+' dia'+(df>1?'s':''):'Hoje!'}</span></td><td>${c.telefone||'—'}</td><td><button class="btn btn-sm btn-success" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+Seu+aniversário+está+chegando!+🎂','_blank')">WhatsApp</button></td></tr>`;}).join('')}</tbody></table></div></div>`;
+  }
+  if(!hoje.length&&!restante.length){html='<div class="empty"><div class="empty-icon">🎂</div><div class="empty-title">Nenhum aniversário este mês</div><div style="font-size:13px;color:var(--gray-400);margin-top:6px">Cadastre as datas de nascimento nos perfis dos clientes</div></div>';}
+  el.innerHTML=html;
 }
 
 // ============================================================
