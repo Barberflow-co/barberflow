@@ -1638,16 +1638,47 @@ async function loadCtx(){
   if(prof){
     CP=prof;CE=null;applyPerm('admin');
     setUI(prof.nome||'Admin','Admin — Proprietário','#0D6EFD');
-    if(prof.nome_barbearia)id('c-barb').value=prof.nome_barbearia;
-    if(prof.nome)id('c-nome').value=prof.nome;
-    if(prof.telefone)id('c-tel').value=prof.telefone;
+    if(prof.nome_barbearia&&id('c-barb'))id('c-barb').value=prof.nome_barbearia;
+    if(prof.nome&&id('c-nome'))id('c-nome').value=prof.nome;
+    if(prof.telefone&&id('c-tel'))id('c-tel').value=prof.telefone;
   } else {
     const{data:eq}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).single();
-    if(eq){CE=eq;const{data:ow}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();if(ow)CP=ow;applyPerm(eq.permissao||'profissional');setUI(eq.nome,PERMS[eq.permissao||'profissional']?.label||'',eq.cor||'#0D6EFD');}
+    if(eq){
+      CE=eq;
+      const{data:ow}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();
+      if(ow)CP=ow;
+      applyPerm(eq.permissao||'profissional');
+      setUI(eq.nome,PERMS[eq.permissao||'profissional']?.label||'',eq.cor||'#0D6EFD');
+    }
   }
   await loadServsBD();await loadProfsBD();await loadCliSels();
 }
 
+function go(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  id('page-'+p).classList.add('active');
+  const loading=id('page-loading');
+  if(loading){loading.classList.add('hide');setTimeout(()=>loading.style.display='none',400);}
+}
+
+function sv(name,el){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  const view=id('view-'+name);if(view)view.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
+  try{localStorage.setItem('bf_page',name);}catch(e){}
+  const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
+  id('tt').textContent=tmap[name]||name;
+  if(name==='clientes')loadCli();
+  if(name==='agenda')loadAgenda();
+  if(name==='relatorios')loadRel();
+  if(name==='equipe')loadEquipe();
+  if(name==='pagamentos')loadPag();
+  if(name==='servicos')loadServicos();
+  if(name==='estoque')loadEstoque();
+  if(name==='comandas')loadComandas();
+  if(name==='caixa')loadCaixa();
+  if(name==='aniversarios')loadAniversarios();
+}
 function getOwn(){return CE?CE.user_id:CU?.id;}
 
 const PERMS={
