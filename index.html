@@ -213,6 +213,22 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .ag-week-day.today{color:var(--brand);font-weight:700}
 .ag-week-day-num{font-size:20px;font-weight:700;display:block;margin-bottom:2px}
 
+/* MODAL AÇÃO RÁPIDA AGENDAMENTO */
+#m-ag-acao .modal{max-width:340px;padding:0;overflow:hidden}
+.ag-acao-header{padding:16px 20px;border-bottom:1px solid var(--gray-100)}
+.ag-acao-nome{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#0F172A}
+.ag-acao-info{font-size:12.5px;color:var(--gray-500);margin-top:3px}
+.ag-acao-status{display:flex;flex-direction:column;gap:6px;padding:14px 20px;border-bottom:1px solid var(--gray-100)}
+.ag-acao-btn{padding:11px 16px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:10px}
+.ag-acao-btn:hover{border-color:var(--brand);background:var(--brand-light);color:var(--brand)}
+.ag-acao-btn.active-status{font-weight:600}
+.ag-acao-btn.btn-confirmar:hover{border-color:#166534;background:#f0fdf4;color:#166534}
+.ag-acao-btn.btn-iniciar:hover{border-color:#7C3AED;background:#f5f3ff;color:#7C3AED}
+.ag-acao-btn.btn-finalizar:hover{border-color:#0D6EFD;background:#EBF3FF;color:#0D6EFD}
+.ag-acao-btn.btn-cancelar:hover{border-color:var(--danger);background:#fef2f2;color:var(--danger)}
+.ag-acao-footer{display:flex;gap:8px;padding:12px 20px}
+.ag-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
 /* WHATSAPP PANEL */
 #wa-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:999;transition:right .3s ease;display:flex;flex-direction:column}
 #wa-panel.open{right:0}
@@ -259,6 +275,28 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .plan-price span{font-size:13px;font-weight:400;color:#64748B}
 .plan-features{font-size:12px;color:#64748B;margin-top:6px}
 .trial-banner{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#92400E}
+
+/* STATUS COLORS - novas cores */
+.st-aguardando{background:#FEF3C7;color:#92400E}
+.st-confirmado{background:#DBEAFE;color:#1E40AF}
+.st-em_atendimento{background:#EDE9FE;color:#5B21B6}
+.st-finalizado{background:#DCFCE7;color:#166534}
+.st-cancelado{background:#F1F5F9;color:#64748B}
+
+/* MODAL AÇÃO RÁPIDA */
+#m-ag-acao .modal{max-width:320px;padding:0;overflow:hidden}
+.aacao-header{padding:16px 20px;border-bottom:1px solid var(--gray-100)}
+.aacao-nome{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#0F172A}
+.aacao-info{font-size:12px;color:var(--gray-500);margin-top:3px}
+.aacao-status-btns{display:flex;flex-direction:column;gap:6px;padding:14px 20px;border-bottom:1px solid var(--gray-100)}
+.aacao-btn{padding:11px 16px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:13.5px;font-weight:500;cursor:pointer;text-align:left;transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:10px;width:100%}
+.aacao-btn:hover{transform:translateX(2px)}
+.aacao-btn-confirmar:hover{border-color:#1E40AF;background:#DBEAFE;color:#1E40AF}
+.aacao-btn-atendimento:hover{border-color:#5B21B6;background:#EDE9FE;color:#5B21B6}
+.aacao-btn-finalizar:hover{border-color:#166534;background:#DCFCE7;color:#166534}
+.aacao-btn-cancelar:hover{border-color:#64748B;background:#F1F5F9;color:#64748B}
+.aacao-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.aacao-footer{display:flex;gap:6px;padding:12px 20px}
 
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
@@ -698,6 +736,28 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-cli')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarCli()">Cadastrar</button></div>
 </div></div>
 
+<!-- MODAL AÇÃO RÁPIDA -->
+<div class="mo" id="m-ag-acao">
+  <div class="modal">
+    <div class="aacao-header">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="aacao-nome" id="aacao-nome">Cliente</div>
+          <div class="aacao-info" id="aacao-info">—</div>
+        </div>
+        <button class="mc" onclick="cm('m-ag-acao')">✕</button>
+      </div>
+      <div style="margin-top:10px"><span id="aacao-badge" class="badge">—</span></div>
+    </div>
+    <div class="aacao-status-btns" id="aacao-btns"></div>
+    <div class="aacao-footer">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditar()">Editar agendamento</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditarCliente()">Editar cliente</button>
+      <button class="btn btn-sm" style="background:#FEE2E2;color:#991B1B;border:1.5px solid #FECACA" onclick="aacaoExcluir()">Excluir</button>
+    </div>
+  </div>
+</div>
+
 <div class="mo" id="m-ag"><div class="modal" style="max-width:680px">
   <div class="mh"><div class="mt" id="m-ag-titulo">Novo agendamento</div><button class="mc" onclick="cm('m-ag')">✕</button></div>
   <div class="mb" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
@@ -729,7 +789,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </div>
       <div class="fg2">
         <div class="fg"><label class="fl">Valor (R$)</label><input class="fi" id="ag-valor" type="number" placeholder="0,00" step="0.01"></div>
-        <div class="fg"><label class="fl">Status</label><select class="fs" id="ag-status"><option value="aguardando">Aguardando</option><option value="confirmado">Confirmado</option></select></div>
+        <div class="fg"><label class="fl">Status</label><select class="fs" id="ag-status" onchange="onStatusChange(this.value)"><option value="aguardando">Aguardando</option><option value="confirmado">Confirmado</option><option value="em_atendimento">Em atendimento</option><option value="finalizado">Finalizado</option><option value="cancelado">Cancelado</option></select></div>
       </div>
       <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="ag-obs" placeholder="Informações adicionais..." style="min-height:55px"></textarea></div>
     </div>
@@ -1280,7 +1340,7 @@ function renderEvCell(a){
     draggable="true"
     ondragstart="agDragStart(event,'${a.id}')"
     ondragend="agDragEnd(event)"
-    onclick="event.stopPropagation();editarAg('${a.id}')" 
+    onclick="event.stopPropagation();abrirAcaoAg('${a.id}')" 
     title="${nome} — ${serv} (${hr} - ${hrFim})">
     <div style="font-size:10px;opacity:.85">${hr} - ${hrFim}</div>
     <div style="font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nome.split(' ')[0]}</div>
@@ -1765,13 +1825,13 @@ function renderAgs(ags){
   return ags.map(a=>{
     const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const st=a.status||'aguardando';
-    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
+    const bc='st-'+st;
     const stLabel={aguardando:'Aguardando',confirmado:'Confirmado',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cancelado'}[st]||st;
     let btns='';
     if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')"></button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='em_atendimento')btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅</button>`;
-    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'—'}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" style="padding:4px 7px"></button>${btns}</div>`;
+    return `<div class="ar" style="cursor:pointer" onclick="abrirAcaoAg('${a.id}')"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'—'}</div></div><span class="badge ${bc}">${stLabel}</span></div>`;
   }).join('');
 }
 
@@ -1804,6 +1864,104 @@ async function excluirAg(agId){
 
 async function confAg(agId){await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);toast('Confirmado','ok');loadAgenda();loadDash();}
 async function cancAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
+
+// ============================================================
+// MODAL AÇÃO RÁPIDA (estilo Gendo)
+// ============================================================
+let agAcaoId=null,agAcaoCliId=null;
+
+const ST_LABELS={
+  aguardando:'Aguardando confirmação',
+  confirmado:'Cliente confirmou',
+  em_atendimento:'Em atendimento',
+  finalizado:'Finalizado',
+  cancelado:'Cliente cancelou'
+};
+const ST_CLASSES={
+  aguardando:'st-aguardando',
+  confirmado:'st-confirmado',
+  em_atendimento:'st-em_atendimento',
+  finalizado:'st-finalizado',
+  cancelado:'st-cancelado'
+};
+const ST_DOTS={
+  aguardando:'#D97706',
+  confirmado:'#1E40AF',
+  em_atendimento:'#5B21B6',
+  finalizado:'#166534',
+  cancelado:'#64748B'
+};
+
+async function abrirAcaoAg(agId){
+  agAcaoId=agId;
+  const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,id)').eq('id',agId).single();
+  if(!a)return;
+  agAcaoCliId=a.cliente_id;
+
+  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short'});
+  const st=a.status||'aguardando';
+
+  id('aacao-nome').textContent=a.clientes?.nome||'Cliente';
+  id('aacao-info').textContent=`${dt} às ${hr}${a.profissional?' · '+a.profissional:''}`;
+
+  const badge=id('aacao-badge');
+  badge.className='badge '+(ST_CLASSES[st]||'st-aguardando');
+  badge.textContent=ST_LABELS[st]||st;
+
+  // Botões de ação conforme status atual
+  let html='';
+  if(st==='aguardando'){
+    html+=mkBtn('confirmar','Cliente confirmou','#1E40AF',`aacaoStatus('confirmado')`);
+    html+=mkBtn('cancelar','Cliente cancelou','#64748B',`aacaoStatus('cancelado')`);
+  } else if(st==='confirmado'){
+    html+=mkBtn('atendimento','Iniciar atendimento','#5B21B6',`aacaoStatus('em_atendimento')`);
+    html+=mkBtn('cancelar','Cliente cancelou','#64748B',`aacaoStatus('cancelado')`);
+  } else if(st==='em_atendimento'){
+    html+=mkBtn('finalizar','Finalizar e abrir comanda','#166534',`aacaoFinalizar('${agId}','${a.cliente_id||''}','${a.profissional||''}')`);
+  } else if(st==='finalizado'){
+    html+=`<div style="text-align:center;padding:8px;font-size:13px;color:var(--gray-400)">Atendimento finalizado</div>`;
+  } else if(st==='cancelado'){
+    html+=mkBtn('confirmar','Reagendar (voltar para aguardando)','#1E40AF',`aacaoStatus('aguardando')`);
+  }
+  id('aacao-btns').innerHTML=html;
+  id('m-ag-acao').classList.add('open');
+}
+
+function mkBtn(tipo,label,cor,onclick){
+  return `<button class="aacao-btn aacao-btn-${tipo}" onclick="${onclick}">
+    <span class="aacao-dot" style="background:${cor}"></span>${label}
+  </button>`;
+}
+
+async function aacaoStatus(novoStatus){
+  if(!agAcaoId)return;
+  const{error}=await sb.from('agendamentos').update({status:novoStatus}).eq('id',agAcaoId);
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast(ST_LABELS[novoStatus],'ok');
+  cm('m-ag-acao');
+  loadAgenda();loadDash();
+}
+
+async function aacaoFinalizar(agId,cliId,servico){
+  cm('m-ag-acao');
+  await finalizarAg(agId,cliId,servico);
+}
+
+function aacaoEditar(){
+  cm('m-ag-acao');
+  editarAg(agAcaoId);
+}
+
+function aacaoEditarCliente(){
+  cm('m-ag-acao');
+  if(agAcaoCliId)editarCli(agAcaoCliId);
+}
+
+async function aacaoExcluir(){
+  cm('m-ag-acao');
+  await excluirAg(agAcaoId);
+}
 
 function abrirAgModal(hrFull, profId){
   agEditId=null;
