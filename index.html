@@ -800,7 +800,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="ph"><div><div class="pt">Relatórios</div><div class="ps" id="rel-sub">Visão geral</div></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-outline btn-md" onclick="exportarClientesCSV()">⬇ Clientes CSV</button>
-          <button class="btn btn-outline btn-md" id="btn-exportar-pdf" onclick="exportarRelPDF()">⬇ Exportar PDF</button>
         </div>
       </div>
 
@@ -3085,9 +3084,7 @@ async function loadRel(){
   if(!CU)return;const ownId=getOwn();
   const dates=getRelDates();if(!dates)return;
   const{ini,fim,label}=dates;
-  // Botão PDF só para admin
-  const btnPdf=id('btn-exportar-pdf');
-  if(btnPdf)btnPdf.style.display=CE?'none':'';
+
   await loadServsBD();
 
   let baseQ=sb.from('agendamentos').select('valor,profissional_id,profissional,equipe(nome,cor)').eq('user_id',ownId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59');
