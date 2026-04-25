@@ -1467,6 +1467,36 @@ async function loadAniversarios(){
 async function confAg(agId){await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);toast('Confirmado ✓','ok');loadAgenda();loadDash();}
 async function cancAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
 
+function abrirAgModal(hrFull, profId){
+  agEditId=null;
+  id('m-ag-titulo').textContent='Novo agendamento';
+  id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';
+  limparCliAg();
+  agTab('anam');
+  // Preenche data e hora se clicou num horário
+  if(hrFull){
+    const d=new Date(hrFull);
+    id('ag-data').value=d.toISOString().split('T')[0];
+    const hh=String(d.getHours()).padStart(2,'0');
+    const mm=String(d.getMinutes()).padStart(2,'0');
+    id('ag-hora').value=hh+':'+mm;
+  } else {
+    id('ag-data').value=new Date().toISOString().split('T')[0];
+    id('ag-hora').value='09:00';
+  }
+  // Pré-seleciona profissional se fornecido
+  if(profId){
+    id('ag-prof').value=profId;
+  } else if(CE){
+    id('ag-prof').value=CE.id;
+    id('ag-prof').disabled=true;
+  } else {
+    id('ag-prof').disabled=false;
+  }
+  loadServsBD();loadProfsBD();
+  id('m-ag').classList.add('open');
+}
+
 let agEditId=null;
 async function editarAg(agId){
   const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,telefone)').eq('id',agId).single();
