@@ -1661,13 +1661,37 @@ async function salvarAg(){
 async function loadServicos(){
   await loadServsBD();const tb=id('tb-servicos');
   if(!allServs.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-title">Nenhum serviço cadastrado</div></div></td></tr>';return;}
-  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>R$${(s.preco||0).toFixed(2)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>R$${(s.preco||0).toFixed(2)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarServ('${s.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">🗑</button></td></tr>`).join('');
+}
+let servEditId=null;
+async function editarServ(sid){
+  const s=allServs.find(x=>x.id===sid);if(!s)return;
+  servEditId=sid;
+  id('sv-nome').value=s.nome||'';
+  id('sv-cat').value=s.categoria||'';
+  id('sv-dur').value=s.duracao_min||'';
+  id('sv-preco').value=s.preco||'';
+  id('sv-comis').value=s.comissao_pct||'';
+  id('m-serv').querySelector('.mt').textContent='Editar serviço';
+  id('m-serv').querySelector('.mf .btn-primary').textContent='Salvar alterações';
+  id('m-serv').classList.add('open');
 }
 async function salvarServ(){
   const nome=v('sv-nome');if(!nome){toast('Nome obrigatório!','err');return;}
-  const{error}=await sb.from('servicos').insert({user_id:getOwn(),nome,categoria:v('sv-cat'),duracao_min:parseInt(v('sv-dur'))||null,preco:parseFloat(v('sv-preco'))||0,comissao_pct:parseInt(v('sv-comis'))||null,ativo:true});
+  const dados={nome,categoria:v('sv-cat'),duracao_min:parseInt(v('sv-dur'))||null,preco:parseFloat(v('sv-preco'))||0,comissao_pct:parseInt(v('sv-comis'))||null,ativo:true};
+  let error;
+  if(servEditId){
+    ({error}=await sb.from('servicos').update(dados).eq('id',servEditId));
+    if(!error)toast('Serviço atualizado ✓','ok');
+  } else {
+    ({error}=await sb.from('servicos').insert({user_id:getOwn(),...dados}));
+    if(!error)toast('Serviço salvo ✓','ok');
+  }
   if(error){toast('Erro: '+error.message,'err');return;}
-  cm('m-serv');toast('Serviço salvo ✓','ok');limpar('m-serv');loadServicos();
+  servEditId=null;
+  id('m-serv').querySelector('.mt').textContent='Novo serviço';
+  id('m-serv').querySelector('.mf .btn-primary').textContent='Salvar serviço';
+  cm('m-serv');limpar('m-serv');loadServicos();
 }
 async function excluirServ(sid){if(!confirm('Remover serviço?'))return;await sb.from('servicos').delete().eq('id',sid);toast('Removido','ok');loadServicos();}
 
@@ -1827,6 +1851,7 @@ function om(mid){
   if(['m-ag','m-cli','m-comanda'].includes(mid))loadCliSels();
   if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfsBD();loadServsBD();}
   if(mid==='m-comanda'){loadProfsBD();cmdItens=[];renderCmdItens();}
+  if(mid==='m-serv'){servEditId=null;if(id('m-serv'))id('m-serv').querySelector('.mt').textContent='Novo serviço';if(id('m-serv'))id('m-serv').querySelector('.mf .btn-primary').textContent='Salvar serviço';}
   if(mid==='m-eq'){eqEditId=null;id('m-eq').querySelector('.mt').textContent='Novo profissional';id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';}
   if(mid==='m-ag'){agEditId=null;id('m-ag-titulo').textContent='Novo agendamento';id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';limparCliAg();agTab('anam');}
   id(mid).classList.add('open');
