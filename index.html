@@ -1842,12 +1842,34 @@ async function iniciarAg(agId){
 
 async function finalizarAg(agId,cliId,servico){
   await sb.from('agendamentos').update({status:'finalizado'}).eq('id',agId);
+  
+  // Busca dados completos do agendamento
+  const{data:ag}=await sb.from('agendamentos').select('*').eq('id',agId).single();
+  
   await loadCliSels();await loadProfsBD();await loadServsBD();
   cmdItens=[];
-  if(cliId){id('cmd-cli').value=cliId;}
-  if(CE){id('cmd-prof').value=CE.id;}
-  const sv2=allServs.find(s=>s.nome===servico);
-  if(sv2){cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0});}
+
+  // Preenche cliente
+  const realCliId=ag?.cliente_id||cliId;
+  if(realCliId)id('cmd-cli').value=realCliId;
+
+  // Preenche profissional — usa o do agendamento ou o logado
+  const realProfId=ag?.profissional_id||null;
+  if(realProfId)id('cmd-prof').value=realProfId;
+  else if(CE)id('cmd-prof').value=CE.id;
+
+  // Preenche serviço com valor do agendamento
+  const nomeServ=ag?.profissional||servico;
+  const sv2=allServs.find(s=>s.nome===nomeServ);
+  if(sv2){
+    // Usa o valor do agendamento se disponível, senão usa o preço do serviço
+    const preco=ag?.valor||sv2.preco||0;
+    cmdItens.push({id:sv2.id,nome:sv2.nome,preco:preco});
+  } else if(nomeServ&&ag?.valor){
+    // Serviço não encontrado mas tem nome e valor no agendamento
+    cmdItens.push({id:'avulso',nome:nomeServ,preco:ag.valor});
+  }
+
   renderCmdItens();
   id('m-comanda').classList.add('open');
   toast('Atendimento finalizado','ok');
