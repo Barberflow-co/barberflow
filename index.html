@@ -356,6 +356,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .dash-period{transition:all .15s}
 .dash-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 .com-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
+.rel-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
@@ -610,7 +611,12 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- CLIENTES -->
     <div class="view" id="view-clientes">
-      <div class="ph"><div><div class="pt">Clientes</div><div class="ps" id="cli-count">0 clientes</div></div><button class="btn btn-md btn-primary" onclick="om('m-cli')">+ Novo cliente</button></div>
+      <div class="ph"><div><div class="pt">Clientes</div><div class="ps" id="cli-count">0 clientes</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-md btn-outline" onclick="om('m-importar-cli')">⬆ Importar lista</button>
+          <button class="btn btn-md btn-primary" onclick="om('m-cli')">+ Novo cliente</button>
+        </div>
+      </div>
       <div class="sb-row"> <input type="text" placeholder="Buscar..." id="s-cli-inp" oninput="filtrarCli()"></div>
       <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
     </div>
@@ -793,17 +799,38 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="view" id="view-relatorios">
       <div class="ph"><div><div class="pt">Relatórios</div><div class="ps" id="rel-sub">Visão geral</div></div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-outline btn-md" onclick="exportarClientesCSV()">Exportar clientes</button>
-          <button class="btn btn-outline btn-md" onclick="exportarRelPDF()">Exportar PDF</button>
+          <button class="btn btn-outline btn-md" onclick="exportarClientesCSV()">⬇ Clientes CSV</button>
+          <button class="btn btn-outline btn-md" onclick="exportarRelPDF()">⬇ Exportar PDF</button>
         </div>
       </div>
-      <div class="stats-row">
-        <div class="stat-box"><div class="stat-lbl">Agendamentos</div><div class="stat-val" id="r-ag">0</div></div>
-        <div class="stat-box"><div class="stat-lbl">Clientes</div><div class="stat-val" id="r-cl">0</div></div>
-        <div class="stat-box"><div class="stat-lbl">Faturamento</div><div class="stat-val" style="font-size:18px" id="r-fat">R$0</div></div>
-        <div class="stat-box"><div class="stat-lbl">Ticket médio</div><div class="stat-val" style="font-size:18px" id="r-tkt">R$0</div></div>
+
+      <!-- Filtro de período -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-outline rel-period active" onclick="setRelPeriod('mes',this)">Este mês</button>
+          <button class="btn btn-sm btn-outline rel-period" onclick="setRelPeriod('semana',this)">Esta semana</button>
+          <button class="btn btn-sm btn-outline rel-period" onclick="setRelPeriod('hoje',this)">Hoje</button>
+          <button class="btn btn-sm btn-outline rel-period" onclick="setRelPeriod('ano',this)">Este ano</button>
+          <button class="btn btn-sm btn-outline rel-period" onclick="setRelPeriod('custom',this)">Personalizado</button>
+        </div>
+        <div id="rel-custom-dates" style="display:none;align-items:center;gap:8px">
+          <input type="date" class="fi" id="rel-dt-ini" style="padding:6px 10px;font-size:13px;width:140px">
+          <span style="color:var(--gray-400);font-size:13px">até</span>
+          <input type="date" class="fi" id="rel-dt-fim" style="padding:6px 10px;font-size:13px;width:140px">
+          <button class="btn btn-sm btn-primary" onclick="loadRel()">Filtrar</button>
+        </div>
       </div>
-      <div class="card" id="rel-prof-breakdown" style="display:none"><div class="st" style="margin-bottom:16px">Por profissional</div><div id="rel-prof-lista"></div></div>
+
+      <!-- Cards resumo -->
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-lbl">Atendimentos</div><div class="stat-val" id="r-ag">0</div><div class="stat-sub" id="r-ag-sub">no período</div></div>
+        <div class="stat-box"><div class="stat-lbl">Clientes</div><div class="stat-val" id="r-cl">0</div><div class="stat-sub">cadastrados</div></div>
+        <div class="stat-box"><div class="stat-lbl">Faturamento</div><div class="stat-val" style="font-size:18px" id="r-fat">R$ 0</div><div class="stat-sub" id="r-fat-sub">no período</div></div>
+        <div class="stat-box"><div class="stat-lbl">Ticket médio</div><div class="stat-val" style="font-size:18px" id="r-tkt">R$ 0</div><div class="stat-sub">por atendimento</div></div>
+      </div>
+
+      <!-- Corpo do relatório -->
+      <div id="rel-body" style="display:flex;flex-direction:column;gap:16px"></div>
     </div>
 
     <!-- SERVIÇOS -->
@@ -1026,6 +1053,42 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="nc-obs" placeholder="Informações iniciais..." style="min-height:60px"></textarea></div>
   </div>
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-cli')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarCli()">Cadastrar</button></div>
+</div></div>
+
+<!-- MODAL IMPORTAR CLIENTES -->
+<div class="mo" id="m-importar-cli"><div class="modal" style="max-width:600px">
+  <div class="mh"><div class="mt">Importar lista de clientes</div><button class="mc" onclick="cm('m-importar-cli')">✕</button></div>
+  <div class="mb">
+    <div style="background:var(--gray-50);border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--gray-600);line-height:1.7">
+      <div style="font-weight:600;color:var(--gray-800);margin-bottom:6px">📋 Como importar</div>
+      <div>1. Baixe o modelo abaixo ou use qualquer planilha CSV/Excel</div>
+      <div>2. Preencha os dados — apenas o <strong>Nome</strong> é obrigatório</div>
+      <div>3. Salve como <strong>.csv</strong> e faça o upload aqui</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--gray-400)">Colunas aceitas: Nome, Telefone, Email, Data Nasc. (DD/MM/AAAA), CPF, CEP, Endereço, Como nos conheceu</div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="baixarModeloCSV()" style="margin-bottom:16px">⬇ Baixar modelo CSV</button>
+    <div class="fg">
+      <label class="fl">Selecione o arquivo CSV ou Excel</label>
+      <input type="file" class="fi" id="import-file" accept=".csv,.xlsx,.xls" style="padding:8px" onchange="previewImport(this)">
+    </div>
+    <div id="import-preview" style="display:none;margin-top:12px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px" id="import-preview-title"></div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--gray-200);border-radius:8px">
+        <table style="width:100%;border-collapse:collapse;font-size:12px" id="import-preview-table"></table>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--gray-500)" id="import-preview-info"></div>
+    </div>
+    <div id="import-progress" style="display:none;margin-top:12px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:6px" id="import-progress-txt">Importando...</div>
+      <div style="height:8px;background:var(--gray-100);border-radius:100px;overflow:hidden">
+        <div id="import-progress-bar" style="height:100%;background:var(--brand);border-radius:100px;width:0%;transition:width .3s"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-md btn-ghost" onclick="cm('m-importar-cli')">Cancelar</button>
+    <button class="btn btn-md btn-primary" id="btn-importar" onclick="importarClientes()" disabled>Importar clientes</button>
+  </div>
 </div></div>
 
 <!-- MODAL AÇÃO RÁPIDA -->
@@ -2985,48 +3048,407 @@ async function loadPag(){
 // ============================================================
 // RELATÓRIOS
 // ============================================================
+let relPeriod='mes';
+function setRelPeriod(period,el){
+  relPeriod=period;
+  document.querySelectorAll('.rel-period').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const customEl=id('rel-custom-dates');
+  if(customEl)customEl.style.display=period==='custom'?'flex':'none';
+  if(period!=='custom')loadRel();
+}
+function getRelDates(){
+  const hoje=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  if(relPeriod==='hoje'){const h=fmt(hoje);return{ini:h,fim:h,label:'Hoje'};}
+  if(relPeriod==='semana'){
+    const dow=hoje.getDay();
+    const seg=new Date(hoje);seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
+    const sab=new Date(seg);sab.setDate(seg.getDate()+6);
+    return{ini:fmt(seg),fim:fmt(sab),label:'Esta semana'};
+  }
+  if(relPeriod==='mes'){
+    return{ini:`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`,fim:fmt(hoje),
+      label:hoje.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})};
+  }
+  if(relPeriod==='ano'){return{ini:`${hoje.getFullYear()}-01-01`,fim:fmt(hoje),label:'Este ano'};}
+  if(relPeriod==='custom'){
+    const ini=id('rel-dt-ini')?.value;const fim=id('rel-dt-fim')?.value;
+    if(!ini||!fim){toast('Selecione as datas','err');return null;}
+    return{ini,fim,label:`${new Date(ini+'T12:00').toLocaleDateString('pt-BR')} a ${new Date(fim+'T12:00').toLocaleDateString('pt-BR')}`};
+  }
+  return null;
+}
+
 async function loadRel(){
   if(!CU)return;const ownId=getOwn();
+  const dates=getRelDates();if(!dates)return;
+  const{ini,fim,label}=dates;
   await loadServsBD();
-  let agQ=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('status','finalizado');
-  let fatQ=sb.from('agendamentos').select('valor,profissional_id,profissional,equipe(nome)').eq('user_id',ownId).eq('status','finalizado');
-  if(CE){agQ=agQ.eq('profissional_id',CE.id);fatQ=fatQ.eq('profissional_id',CE.id);}
-  const[{count:ca},{count:cc},{data:fat}]=await Promise.all([agQ,sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),fatQ]);
-  const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  id('r-ag').textContent=ca||0;id('r-cl').textContent=cc||0;id('r-fat').textContent=fmtMoney(total);id('r-tkt').textContent=fmtMoney(ca>0?total/ca:0);
 
-  if(!CE&&allProf.length){
-    id('rel-prof-breakdown').style.display='block';
-    const byP={};
-    (fat||[]).forEach(a=>{
-      const pid=a.profissional_id||'sem';
-      if(!byP[pid])byP[pid]={nome:a.equipe?.nome||'Sem profissional',tot:0,comissao:0,qt:0};
-      byP[pid].tot+=a.valor||0;
-      byP[pid].qt++;
-      const serv=allServs.find(s=>s.nome===a.profissional);
-      const pct=serv?.comissao_pct||0;
-      byP[pid].comissao+=(a.valor||0)*(pct/100);
-    });
-    const sorted=Object.values(byP).sort((a,b)=>b.tot-a.tot);
-    const totalComissoes=sorted.reduce((s,p)=>s+p.comissao,0);
-    id('rel-prof-lista').innerHTML=`
-      ${sorted.map(p=>`
-        <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-          <div style="flex:1;font-weight:500">${p.nome}</div>
-          <div style="font-size:13px;color:var(--gray-500);margin-right:16px">${p.qt} atend.</div>
+  let baseQ=sb.from('agendamentos').eq('user_id',ownId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59');
+  if(CE){baseQ=baseQ.eq('profissional_id',CE.id);}
+  const[{count:ca},{count:cc},{data:fat}]=await Promise.all([
+    baseQ.select('*',{count:'exact',head:true}),
+    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),
+    baseQ.select('valor,profissional_id,profissional,equipe(nome,cor)')
+  ]);
+  const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  id('r-ag').textContent=ca||0;
+  id('r-cl').textContent=cc||0;
+  id('r-fat').textContent=fmtMoney(total);
+  id('r-tkt').textContent=fmtMoney(ca>0?total/ca:0);
+  if(id('r-fat-sub'))id('r-fat-sub').textContent=label;
+  if(id('r-ag-sub'))id('r-ag-sub').textContent=label;
+
+  const el=id('rel-body');if(!el)return;
+  if(!fat||!fat.length){
+    el.innerHTML=`<div class="card"><div class="empty"><div class="empty-title">Nenhum atendimento no período</div></div></div>`;
+    return;
+  }
+
+  // Agrupa por profissional com serviços detalhados
+  const byP={};
+  (fat||[]).forEach(a=>{
+    const pid=a.profissional_id||'sem';
+    if(!byP[pid])byP[pid]={nome:a.equipe?.nome||'Sem profissional',cor:a.equipe?.cor||'#94A3B8',tot:0,comissao:0,qt:0,servicos:{}};
+    byP[pid].tot+=a.valor||0;
+    byP[pid].qt++;
+    const servNome=a.profissional||'Serviço';
+    if(!byP[pid].servicos[servNome])byP[pid].servicos[servNome]={qt:0,tot:0,comissao:0,pct:0};
+    byP[pid].servicos[servNome].qt++;
+    byP[pid].servicos[servNome].tot+=a.valor||0;
+    const serv=allServs.find(s=>s.nome===servNome);
+    const pct=serv?.comissao_pct||0;
+    byP[pid].servicos[servNome].pct=pct;
+    byP[pid].servicos[servNome].comissao+=(a.valor||0)*(pct/100);
+    byP[pid].comissao+=(a.valor||0)*(pct/100);
+  });
+
+  const sorted=Object.values(byP).sort((a,b)=>b.tot-a.tot);
+  const totalComissoes=sorted.reduce((s,p)=>s+p.comissao,0);
+  const maxTot=sorted[0]?.tot||1;
+
+  // Serviços globais (todos os profissionais)
+  const byS={};
+  (fat||[]).forEach(a=>{
+    const s=a.profissional||'Serviço';
+    if(!byS[s])byS[s]={qt:0,tot:0};
+    byS[s].qt++;byS[s].tot+=a.valor||0;
+  });
+  const sortedServs=Object.entries(byS).sort((a,b)=>b[1].qt-a[1].qt);
+
+  let html='';
+
+  // 1. RANKING DE PROFISSIONAIS (resumo)
+  html+=`<div class="card">
+    <div class="sh" style="margin-bottom:16px">
+      <div class="st">Ranking de profissionais</div>
+      <span class="badge b-gray">${label}</span>
+    </div>
+    ${sorted.map((p,i)=>`
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;border-radius:50%;background:${i===0?'#F59E0B':i===1?'#94A3B8':i===2?'#D97706':'var(--gray-200)'};color:${i<3?'#fff':'var(--gray-600)'};font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">${i+1}</div>
+            <div style="width:10px;height:10px;border-radius:50%;background:${p.cor}"></div>
+            <span style="font-weight:600;font-size:14px">${p.nome}</span>
+            <span style="font-size:12px;color:var(--gray-400)">${p.qt} atend.</span>
+          </div>
           <div style="text-align:right">
             <div style="font-size:15px;font-weight:700;color:var(--brand)">${fmtMoney(p.tot)}</div>
-            <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px">
-              <span style="font-size:11px;color:var(--gray-400)">Comissão:</span>
-              <span style="font-size:13px;font-weight:600;color:#16A34A">${fmtMoney(p.comissao)}</span>
-            </div>
+            <div style="font-size:11px;color:#16A34A;font-weight:600">comissão: ${fmtMoney(p.comissao)}</div>
           </div>
-        </div>`).join('')}
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-top:4px;background:var(--gray-50);border-radius:var(--radius);padding:12px 16px">
-        <div style="font-weight:600;font-size:13px">Total de comissões a pagar</div>
-        <div style="font-size:16px;font-weight:800;color:#16A34A">${fmtMoney(totalComissoes)}</div>
-      </div>`;
+        </div>
+        <div style="height:6px;background:var(--gray-100);border-radius:100px;overflow:hidden">
+          <div style="height:100%;background:${p.cor};border-radius:100px;width:${(p.tot/maxTot*100).toFixed(0)}%;transition:width .5s"></div>
+        </div>
+      </div>`).join('')}
+    <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <span style="font-weight:600;font-size:13px;color:#166534">Total de comissões a pagar</span>
+      <span style="font-size:18px;font-weight:800;color:#16A34A">${fmtMoney(totalComissoes)}</span>
+    </div>
+  </div>`;
+
+  // 2. DETALHAMENTO POR PROFISSIONAL (serviços discriminados)
+  sorted.forEach(p=>{
+    const servList=Object.entries(p.servicos).sort((a,b)=>b[1].qt-a[1].qt);
+    const maxServTot=servList[0]?.[1]?.tot||1;
+    html+=`<div class="card">
+      <div class="sh" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:12px;height:12px;border-radius:50%;background:${p.cor}"></div>
+          <div class="st">${p.nome}</div>
+        </div>
+        <div style="display:flex;gap:12px;font-size:13px">
+          <span style="color:var(--gray-500)">${p.qt} atendimentos</span>
+          <span style="font-weight:700;color:var(--brand)">${fmtMoney(p.tot)}</span>
+          <span style="font-weight:600;color:#16A34A">comissão: ${fmtMoney(p.comissao)}</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--gray-50)">
+              <th style="text-align:left;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Serviço</th>
+              <th style="text-align:center;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Qtd</th>
+              <th style="text-align:right;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Total</th>
+              <th style="text-align:right;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Comissão %</th>
+              <th style="text-align:right;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">A receber</th>
+              <th style="padding:8px 10px;border-bottom:1px solid var(--gray-200);width:100px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${servList.map(([nome,s])=>`
+              <tr style="border-bottom:1px solid var(--gray-100)">
+                <td style="padding:10px;font-weight:500">${nome}</td>
+                <td style="padding:10px;text-align:center"><span class="badge b-gray">${s.qt}x</span></td>
+                <td style="padding:10px;text-align:right;font-weight:600;color:var(--brand)">${fmtMoney(s.tot)}</td>
+                <td style="padding:10px;text-align:right;color:var(--gray-500)">${s.pct?s.pct+'%':'—'}</td>
+                <td style="padding:10px;text-align:right;font-weight:600;color:#16A34A">${s.comissao>0?fmtMoney(s.comissao):'—'}</td>
+                <td style="padding:10px">
+                  <div style="height:4px;background:var(--gray-100);border-radius:100px;overflow:hidden">
+                    <div style="height:100%;background:${p.cor};opacity:.7;border-radius:100px;width:${(s.tot/maxServTot*100).toFixed(0)}%"></div>
+                  </div>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="background:var(--gray-50)">
+              <td style="padding:10px;font-weight:700">Total</td>
+              <td style="padding:10px;text-align:center;font-weight:700">${p.qt}</td>
+              <td style="padding:10px;text-align:right;font-weight:700;color:var(--brand)">${fmtMoney(p.tot)}</td>
+              <td></td>
+              <td style="padding:10px;text-align:right;font-weight:700;color:#16A34A">${fmtMoney(p.comissao)}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>`;
+  });
+
+  // 3. SERVIÇOS MAIS REALIZADOS (geral)
+  html+=`<div class="card">
+    <div class="sh" style="margin-bottom:16px">
+      <div class="st">Serviços mais realizados</div>
+      <span class="badge b-gray">${label}</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:var(--gray-50)">
+            <th style="text-align:left;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">#</th>
+            <th style="text-align:left;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Serviço</th>
+            <th style="text-align:center;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Qtd</th>
+            <th style="text-align:right;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">Faturamento</th>
+            <th style="text-align:right;padding:8px 10px;font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray-200)">% do total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedServs.map(([nome,s],i)=>`
+            <tr style="border-bottom:1px solid var(--gray-100)">
+              <td style="padding:10px;font-size:13px;font-weight:700;color:var(--gray-400)">${i+1}</td>
+              <td style="padding:10px;font-weight:500">${nome}</td>
+              <td style="padding:10px;text-align:center"><span class="badge b-blue">${s.qt}x</span></td>
+              <td style="padding:10px;text-align:right;font-weight:600;color:var(--brand)">${fmtMoney(s.tot)}</td>
+              <td style="padding:10px;text-align:right">
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px">
+                  <div style="width:60px;height:4px;background:var(--gray-100);border-radius:100px;overflow:hidden">
+                    <div style="height:100%;background:var(--brand);opacity:.6;border-radius:100px;width:${total>0?(s.tot/total*100).toFixed(0):0}%"></div>
+                  </div>
+                  <span style="font-size:12px;color:var(--gray-500);min-width:36px;text-align:right">${total>0?(s.tot/total*100).toFixed(1):0}%</span>
+                </div>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+
+  el.innerHTML=html;
+}
+
+
+// ============================================================
+// IMPORTAR CLIENTES
+// ============================================================
+let importDados = [];
+
+function baixarModeloCSV(){
+  const sep=';';
+  const headers=['Nome','Telefone','Email','Data Nasc. (DD/MM/AAAA)','CPF','CEP','Endereco','Como nos conheceu'];
+  const exemplo=['João da Silva','(11) 9 9999-9999','joao@email.com','15/03/1990','000.000.000-00','12345-678','Rua Exemplo, 100, Centro, São Paulo / SP','Instagram'];
+  const csv=[headers,exemplo].map(r=>r.map(v=>`"${v}"`).join(sep)).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='modelo-clientes-barberflow.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function previewImport(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const text=e.target.result;
+    const linhas=text.split(/\r?\n/).filter(l=>l.trim());
+    if(linhas.length<2){toast('Arquivo vazio ou sem dados','err');return;}
+
+    // Detecta separador: ; ou ,
+    const sep=linhas[0].includes(';')?';':',';
+
+    // Parse CSV simples
+    function parseCSVLine(line){
+      const result=[];let cur='';let inQ=false;
+      for(let i=0;i<line.length;i++){
+        if(line[i]==='"'){inQ=!inQ;}
+        else if(line[i]===sep&&!inQ){result.push(cur.trim());cur='';}
+        else cur+=line[i];
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    const headers=parseCSVLine(linhas[0]).map(h=>h.replace(/"/g,'').toLowerCase().trim());
+    const rows=linhas.slice(1).map(l=>parseCSVLine(l));
+
+    // Mapeia colunas
+    const colMap={};
+    const mapa={
+      nome:['nome','name','cliente','client'],
+      telefone:['telefone','tel','phone','celular','whatsapp','fone'],
+      email:['email','e-mail','mail'],
+      data_nascimento:['data nasc','data de nasc','nascimento','nasc','birthday','data nasc. (dd/mm/aaaa)','dt nasc'],
+      cpf:['cpf','cpf/cnpj'],
+      cep:['cep','codigo postal'],
+      endereco:['endereco','endereço','address','end'],
+      canal:['como nos conheceu','canal','origem','source','indicacao']
+    };
+    headers.forEach((h,i)=>{
+      for(const[campo,aliases]of Object.entries(mapa)){
+        if(aliases.some(a=>h.includes(a)))colMap[campo]=i;
+      }
+    });
+
+    // Processa linhas
+    importDados=rows.filter(r=>r.length>0&&r.some(v=>v.replace(/"/g,'').trim())).map(r=>{
+      const get=(campo)=>(r[colMap[campo]]||'').replace(/"/g,'').trim();
+      const nasc=get('data_nascimento');
+      let nascISO=null;
+      if(nasc){
+        // Aceita DD/MM/AAAA ou AAAA-MM-DD
+        const partes=nasc.split(/[\/\-]/);
+        if(partes.length===3){
+          if(partes[0].length===4)nascISO=nasc; // já é ISO
+          else nascISO=`${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
+        }
+      }
+      return{
+        nome:get('nome'),
+        telefone:get('telefone'),
+        email:get('email'),
+        data_nascimento:nascISO,
+        cpf:get('cpf'),
+        cep:get('cep'),
+        endereco:get('endereco'),
+        canal:get('canal'),
+      };
+    }).filter(r=>r.nome);
+
+    if(!importDados.length){toast('Nenhum cliente com nome encontrado','err');return;}
+
+    // Preview
+    const preview=id('import-preview');
+    preview.style.display='block';
+    id('import-preview-title').textContent=`${importDados.length} clientes encontrados`;
+    id('import-preview-info').textContent='Prévia dos primeiros 5 registros. Clientes com nome duplicado serão ignorados.';
+    
+    const amostra=importDados.slice(0,5);
+    id('import-preview-table').innerHTML=`
+      <thead style="background:var(--gray-50)">
+        <tr>${['Nome','Telefone','Email','Nasc.','Canal'].map(h=>`<th style="padding:6px 10px;text-align:left;font-size:11px;color:var(--gray-500);font-weight:600;border-bottom:1px solid var(--gray-200)">${h}</th>`).join('')}</tr>
+      </thead>
+      <tbody>
+        ${amostra.map(c=>`<tr>
+          ${[c.nome,c.telefone||'—',c.email||'—',c.data_nascimento||'—',c.canal||'—'].map(v=>`<td style="padding:6px 10px;border-bottom:1px solid var(--gray-100);font-size:12px">${v}</td>`).join('')}
+        </tr>`).join('')}
+      </tbody>`;
+
+    id('btn-importar').disabled=false;
+    toast(`${importDados.length} clientes prontos para importar`,'ok');
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+async function importarClientes(){
+  if(!importDados.length){toast('Nenhum dado para importar','err');return;}
+  if(!CU){toast('Faça login primeiro','err');return;}
+
+  const btn=id('btn-importar');
+  btn.disabled=true;
+  btn.textContent='Importando...';
+  id('import-progress').style.display='block';
+
+  const ownId=getOwn();
+  let ok=0,erro=0,duplicado=0;
+  const total=importDados.length;
+
+  // Busca nomes existentes para evitar duplicatas
+  const{data:existentes}=await sb.from('clientes').select('nome').eq('user_id',ownId);
+  const nomesExistentes=new Set((existentes||[]).map(c=>c.nome.toLowerCase().trim()));
+
+  for(let i=0;i<total;i++){
+    const c=importDados[i];
+    
+    // Atualiza progresso
+    const pct=Math.round((i+1)/total*100);
+    id('import-progress-bar').style.width=pct+'%';
+    id('import-progress-txt').textContent=`Importando ${i+1} de ${total}...`;
+
+    // Verifica duplicata
+    if(nomesExistentes.has(c.nome.toLowerCase().trim())){
+      duplicado++;continue;
+    }
+
+    const{error}=await sb.from('clientes').insert({
+      user_id:ownId,
+      nome:c.nome,
+      telefone:c.telefone||null,
+      email:c.email||null,
+      data_nascimento:c.data_nascimento||null,
+      cpf:c.cpf||null,
+      cep:c.cep||null,
+      endereco:c.endereco||null,
+      canal:c.canal||null,
+    });
+    if(error)erro++;
+    else{ok++;nomesExistentes.add(c.nome.toLowerCase().trim());}
+
+    // Pequena pausa para não sobrecarregar
+    if(i%10===0)await new Promise(r=>setTimeout(r,50));
   }
+
+  id('import-progress-txt').textContent=`Concluído! ${ok} importados · ${duplicado} duplicados ignorados · ${erro} erros`;
+  id('import-progress-bar').style.width='100%';
+  id('import-progress-bar').style.background='#16A34A';
+  
+  btn.textContent='Importar clientes';
+  importDados=[];
+  id('import-file').value='';
+  id('btn-importar').disabled=true;
+  id('import-preview').style.display='none';
+  
+  toast(`${ok} clientes importados com sucesso!`,'ok');
+  loadCli();loadDash();
+  
+  setTimeout(()=>{
+    cm('m-importar-cli');
+    id('import-progress').style.display='none';
+    id('import-progress-bar').style.width='0%';
+    id('import-progress-bar').style.background='var(--brand)';
+  },3000);
 }
 
 // ============================================================
