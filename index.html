@@ -3526,10 +3526,12 @@ async function init(){
     setTimeout(carregarLogoSalva, 500);
     try{
       const lastPage=localStorage.getItem('bf_page');
-      if(lastPage&&lastPage!=='dashboard'){
-        // Chama sv() diretamente — loadCtx já terminou (await acima)
-        const navItem=document.querySelector(`[onclick*="sv('${lastPage}'"]`);
-        await sv(lastPage,navItem);
+      // Páginas que dependem de contexto anterior — volta para o pai
+      const paginasPai={perfil:'clientes',sumidos:'clientes',aniversarios:'clientes'};
+      const pageToLoad=paginasPai[lastPage]||lastPage;
+      if(pageToLoad&&pageToLoad!=='dashboard'){
+        const navItem=document.querySelector(`[onclick*="sv('${pageToLoad}'"]`);
+        await sv(pageToLoad,navItem);
       } else {
         loadDash();
       }
