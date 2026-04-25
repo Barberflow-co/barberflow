@@ -352,6 +352,13 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .lp-animate:nth-child(4){animation-delay:.2s}
 .lp-animate:nth-child(5){animation-delay:.25s}
 
+/* NORWOOD CARDS */
+.norwood-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;border-radius:10px;border:2px solid var(--gray-200);cursor:pointer;transition:all .2s;background:#fff}
+.norwood-card:hover{border-color:var(--brand);background:var(--brand-light)}
+.norwood-card.active{border-color:var(--brand);background:var(--brand-light)}
+.norwood-card span{font-size:11px;font-weight:600;color:var(--gray-600)}
+.norwood-card.active span{color:var(--brand)}
+
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #page-loading.hide{opacity:0;pointer-events:none}
@@ -1152,18 +1159,33 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-lanc')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarLanc()">Salvar</button></div>
 </div></div>
 
-<div class="mo" id="m-anam"><div class="modal" style="max-width:820px">
+<div class="mo" id="m-anam"><div class="modal" style="max-width:860px">
   <div class="mh">
     <div><div class="mt">Ficha de Anamnese</div><div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="m-anam-cliente"></div></div>
     <button class="mc" onclick="cm('m-anam')">✕</button>
   </div>
-  <div class="mb" style="max-height:70vh;overflow-y:auto">
+  <div class="mb" style="max-height:75vh;overflow-y:auto">
     <input type="hidden" id="an-cli">
     <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:18px"></span>
       <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--brand);margin-bottom:2px">Cliente</div><div style="font-size:15px;font-weight:700;color:var(--gray-900)" id="an-cli-nome">—</div></div>
     </div>
-    <div class="ab"><div class="abh"><span style="font-size:18px"></span><div class="abt">Tipo de cabelo</div></div><div class="abb">
+
+    <!-- DADOS PESSOAIS -->
+    <div class="ab"><div class="abh"><div class="abt">Dados pessoais</div></div><div class="abb">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Como nos conheceu</label>
+          <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+            <span class="tog" onclick="selTog('tg-canal',this)">Instagram</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Indicação</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Google</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Facebook</span>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- TIPO DE CABELO -->
+    <div class="ab"><div class="abh"><div class="abt">Cabelo</div></div><div class="abb">
       <div class="fg">
         <label class="fl">Tipo de cabelo</label>
         <div id="tg-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
@@ -1171,6 +1193,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <span class="tog" onclick="selTog('tg-cabelo',this)">Ondulado</span>
           <span class="tog" onclick="selTog('tg-cabelo',this)">Cacheado</span>
           <span class="tog" onclick="selTog('tg-cabelo',this)">Crespo</span>
+          <span class="tog" onclick="selTog('tg-cabelo',this)">Alisado</span>
           <span class="tog" onclick="selTog('tg-cabelo',this)">Afro</span>
         </div>
       </div>
@@ -1178,35 +1201,148 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         <label class="fl">Tons de grisalho</label>
         <div id="tg-grisalho" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
           <span class="tog" onclick="selTog('tg-grisalho',this)">Sem grisalho</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">5%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">10%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">20%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">30%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">40%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">50%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">60%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">65%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">70%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">80%</span>
           <span class="tog" onclick="selTog('tg-grisalho',this)">90%</span>
         </div>
       </div>
-      <div class="fg"><label class="fl">Grau de calvície</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
+      <div class="fg">
+        <label class="fl">Cor do cabelo</label>
+        <div id="tg-cor-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1a1a1a;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1 Preto</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#2C1810;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1B Castanho Escuro</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3D2314;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#2 Cast. Médio Escuro</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#5C3317;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#3 Castanho Médio</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#7B4A2D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#4 Castanho Claro</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#A0522D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#5 Loiro Escuro</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#C68B3A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#6 Loiro Médio</span>
+          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#E8C97A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#7 Loiro Claro</span>
+        </div>
+      </div>
     </div></div>
+
+    <!-- GRAU DE CALVÍCIE COM ILUSTRAÇÕES -->
+    <div class="ab"><div class="abh"><div class="abt">Grau de calvície</div></div><div class="abb">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:4px" id="norwood-visual">
+
+        <!-- Grau III -->
+        <div class="norwood-card" onclick="selNorwood(this,'III')" data-grau="III">
+          <svg viewBox="0 0 80 80" width="60" height="60">
+            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
+            <ellipse cx="40" cy="30" rx="28" ry="18" fill="#4a3728"/>
+            <ellipse cx="20" cy="22" rx="8" ry="10" fill="#D4B896"/>
+            <ellipse cx="60" cy="22" rx="8" ry="10" fill="#D4B896"/>
+          </svg>
+          <span>Grau III</span>
+        </div>
+
+        <!-- Grau IV -->
+        <div class="norwood-card" onclick="selNorwood(this,'IV')" data-grau="IV">
+          <svg viewBox="0 0 80 80" width="60" height="60">
+            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
+            <ellipse cx="40" cy="35" rx="25" ry="12" fill="#4a3728"/>
+            <ellipse cx="15" cy="28" rx="6" ry="12" fill="#4a3728"/>
+            <ellipse cx="65" cy="28" rx="6" ry="12" fill="#4a3728"/>
+            <ellipse cx="40" cy="18" rx="18" ry="8" fill="#D4B896"/>
+          </svg>
+          <span>Grau IV</span>
+        </div>
+
+        <!-- Grau V -->
+        <div class="norwood-card" onclick="selNorwood(this,'V')" data-grau="V">
+          <svg viewBox="0 0 80 80" width="60" height="60">
+            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
+            <ellipse cx="40" cy="36" rx="22" ry="10" fill="#4a3728"/>
+            <ellipse cx="14" cy="30" rx="5" ry="14" fill="#4a3728"/>
+            <ellipse cx="66" cy="30" rx="5" ry="14" fill="#4a3728"/>
+            <ellipse cx="40" cy="17" rx="12" ry="6" fill="#D4B896"/>
+          </svg>
+          <span>Grau V</span>
+        </div>
+
+        <!-- Grau VI -->
+        <div class="norwood-card" onclick="selNorwood(this,'VI')" data-grau="VI">
+          <svg viewBox="0 0 80 80" width="60" height="60">
+            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
+            <ellipse cx="13" cy="32" rx="4" ry="16" fill="#4a3728"/>
+            <ellipse cx="67" cy="32" rx="4" ry="16" fill="#4a3728"/>
+            <ellipse cx="40" cy="52" rx="22" ry="8" fill="#4a3728"/>
+          </svg>
+          <span>Grau VI</span>
+        </div>
+
+        <!-- Grau VII -->
+        <div class="norwood-card" onclick="selNorwood(this,'VII')" data-grau="VII">
+          <svg viewBox="0 0 80 80" width="60" height="60">
+            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
+            <ellipse cx="13" cy="35" rx="3" ry="12" fill="#4a3728"/>
+            <ellipse cx="67" cy="35" rx="3" ry="12" fill="#4a3728"/>
+          </svg>
+          <span>Grau VII</span>
+        </div>
+
+      </div>
+      <!-- Campo hidden para guardar o grau selecionado -->
+      <input type="hidden" id="an-norwood-val">
+    </div></div>
+
+    <!-- MODELO E MEDIDAS -->
+    <div class="ab"><div class="abh"><div class="abt">Prótese</div></div><div class="abb">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Modelo</label>
+          <div id="tg-modelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+            <span class="tog" onclick="selTog('tg-modelo',this)">Micropele</span>
+            <span class="tog" onclick="selTog('tg-modelo',this)">Híbrida</span>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Fixação</label>
+          <div id="tg-fix" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+            <span class="tog" onclick="selTog('tg-fix',this)">Fita</span>
+            <span class="tog" onclick="selTog('tg-fix',this)">Cola</span>
+            <span class="tog" onclick="selTog('tg-fix',this)">Ambas</span>
+          </div>
+        </div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Testa / Nuca (cm)</label><input class="fi" id="an-medida-testa" type="number" step="0.5" placeholder="Ex: 32"></div>
+        <div class="fg"><label class="fl">Orelha a Orelha (cm)</label><input class="fi" id="an-medida-orelha" type="number" step="0.5" placeholder="Ex: 38"></div>
+      </div>
+    </div></div>
+
+    <!-- SAÚDE -->
     <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
       <div class="fg2">
         <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
         <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med" placeholder="Ex: Finasterida..."></div>
       </div>
-      <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
-    </div></div>
-    <div class="ab"><div class="abh"><div class="abt">Preferências</div></div><div class="abb">
-      <div class="fg3">
-        <div class="fg"><label class="fl">Material</label><div id="tg-mat"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
-        <div class="fg"><label class="fl">Fixação</label><div id="tg-fix"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
-        <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span></div></div>
+      <div class="fg"><label class="fl">Tipo de pele</label>
+        <div id="tg-pele" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="selTog('tg-pele',this)">Seca</span>
+          <span class="tog" onclick="selTog('tg-pele',this)">Normal</span>
+          <span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span>
+          <span class="tog" onclick="selTog('tg-pele',this)">Mista</span>
+        </div>
       </div>
-      <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs" placeholder="Informações importantes..." style="min-height:70px"></textarea></div>
     </div></div>
+
+    <!-- OBSERVAÇÕES -->
+    <div class="ab"><div class="abh"><div class="abt">Observações</div></div><div class="abb">
+      <div class="fg"><label class="fl">Material preferido</label>
+        <div id="tg-mat" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="selTog('tg-mat',this)">Humano</span>
+          <span class="tog" onclick="selTog('tg-mat',this)">Sintético</span>
+          <span class="tog" onclick="selTog('tg-mat',this)">Misto</span>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Observações gerais</label><textarea class="ft" id="an-obs" placeholder="Informações importantes sobre o cliente..." style="min-height:70px"></textarea></div>
+    </div></div>
+
   </div>
   <div class="mf"><button class="btn btn-ghost btn-md" onclick="cm('m-anam')">Fechar</button><button class="btn btn-primary btn-md" onclick="salvarAnam()">Salvar ficha</button></div>
 </div></div>
@@ -1838,37 +1974,51 @@ async function abrirAnamModal(){
   id('an-cli-nome').textContent=nomeEl.textContent;
   id('an-cli').value=anamCliId;
 
-  // *** LIMPA TODOS OS CAMPOS PRIMEIRO ***
-  if(id('an-tipo'))id('an-tipo').value='';
-  if(id('an-tempo'))id('an-tempo').value='Menos de 1 ano';
+  // Limpa todos os campos
   if(id('an-alergia'))id('an-alergia').value='';
   if(id('an-med'))id('an-med').value='';
   if(id('an-obs'))id('an-obs').value='';
-  // Limpa Norwood
-  document.querySelectorAll('#norwood .sc-btn').forEach(b=>b.classList.remove('active'));
-  // Reseta toggles para padrão
-  document.querySelectorAll('#tg-cabelo .tog').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('#tg-grisalho .tog').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('#tg-pele .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
-  document.querySelectorAll('#tg-mat .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
-  document.querySelectorAll('#tg-fix .tog').forEach((t,i)=>t.classList.toggle('active',i===1));
-  document.querySelectorAll('#tg-esp .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
+  if(id('an-medida-testa'))id('an-medida-testa').value='';
+  if(id('an-medida-orelha'))id('an-medida-orelha').value='';
+  if(id('an-norwood-val'))id('an-norwood-val').value='';
+  // Limpa todos os toggles e norwood visual
+  ['tg-cabelo','tg-grisalho','tg-cor-cabelo','tg-canal','tg-modelo','tg-pele','tg-mat','tg-fix'].forEach(g=>{
+    document.querySelectorAll('#'+g+' .tog').forEach(t=>t.classList.remove('active'));
+  });
+  document.querySelectorAll('#norwood-visual .norwood-card').forEach(c=>c.classList.remove('active'));
 
-  // Carrega anamnese existente do cliente específico
+  // Carrega anamnese existente
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',anamCliId).order('created_at',{ascending:false}).limit(1);
   if(data&&data.length){
     const a=data[0];
-    if(id('an-tipo'))id('an-tipo').value=a.tipo_alopecia||'';
-    if(id('an-tempo'))id('an-tempo').value=a.tempo_alopecia||'Menos de 1 ano';
-    if(id('an-alergia'))id('an-alergia').value=a.alergias||'';
-    if(id('an-med'))id('an-med').value=a.medicamentos||'';
-    if(id('an-obs'))id('an-obs').value=a.observacoes||'';
-    if(a.norwood)document.querySelectorAll('#norwood .sc-btn').forEach((b,i)=>b.classList.toggle('active',i===a.norwood-1));
+    if(a.alergias)id('an-alergia').value=a.alergias;
+    if(a.medicamentos)id('an-med').value=a.medicamentos;
     if(a.tipo_alopecia)document.querySelectorAll('#tg-cabelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_alopecia));
     if(a.tempo_alopecia)document.querySelectorAll('#tg-grisalho .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tempo_alopecia));
     if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_pele));
-    if(a.material_pref)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.material_pref));
+    if(a.material_pref)document.querySelectorAll('#tg-modelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.material_pref));
     if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.fixacao_pref));
+    // Grau de calvície visual
+    if(a.norwood){
+      const graus=['III','IV','V','VI','VII'];
+      const grau=graus[a.norwood-3]||null;
+      if(grau){
+        id('an-norwood-val').value=grau;
+        document.querySelectorAll('#norwood-visual .norwood-card').forEach(c=>c.classList.toggle('active',c.dataset.grau===grau));
+      }
+    }
+    // Campos extras do JSON de observações
+    if(a.observacoes){
+      try{
+        const obs=JSON.parse(a.observacoes);
+        if(obs.cor_cabelo)document.querySelectorAll('#tg-cor-cabelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.cor_cabelo));
+        if(obs.canal)document.querySelectorAll('#tg-canal .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.canal));
+        if(obs.mat)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.mat));
+        if(obs.medida_testa&&id('an-medida-testa'))id('an-medida-testa').value=obs.medida_testa;
+        if(obs.medida_orelha&&id('an-medida-orelha'))id('an-medida-orelha').value=obs.medida_orelha;
+        if(obs.obs&&id('an-obs'))id('an-obs').value=obs.obs;
+      }catch(e){if(a.observacoes&&id('an-obs'))id('an-obs').value=a.observacoes;}
+    }
   }
   id('m-anam').classList.add('open');
 }
@@ -1876,25 +2026,34 @@ async function abrirAnamModal(){
 async function salvarAnam(){
   const cliId=anamCliId||id('an-cli')?.value;
   if(!cliId){toast('Erro: cliente não identificado!','err');return;}
-  const norwood=document.querySelector('#norwood .sc-btn.active')?.textContent;
   const cabelo=document.querySelector('#tg-cabelo .tog.active')?.textContent?.trim();
+  const grisalho=document.querySelector('#tg-grisalho .tog.active')?.textContent?.trim();
+  const corCabelo=document.querySelector('#tg-cor-cabelo .tog.active')?.textContent?.trim();
+  const canal=document.querySelector('#tg-canal .tog.active')?.textContent?.trim();
+  const modelo=document.querySelector('#tg-modelo .tog.active')?.textContent?.trim();
   const pele=document.querySelector('#tg-pele .tog.active')?.textContent?.trim();
   const mat=document.querySelector('#tg-mat .tog.active')?.textContent?.trim();
   const fix=document.querySelector('#tg-fix .tog.active')?.textContent?.trim();
+  const grauCalv=id('an-norwood-val')?.value||null;
   const dados={
     cliente_id:cliId,
     tipo_alopecia:cabelo||null,
-    tempo_alopecia:null,
-    norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,
-    tempo_alopecia:document.querySelector('#tg-grisalho .tog.active')?.textContent?.trim()||null,
+    tempo_alopecia:grisalho||null,
+    norwood:grauCalv?['III','IV','V','VI','VII'].indexOf(grauCalv)+3:null,
     alergias:id('an-alergia')?.value||null,
     medicamentos:id('an-med')?.value||null,
     tipo_pele:pele||null,
-    material_pref:mat||null,
+    material_pref:modelo||null,
     fixacao_pref:fix||null,
-    observacoes:id('an-obs')?.value||null
+    observacoes:JSON.stringify({
+      cor_cabelo:corCabelo||null,
+      canal:canal||null,
+      mat:mat||null,
+      medida_testa:id('an-medida-testa')?.value||null,
+      medida_orelha:id('an-medida-orelha')?.value||null,
+      obs:id('an-obs')?.value||null
+    })
   };
-  // Verifica se já existe anamnese para atualizar ou criar nova
   const{data:exist}=await sb.from('anamneses').select('id').eq('cliente_id',cliId).limit(1);
   let error;
   if(exist&&exist.length){
@@ -2978,6 +3137,13 @@ document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.
 function limpar(mid){const m=id(mid);if(!m)return;m.querySelectorAll('input:not([type=checkbox]):not([type=radio])').forEach(i=>i.value='');m.querySelectorAll('textarea').forEach(t=>t.value='');m.querySelectorAll('select').forEach(s=>s.selectedIndex=0);}
 function upPermDesc(){const d={admin:'Admin: acesso total.',financeiro:'Financeiro: vê relatórios. Não agenda.',recepcao:'Recepção: agenda e clientes. Sem financeiro.',profissional:'Profissional: só sua agenda e ganhos.'};id('perm-desc').textContent=d[v('eq-perm')]||'';}
 function selCor(el){document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;}
+function selNorwood(el, grau){
+  document.querySelectorAll('#norwood-visual .norwood-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const inp=id('an-norwood-val');
+  if(inp)inp.value=grau;
+}
+
 function togDia(el){el.classList.toggle('active');}
 function selTog(gid,el){document.querySelectorAll('#'+gid+' .tog').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
 function selSc(gid,el){document.querySelectorAll('#'+gid+' .sc-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
