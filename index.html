@@ -1165,21 +1165,19 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- DADOS PESSOAIS -->
     <div class="ab"><div class="abh"><div class="abt">Dados pessoais</div></div><div class="abb">
-      <div class="fg2">
-        <div class="fg"><label class="fl">Como nos conheceu</label>
-          <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="togAnam('tg-canal',this)">Facebook</span>
-            <span class="tog" onclick="togAnam('tg-canal',this)">Instagram</span>
-            <span class="tog" onclick="togAnam('tg-canal',this)">Google</span>
-            <span class="tog" onclick="togAnam('tg-canal',this)">Indicação</span>
-            <span class="tog" onclick="togAnam('tg-canal',this)">TikTok</span>
-            <span class="tog" onclick="togAnam('tg-canal',this)">Outros</span>
-          </div>
+      <div class="fg"><label class="fl">Como nos conheceu</label>
+        <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="togAnam('tg-canal',this)">Facebook</span>
+          <span class="tog" onclick="togAnam('tg-canal',this)">Instagram</span>
+          <span class="tog" onclick="togAnam('tg-canal',this)">Google</span>
+          <span class="tog" onclick="togAnam('tg-canal',this)">Indicação</span>
+          <span class="tog" onclick="togAnam('tg-canal',this)">TikTok</span>
+          <span class="tog" onclick="togAnam('tg-canal',this)">Outros</span>
         </div>
       </div>
     </div></div>
 
-    <!-- TIPO DE CABELO -->
+    <!-- CABELO -->
     <div class="ab"><div class="abh"><div class="abt">Cabelo</div></div><div class="abb">
       <div class="fg">
         <label class="fl">Tipo de cabelo</label>
@@ -1193,7 +1191,20 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         </div>
       </div>
       <div class="fg">
-        <label class="fl">Tons de grisalho</label>
+        <label class="fl">Cor do cabelo</label>
+        <div id="tg-cor-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1a1a1a;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1 Preto</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#2C1810;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1B Cast. Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3D2314;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#2 Cast. Méd. Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#5C3317;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#3 Cast. Médio</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#7B4A2D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#4 Cast. Claro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#A0522D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#5 Loiro Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#C68B3A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#6 Loiro Médio</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#E8C97A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#7 Loiro Claro</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">% Grisalho</label>
         <div id="tg-grisalho" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
           <span class="tog" onclick="togAnam('tg-grisalho',this)">Sem grisalho</span>
           <span class="tog" onclick="togAnam('tg-grisalho',this)">5%</span>
@@ -1208,23 +1219,20 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         </div>
       </div>
       <div class="fg">
-        <label class="fl">Cor do cabelo</label>
-        <div id="tg-cor-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1a1a1a;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1 Preto</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#2C1810;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1B Castanho Escuro</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3D2314;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#2 Cast. Médio Escuro</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#5C3317;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#3 Castanho Médio</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#7B4A2D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#4 Castanho Claro</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#A0522D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#5 Loiro Escuro</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#C68B3A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#6 Loiro Médio</span>
-          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#E8C97A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#7 Loiro Claro</span>
+        <label class="fl">Material preferido</label>
+        <div id="tg-mat" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="togAnam('tg-mat',this)">Humano</span>
+          <span class="tog" onclick="togAnam('tg-mat',this)">Sintético</span>
+          <span class="tog" onclick="togAnam('tg-mat',this)">Misto</span>
         </div>
       </div>
     </div></div>
 
-    <!-- GRAU DE CALVÍCIE COM ILUSTRAÇÕES -->
+    <!-- GRAU DE CALVÍCIE -->
     <div class="ab"><div class="abh"><div class="abt">Grau de calvície</div></div><div class="abb">
       <div id="norwood-visual" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <span class="tog" onclick="togNorwood(this,'I')" data-grau="I">Grau I</span>
+        <span class="tog" onclick="togNorwood(this,'II')" data-grau="II">Grau II</span>
         <span class="tog" onclick="togNorwood(this,'III')" data-grau="III">Grau III</span>
         <span class="tog" onclick="togNorwood(this,'IV')" data-grau="IV">Grau IV</span>
         <span class="tog" onclick="togNorwood(this,'V')" data-grau="V">Grau V</span>
@@ -1234,35 +1242,19 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <input type="hidden" id="an-norwood-val">
     </div></div>
 
-    <!-- MODELO E MEDIDAS -->
-    <div class="ab"><div class="abh"><div class="abt">Prótese</div></div><div class="abb">
-      <div class="fg2">
-        <div class="fg"><label class="fl">Modelo</label>
-          <div id="tg-modelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="togAnam('tg-modelo',this)">Micropele</span>
-            <span class="tog" onclick="togAnam('tg-modelo',this)">Híbrida</span>
-          </div>
+    <!-- MODELO DE PRÓTESE -->
+    <div class="ab"><div class="abh"><div class="abt">Modelo de prótese capilar</div></div><div class="abb">
+      <div class="fg">
+        <div id="tg-modelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="togAnam('tg-modelo',this)">Micropele</span>
+          <span class="tog" onclick="togAnam('tg-modelo',this)">Híbrida</span>
+          <span class="tog" onclick="togAnam('tg-modelo',this)">Full Lace</span>
         </div>
-        <div class="fg"><label class="fl">Fixação</label>
-          <div id="tg-fix" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="togAnam('tg-fix',this)">Fita</span>
-            <span class="tog" onclick="togAnam('tg-fix',this)">Cola</span>
-            <span class="tog" onclick="togAnam('tg-fix',this)">Ambas</span>
-          </div>
-        </div>
-      </div>
-      <div class="fg2">
-        <div class="fg"><label class="fl">Testa / Nuca (cm)</label><input class="fi" id="an-medida-testa" type="number" step="0.5" placeholder="Ex: 32"></div>
-        <div class="fg"><label class="fl">Orelha a Orelha (cm)</label><input class="fi" id="an-medida-orelha" type="number" step="0.5" placeholder="Ex: 38"></div>
       </div>
     </div></div>
 
-    <!-- SAÚDE -->
-    <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
-      <div class="fg2">
-        <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
-        <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med" placeholder="Ex: Finasterida..."></div>
-      </div>
+    <!-- INFO ADICIONAIS -->
+    <div class="ab"><div class="abh"><div class="abt">Info adicionais</div></div><div class="abb">
       <div class="fg"><label class="fl">Tipo de pele</label>
         <div id="tg-pele" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
           <span class="tog" onclick="togAnam('tg-pele',this)">Seca</span>
@@ -1271,16 +1263,16 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <span class="tog" onclick="togAnam('tg-pele',this)">Mista</span>
         </div>
       </div>
-    </div></div>
-
-    <!-- OBSERVAÇÕES -->
-    <div class="ab"><div class="abh"><div class="abt">Observações</div></div><div class="abb">
-      <div class="fg"><label class="fl">Material preferido</label>
-        <div id="tg-mat" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="togAnam('tg-mat',this)">Humano</span>
-          <span class="tog" onclick="togAnam('tg-mat',this)">Sintético</span>
-          <span class="tog" onclick="togAnam('tg-mat',this)">Misto</span>
+      <div class="fg"><label class="fl">Fixação</label>
+        <div id="tg-fix" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="togAnam('tg-fix',this)">Fita</span>
+          <span class="tog" onclick="togAnam('tg-fix',this)">Cola</span>
+          <span class="tog" onclick="togAnam('tg-fix',this)">Ambas</span>
         </div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Testa / Nuca (cm)</label><input class="fi" id="an-medida-testa" type="number" step="0.5" placeholder="Ex: 32"></div>
+        <div class="fg"><label class="fl">Orelha a Orelha (cm)</label><input class="fi" id="an-medida-orelha" type="number" step="0.5" placeholder="Ex: 38"></div>
       </div>
       <div class="fg"><label class="fl">Observações gerais</label><textarea class="ft" id="an-obs" placeholder="Informações importantes sobre o cliente..." style="min-height:70px"></textarea></div>
     </div></div>
@@ -1907,8 +1899,8 @@ async function loadAnamPerfil(cid){
   let obs={};
   try{if(a.observacoes)obs=JSON.parse(a.observacoes);}catch(e){}
 
-  const graus=['III','IV','V','VI','VII'];
-  const grauLabel=a.norwood?'Grau '+(graus[a.norwood-3]||a.norwood):null;
+  const graus=['I','II','III','IV','V','VI','VII'];
+  const grauLabel=a.norwood?'Grau '+(graus[a.norwood-1]||a.norwood):null;
 
   const secoes=[
     {titulo:'Dados pessoais',campos:[
@@ -1920,16 +1912,14 @@ async function loadAnamPerfil(cid){
       ['Cor do cabelo',obs.cor_cabelo||null],
       ['Grau de calvície',grauLabel],
     ]},
-    {titulo:'Prótese',campos:[
+    {titulo:'Modelo de prótese capilar',campos:[
       ['Modelo',a.material_pref],
+    ]},
+    {titulo:'Info adicionais',campos:[
+      ['Tipo de pele',a.tipo_pele],
       ['Fixação',a.fixacao_pref],
       ['Testa / Nuca',obs.medida_testa?obs.medida_testa+' cm':null],
       ['Orelha a Orelha',obs.medida_orelha?obs.medida_orelha+' cm':null],
-    ]},
-    {titulo:'Saúde',campos:[
-      ['Tipo de pele',a.tipo_pele],
-      ['Alergias',a.alergias],
-      ['Medicamentos',a.medicamentos],
     ]},
   ];
 
@@ -1979,8 +1969,6 @@ async function abrirAnamModal(){
   id('an-cli').value=anamCliId;
 
   // Limpa todos os campos
-  if(id('an-alergia'))id('an-alergia').value='';
-  if(id('an-med'))id('an-med').value='';
   if(id('an-obs'))id('an-obs').value='';
   if(id('an-medida-testa'))id('an-medida-testa').value='';
   if(id('an-medida-orelha'))id('an-medida-orelha').value='';
@@ -1995,8 +1983,7 @@ async function abrirAnamModal(){
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',anamCliId).order('created_at',{ascending:false}).limit(1);
   if(data&&data.length){
     const a=data[0];
-    if(a.alergias)id('an-alergia').value=a.alergias;
-    if(a.medicamentos)id('an-med').value=a.medicamentos;
+
     if(a.tipo_alopecia)document.querySelectorAll('#tg-cabelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_alopecia));
     if(a.tempo_alopecia)document.querySelectorAll('#tg-grisalho .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tempo_alopecia));
     if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_pele));
@@ -2004,8 +1991,8 @@ async function abrirAnamModal(){
     if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.fixacao_pref));
     // Grau de calvície visual
     if(a.norwood){
-      const graus=['III','IV','V','VI','VII'];
-      const grau=graus[a.norwood-3]||null;
+      const graus=['I','II','III','IV','V','VI','VII'];
+      const grau=graus[a.norwood-1]||null;
       if(grau){
         id('an-norwood-val').value=grau;
         document.querySelectorAll('#norwood-visual .tog').forEach(c=>c.classList.toggle('active',c.dataset.grau===grau));
@@ -2043,9 +2030,9 @@ async function salvarAnam(){
     cliente_id:cliId,
     tipo_alopecia:cabelo||null,
     tempo_alopecia:grisalho||null,
-    norwood:grauCalv?['III','IV','V','VI','VII'].indexOf(grauCalv)+3:null,
-    alergias:id('an-alergia')?.value||null,
-    medicamentos:id('an-med')?.value||null,
+    norwood:grauCalv?['I','II','III','IV','V','VI','VII'].indexOf(grauCalv)+1:null,
+    alergias:null,
+    medicamentos:null,
     tipo_pele:pele||null,
     material_pref:modelo||null,
     fixacao_pref:fix||null,
