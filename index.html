@@ -314,8 +314,8 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .curso-progress-bar{height:100%;background:var(--brand);border-radius:100px;transition:width .3s}
 
 /* PÁGINA PÚBLICA / LINK PAGE */
-#page-link{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);min-height:100vh;display:none;align-items:center;justify-content:center;padding:24px;font-family:'Inter',sans-serif}
-#page-link.active{display:flex}
+#page-link{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);min-height:100vh;display:none!important;align-items:center;justify-content:center;padding:24px;font-family:'Inter',sans-serif}
+#page-link.active{display:flex!important}
 .link-page-box{width:100%;max-width:400px;text-align:center}
 .link-page-avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;overflow:hidden;border:3px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
 .link-page-avatar img{width:100%;height:100%;object-fit:cover}
@@ -341,7 +341,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 <body>
 
 <!-- PÁGINA PÚBLICA DE LINKS -->
-<div class="page" id="page-link" style="display:none">
+<div class="page" id="page-link">
   <div class="link-page-box">
     <div class="link-page-avatar" id="lp-avatar">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
