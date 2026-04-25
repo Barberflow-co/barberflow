@@ -669,7 +669,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="view" id="view-anamnese">
       <div class="ph"><div><div class="pt">Ficha de Anamnese</div><div class="ps">Preencha na primeira consulta</div></div><button class="btn btn-md btn-primary" onclick="salvarAnam()">Salvar ficha</button></div>
       <div style="max-width:800px">
-        <div class="fg" style="margin-bottom:20px"><label class="fl">Cliente *</label><select class="fs" id="an-cli"><option value="">Selecionar cliente...</option></select></div>
+        <div class="fg" style="margin-bottom:20px"><label class="fl">Cliente *</label><select class="fs" id="an-cli-view"><option value="">Selecionar cliente...</option></select></div>
         <div class="ab"><div class="abh"><span style="font-size:18px"></span><div class="abt">Tipo de cabelo</div></div><div class="abb">
           <div class="fg2">
             <div class="fg"><label class="fl">Tipo de alopecia</label><select class="fs" id="an-tipo"><option value="">Selecionar...</option><option>Alopecia androgenética</option><option>Alopecia areata</option><option>Alopecia totalis</option><option>Quimioterapia/radioterapia</option><option>Tricotilomania</option><option>Outra</option></select></div>
@@ -679,18 +679,18 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         </div></div>
         <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
           <div class="fg2">
-            <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia" placeholder="Ex: cola látex..."></div>
-            <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med" placeholder="Ex: Finasterida..."></div>
+            <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia-view" placeholder="Ex: cola látex..."></div>
+            <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med-view" placeholder="Ex: Finasterida..."></div>
           </div>
-          <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
+          <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele-view"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
         </div></div>
         <div class="ab"><div class="abh"><div class="abt">Preferências</div></div><div class="abb">
           <div class="fg3">
-            <div class="fg"><label class="fl">Material</label><div id="tg-mat"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
-            <div class="fg"><label class="fl">Fixação</label><div id="tg-fix"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
+            <div class="fg"><label class="fl">Material</label><div id="tg-mat-view"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
+            <div class="fg"><label class="fl">Fixação</label><div id="tg-fix-view"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
             <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span></div></div>
           </div>
-          <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs" placeholder="Informações importantes..."></textarea></div>
+          <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs-view" placeholder="Informações importantes..."></textarea></div>
         </div></div>
       </div>
     </div>
@@ -1948,12 +1948,15 @@ async function loadAnamPerfil(cid){
     </div>`;
   });
 
-  // Só mostra obs se for texto real (não JSON)
   const obsText=obs.obs||null;
-  if(obsText)html+=`<div style="background:var(--gray-50);border-radius:8px;padding:10px 12px;margin-top:4px">
-    <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">Observações</div>
-    <div style="font-size:13.5px;color:var(--gray-700)">${obsText}</div>
-  </div>`;
+  if(obsText){
+    html+=`<div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:8px">Observações</div>
+      <div style="background:var(--gray-50);border-radius:8px;padding:10px 12px">
+        <div style="font-size:13.5px;color:var(--gray-700);line-height:1.5">${obsText}</div>
+      </div>
+    </div>`;
+  }
 
   if(!html)html='<div class="empty"><div class="empty-title">Ficha sem dados preenchidos</div></div>';
   html+=`<button class="btn btn-outline btn-sm" style="margin-top:14px;width:100%" onclick="abrirAnamModal()">Editar ficha de anamnese</button>`;
