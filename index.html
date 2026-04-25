@@ -36,7 +36,18 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;color:var(--
 .auth-title{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--gray-900);margin-bottom:6px}
 .auth-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px}
 #page-app{flex-direction:row}
-.sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:#fff;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;z-index:50}
+.sidebar{width:var(--sidebar-w);height:100vh;position:fixed;left:0;top:0;background:#fff;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;z-index:50;transition:width .25s ease,transform .25s ease;overflow:hidden}
+.sidebar.collapsed{width:56px}
+.sidebar.collapsed .sb-name,.sidebar.collapsed .nav-label,.sidebar.collapsed .u-name,.sidebar.collapsed .u-role,.sidebar.collapsed .nav-item span{display:none}
+.sidebar.collapsed .nav-item{justify-content:center;padding:10px}
+.sidebar.collapsed .sb-brand{justify-content:center;padding:16px 0}
+.sidebar.collapsed .sb-mark{margin:0}
+.sidebar.collapsed .sb-user{justify-content:center;padding:10px 0}
+.sidebar.collapsed .u-av{margin:0}
+.sidebar.collapsed .sb-toggle-label{display:none}
+.sidebar-collapsed .main{margin-left:56px}
+.sb-toggle{width:100%;background:none;border:none;display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;color:var(--gray-500);font-size:13px;font-weight:500;border-top:1px solid var(--gray-100);transition:all .15s}
+.sb-toggle:hover{background:var(--gray-50);color:var(--gray-800)}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:0 20px;height:var(--topbar-h);border-bottom:1px solid var(--gray-100)}
 .sb-mark{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff}
 .sb-name{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:var(--gray-900)}
@@ -366,7 +377,75 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .loading-logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:var(--gray-900);margin-bottom:6px}
 .loading-sub{font-size:13px;color:var(--gray-400)}
 
-@media(max-width:768px){:root{--sidebar-w:0px}.sidebar{transform:translateX(-240px);transition:transform .3s}.sidebar.open{transform:translateX(0);width:240px}.main{margin-left:0}.stats-row{grid-template-columns:1fr 1fr}.auth-left{display:none}.auth-right{flex:1}.fg2,.fg3{grid-template-columns:1fr}}
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+
+  /* SIDEBAR — esconde e abre com toggle */
+  .sidebar{transform:translateX(-240px);transition:transform .3s;z-index:200;position:fixed}
+  .sidebar.open{transform:translateX(0);width:240px}
+  .main{margin-left:0}
+
+  /* OVERLAY quando sidebar aberta */
+  .sidebar-overlay{display:block!important}
+
+  /* GRIDS — tudo em coluna única */
+  .stats-row{grid-template-columns:1fr 1fr}
+  .fg2,.fg3{grid-template-columns:1fr}
+  .auth-left{display:none}
+  .auth-right{flex:1}
+
+  /* DASHBOARD — cards em grid 2x2 no mobile */
+  #dash-body{grid-template-columns:1fr!important}
+
+  /* PÁGINA HEADER */
+  .ph{flex-wrap:wrap;gap:10px}
+  .ph>div:last-child{width:100%}
+  .ph button, .ph>div[style*="display:flex"]{width:100%;justify-content:flex-end}
+
+  /* TABELAS — scroll horizontal */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:500px}
+
+  /* MODAIS — fullscreen no mobile */
+  .modal{width:100%!important;max-width:100%!important;max-height:90vh;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;top:auto;margin:0}
+  .mo{align-items:flex-end}
+
+  /* AGENDA — tabs menores */
+  .ag-view-tabs{gap:4px}
+  .ag-view-tabs button{font-size:11px;padding:5px 8px}
+
+  /* PERFIL — coluna única */
+  #view-perfil>div[style*="grid-template-columns"]{display:block!important}
+  #view-perfil>div>div:first-child{margin-bottom:16px}
+
+  /* RELATÓRIO — corpo em coluna única */
+  #rel-body{display:flex!important;flex-direction:column!important}
+
+  /* PERÍODO FILTROS — wrap */
+  .dash-period,.com-period,.rel-period{font-size:11px;padding:4px 8px}
+
+  /* BOTÃO MENU MOBILE */
+  .mobile-menu-btn{display:flex!important}
+
+  /* ANAMNESE — modal largo */
+  #m-anam .modal{max-width:100%!important}
+
+  /* CARDS PERFIL */
+  .prof-card{min-width:0}
+
+  /* STATS menor no mobile */
+  .stat-val{font-size:18px!important}
+  .stat-box{padding:12px}
+}
+
+@media(max-width:480px){
+  /* MUITO pequeno — ajustes extras */
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat-val{font-size:16px!important}
+  h1,.pt{font-size:18px}
+  .btn-md{padding:8px 14px;font-size:13px}
+  #dash-body{grid-template-columns:1fr!important}
+}
 </style>
 </head>
 <body>
@@ -526,6 +605,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div style="flex:1"><div class="u-name" id="u-name">Carregando...</div><div class="u-role" id="u-role">--</div></div>
       <button class="btn btn-sm btn-ghost" onclick="doLogout()" title="Sair" style="padding:6px">↩</button>
     </div>
+    <button class="sb-toggle" onclick="toggleSidebar()" id="sb-toggle-btn">
+      <svg id="sb-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+      <span class="sb-toggle-label">Recolher menu</span>
+    </button>
   </aside>
 
   <div class="main">
@@ -534,6 +617,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:transparent;cursor:pointer;border-radius:8px;color:var(--gray-700)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <div class="topbar-title" id="tt">Dashboard</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
@@ -1410,6 +1496,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   </div>
   <div class="mf"><button class="btn btn-ghost btn-md" onclick="cm('m-anam')">Fechar</button><button class="btn btn-primary btn-md" onclick="salvarAnam()">Salvar ficha</button></div>
 </div></div>
+
+<!-- OVERLAY SIDEBAR MOBILE -->
+<div class="sidebar-overlay" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199"></div>
 
 <!-- OVERLAY -->
 <div id="wa-overlay" onclick="toggleWaPanel()"></div>
@@ -4106,6 +4195,28 @@ function cm(mid){id(mid).classList.remove('open');}
 document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
 function limpar(mid){const m=id(mid);if(!m)return;m.querySelectorAll('input:not([type=checkbox]):not([type=radio])').forEach(i=>i.value='');m.querySelectorAll('textarea').forEach(t=>t.value='');m.querySelectorAll('select').forEach(s=>s.selectedIndex=0);}
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const ov=document.querySelector('.sidebar-overlay');
+  if(sb){
+    sb.classList.toggle('open');
+    if(ov)ov.style.display=sb.classList.contains('open')?'block':'none';
+  }
+}
+// Fecha sidebar ao clicar em item do menu no mobile
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      if(window.innerWidth<=768){
+        const sb=document.querySelector('.sidebar');
+        const ov=document.querySelector('.sidebar-overlay');
+        if(sb)sb.classList.remove('open');
+        if(ov)ov.style.display='none';
+      }
+    });
+  });
+});
+
 function upPermDesc(){const d={admin:'Admin: acesso total.',financeiro:'Financeiro: vê relatórios. Não agenda.',recepcao:'Recepção: agenda e clientes. Sem financeiro.',profissional:'Profissional: só sua agenda e ganhos.'};id('perm-desc').textContent=d[v('eq-perm')]||'';}
 function selCor(el){document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;}
 // Toggle para campos da anamnese — permite desselecionar
@@ -4130,6 +4241,18 @@ function togNorwood(el, grau){
     el.classList.add('active');
     if(inp)inp.value=grau;
   }
+}
+
+function toggleSidebar(){
+  const sb=id('sidebar');
+  const main=document.querySelector('.main');
+  const icon=id('sb-toggle-icon');
+  const label=document.querySelector('.sb-toggle-label');
+  const collapsed=sb.classList.toggle('collapsed');
+  if(main)main.style.marginLeft=collapsed?'56px':'var(--sidebar-w)';
+  // Rotaciona ícone
+  if(icon)icon.style.transform=collapsed?'rotate(180deg)':'rotate(0deg)';
+  try{localStorage.setItem('bf_sb_collapsed',collapsed?'1':'0');}catch(e){}
 }
 
 function mascaraTelInput(el){
@@ -4499,6 +4622,14 @@ async function init(){
     await loadCtx();
     go('app');
     verificarTrial();
+    // Restaura estado do menu
+    try{
+      if(localStorage.getItem('bf_sb_collapsed')==='1'){
+        const sb=id('sidebar');const main=document.querySelector('.main');
+        if(sb)sb.classList.add('collapsed');
+        if(main)main.style.marginLeft='56px';
+      }
+    }catch(e){}
     // Frase motivacional rotativa
     const frases=[
       'Cada corte é uma obra de arte. Bora faturar! ✂️',
