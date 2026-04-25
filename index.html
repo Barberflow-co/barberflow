@@ -766,13 +766,13 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- CAIXA -->
     <div class="view" id="view-caixa">
-      <div class="ph"><div><div class="pt">Controle de Caixa</div><div class="ps">Receitas e despesas do mês</div></div><button class="btn btn-md btn-primary" onclick="om('m-lanc')">+ Lançamento</button></div>
+      <div class="ph"><div><div class="pt">Frente de Caixa</div><div class="ps">Controle de dinheiro em caixa</div></div><button class="btn btn-md btn-primary" onclick="om('m-lanc')">+ Lançamento</button></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
-        <div class="stat-box"><div class="stat-lbl">Receitas</div><div class="stat-val" style="font-size:20px;color:#166534" id="cx-rec">R$0</div></div>
-        <div class="stat-box"><div class="stat-lbl">Despesas</div><div class="stat-val" style="font-size:20px;color:#991B1B" id="cx-des">R$0</div></div>
-        <div class="stat-box"><div class="stat-lbl">Saldo</div><div class="stat-val" style="font-size:20px" id="cx-sal">R$0</div></div>
+        <div class="stat-box"><div class="stat-lbl">Entradas</div><div class="stat-val" style="font-size:20px;color:#166534" id="cx-rec">R$ 0</div></div>
+        <div class="stat-box"><div class="stat-lbl">Saídas</div><div class="stat-val" style="font-size:20px;color:#991B1B" id="cx-des">R$ 0</div></div>
+        <div class="stat-box"><div class="stat-lbl">Saldo em caixa</div><div class="stat-val" style="font-size:20px" id="cx-sal">R$ 0</div></div>
       </div>
-      <div class="tw"><table><thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Forma</th></tr></thead><tbody id="tb-caixa"></tbody></table></div>
+      <div class="tw"><table><thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead><tbody id="tb-caixa"></tbody></table></div>
     </div>
 
     <!-- PAGAMENTOS -->
@@ -1220,14 +1220,11 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="mh"><div class="mt">Novo lançamento</div><button class="mc" onclick="cm('m-lanc')">✕</button></div>
   <div class="mb">
     <div class="fg2">
-      <div class="fg"><label class="fl">Tipo *</label><select class="fs" id="lc-tipo"><option value="receita">💚 Receita</option><option value="despesa">🔴 Despesa</option></select></div>
+      <div class="fg"><label class="fl">Tipo *</label><select class="fs" id="lc-tipo"><option value="receita">Entrada</option><option value="despesa">Saída</option></select></div>
       <div class="fg"><label class="fl">Data</label><input class="fi" id="lc-data" type="date"></div>
     </div>
     <div class="fg"><label class="fl">Descrição *</label><input class="fi" id="lc-desc" placeholder="Ex: Compra de cola fixadora"></div>
-    <div class="fg2">
-      <div class="fg"><label class="fl">Valor (R$) *</label><input class="fi" id="lc-valor" type="number" placeholder="0,00" step="0.01"></div>
-      <div class="fg"><label class="fl">Forma</label><select class="fs" id="lc-forma"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option></select></div>
-    </div>
+    <div class="fg"><label class="fl">Valor (R$) *</label><input class="fi" id="lc-valor" type="number" placeholder="0,00" step="0.01"></div>
   </div>
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-lanc')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarLanc()">Salvar</button></div>
 </div></div>
@@ -2928,18 +2925,28 @@ async function loadCaixa(){
   const{data}=await sb.from('caixa').select('*').eq('user_id',getOwn()).gte('data',mesI).order('data',{ascending:false});
   const rec=(data||[]).filter(l=>l.tipo==='receita').reduce((s,l)=>s+(l.valor||0),0);
   const des=(data||[]).filter(l=>l.tipo==='despesa').reduce((s,l)=>s+(l.valor||0),0);
-  id('cx-rec').textContent=fmtMoney(rec);id('cx-des').textContent=fmtMoney(des);
-  const sal=rec-des;id('cx-sal').textContent=fmtMoney(sal);id('cx-sal').style.color=sal>=0?'#166534':'#991B1B';
+  const sal=rec-des;
+  id('cx-rec').textContent=fmtMoney(rec);
+  id('cx-des').textContent=fmtMoney(des);
+  id('cx-sal').textContent=fmtMoney(sal);
+  id('cx-sal').style.color=sal>=0?'#166534':'#991B1B';
   const tb=id('tb-caixa');
-  if(!data||!data.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-title">Nenhum lançamento</div></div></td></tr>';return;}
-  tb.innerHTML=data.map(l=>`<tr><td>${new Date(l.data).toLocaleDateString('pt-BR')}</td><td>${l.descricao||'—'}</td><td><span class="badge ${l.tipo==='receita'?'b-green':'b-red'}">${l.tipo}</span></td><td style="font-weight:600;color:${l.tipo==='receita'?'#166634':'#991B1B'}">R$${(l.valor||0).toFixed(2)}</td><td>${l.forma_pagamento||'—'}</td></tr>`).join('');
+  if(!data||!data.length){tb.innerHTML='<tr><td colspan="4"><div class="empty"><div class="empty-title">Nenhum lançamento</div></div></td></tr>';return;}
+  const tipoLabel={receita:'Entrada',despesa:'Saída'};
+  const tipoBadge={receita:'b-green',despesa:'b-red'};
+  tb.innerHTML=data.map(l=>`<tr>
+    <td>${new Date(l.data+'T12:00').toLocaleDateString('pt-BR')}</td>
+    <td>${l.descricao||'—'}</td>
+    <td><span class="badge ${tipoBadge[l.tipo]||'b-gray'}">${tipoLabel[l.tipo]||l.tipo}</span></td>
+    <td style="font-weight:600;color:${l.tipo==='receita'?'#166534':'#991B1B'}">${fmtMoney(l.valor||0)}</td>
+  </tr>`).join('');
 }
 async function salvarLanc(){
   const desc=v('lc-desc'),valor=parseFloat(v('lc-valor'));
   if(!desc||!valor){toast('Preencha descrição e valor!','err');return;}
-  const{error}=await sb.from('caixa').insert({user_id:getOwn(),tipo:v('lc-tipo'),descricao:desc,valor,forma_pagamento:v('lc-forma'),data:v('lc-data')||new Date().toISOString().split('T')[0]});
+  const{error}=await sb.from('caixa').insert({user_id:getOwn(),tipo:v('lc-tipo'),descricao:desc,valor,forma_pagamento:'Dinheiro',data:v('lc-data')||new Date().toISOString().split('T')[0]});
   if(error){toast('Erro: '+error.message,'err');return;}
-  cm('m-lanc');toast('Lançamento salvo ✓','ok');limpar('m-lanc');loadCaixa();
+  cm('m-lanc');toast('Lançamento salvo','ok');limpar('m-lanc');loadCaixa();
 }
 
 // ============================================================
@@ -2974,20 +2981,29 @@ async function loadRel(){
       if(!byP[pid])byP[pid]={nome:a.equipe?.nome||'Sem profissional',tot:0,comissao:0,qt:0};
       byP[pid].tot+=a.valor||0;
       byP[pid].qt++;
-      // Calcula comissão pelo % do serviço
       const serv=allServs.find(s=>s.nome===a.profissional);
       const pct=serv?.comissao_pct||0;
       byP[pid].comissao+=(a.valor||0)*(pct/100);
     });
-    id('rel-prof-lista').innerHTML=Object.values(byP).sort((a,b)=>b.tot-a.tot).map(p=>`
-      <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100)">
-        <div style="flex:1;font-weight:500">${p.nome}</div>
-        <div style="font-size:13px;color:var(--gray-500);margin-right:12px">${p.qt} atend.</div>
-        <div style="text-align:right">
-          <div style="font-size:15px;font-weight:700;color:var(--brand)">R$${p.tot.toFixed(0)}</div>
-          <div style="font-size:11px;color:var(--gray-400)">Comissão: R$${p.comissao.toFixed(0)}</div>
-        </div>
-      </div>`).join('');
+    const sorted=Object.values(byP).sort((a,b)=>b.tot-a.tot);
+    const totalComissoes=sorted.reduce((s,p)=>s+p.comissao,0);
+    id('rel-prof-lista').innerHTML=`
+      ${sorted.map(p=>`
+        <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--gray-100)">
+          <div style="flex:1;font-weight:500">${p.nome}</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-right:16px">${p.qt} atend.</div>
+          <div style="text-align:right">
+            <div style="font-size:15px;font-weight:700;color:var(--brand)">${fmtMoney(p.tot)}</div>
+            <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px">
+              <span style="font-size:11px;color:var(--gray-400)">Comissão:</span>
+              <span style="font-size:13px;font-weight:600;color:#16A34A">${fmtMoney(p.comissao)}</span>
+            </div>
+          </div>
+        </div>`).join('')}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-top:4px;background:var(--gray-50);border-radius:var(--radius);padding:12px 16px">
+        <div style="font-weight:600;font-size:13px">Total de comissões a pagar</div>
+        <div style="font-size:16px;font-weight:800;color:#16A34A">${fmtMoney(totalComissoes)}</div>
+      </div>`;
   }
 }
 
