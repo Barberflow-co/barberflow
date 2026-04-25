@@ -3527,10 +3527,9 @@ async function init(){
     try{
       const lastPage=localStorage.getItem('bf_page');
       if(lastPage&&lastPage!=='dashboard'){
-        setTimeout(()=>{
-          const navItem=document.querySelector(`[onclick*="sv('${lastPage}'"]`);
-          sv(lastPage,navItem);
-        },100);
+        // Chama sv() diretamente — loadCtx já terminou (await acima)
+        const navItem=document.querySelector(`[onclick*="sv('${lastPage}'"]`);
+        await sv(lastPage,navItem);
       } else {
         loadDash();
       }
@@ -3584,28 +3583,28 @@ function go(p){
   if(loading){loading.classList.add('hide');setTimeout(()=>loading.style.display='none',400);}
 }
 
-function sv(name,el){
+async function sv(name,el){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   const view=id('view-'+name);if(view)view.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
   try{localStorage.setItem('bf_page',name);}catch(e){}
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
   id('tt').textContent=tmap[name]||name;
-  if(name==='dashboard')loadDash();
-  if(name==='clientes')loadCli();
-  if(name==='sumidos')loadSumidos();
+  if(name==='dashboard')await loadDash();
+  if(name==='clientes')await loadCli();
+  if(name==='sumidos')await loadSumidos();
   if(name==='cursos')loadCursos();
   if(name==='config')carregarLinkPageCfg();
   if(name==='linkpage'){carregarLinkPageCfg();carregarFotoLP();atualizarPreviewLinkPage();}
-  if(name==='agenda')loadAgenda();
-  if(name==='relatorios')loadRel();
-  if(name==='equipe')loadEquipe();
-  if(name==='pagamentos')loadPag();
-  if(name==='servicos')loadServicos();
-  if(name==='estoque')loadEstoque();
-  if(name==='comandas')loadComandas();
-  if(name==='caixa')loadCaixa();
-  if(name==='aniversarios')loadAniversarios();
+  if(name==='agenda')await loadAgenda();
+  if(name==='relatorios')await loadRel();
+  if(name==='equipe')await loadEquipe();
+  if(name==='pagamentos')await loadPag();
+  if(name==='servicos')await loadServicos();
+  if(name==='estoque')await loadEstoque();
+  if(name==='comandas')await loadComandas();
+  if(name==='caixa')await loadCaixa();
+  if(name==='aniversarios')await loadAniversarios();
 }
 function getOwn(){return CE?CE.user_id:CU?.id;}
 
