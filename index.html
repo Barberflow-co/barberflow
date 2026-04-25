@@ -195,7 +195,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .ag-grade-wrap{flex:1;overflow-y:auto;overflow-x:hidden}
 .ag-grade-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .ag-grade-time{width:60px;padding:0 8px;font-size:11px;font-weight:600;color:var(--gray-400);text-align:right;vertical-align:top;padding-top:4px;border-bottom:1px solid var(--gray-100);white-space:nowrap}
-.ag-grade-cell{border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);height:56px;cursor:pointer;transition:background .1s;vertical-align:top;padding:0;position:relative;overflow:visible}
+.ag-grade-cell{border-left:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);height:36px;cursor:pointer;transition:background .1s;vertical-align:top;padding:0;position:relative;overflow:visible}
 .ag-grade-cell.drag-over{background:var(--brand-light)!important;border:2px dashed var(--brand)}
 .ag-grade-cell:hover{background:var(--brand-light)}
 .ag-grade-col-header{padding:8px 12px;text-align:center;font-size:12px;font-weight:600;background:var(--gray-50);border-bottom:2px solid var(--gray-200);border-left:1px solid var(--gray-200)}
@@ -1112,7 +1112,7 @@ function renderEvCell(a){
   // Calcula altura baseada na duração do serviço (56px = 30min)
   const sv2=allServs.find(s=>s.nome===serv);
   const durMin=sv2?.duracao_min||30;
-  const altura=Math.max(Math.round((durMin/30)*56)-2, 28);
+  const altura=Math.max(Math.round((durMin/30)*36)-2, 20);
   
   // Calcula hora de término
   const inicio=new Date(a.data_hora);
