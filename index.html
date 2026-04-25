@@ -1767,7 +1767,7 @@ async function carregarAnamAg(cliId){
     ['Alergias',a.alergias],
     ['Medicamentos',a.medicamentos],
   ].filter(x=>x[1]);
-  prev.innerHTML=`<div style="font-size:12.5px;line-height:2">${campos.map(x=>`<div><strong style="color:var(--gray-600)">${x[0]}:</strong> ${x[1]}</div>`).join('')}${a.observacoes?`<div style="margin-top:8px;padding:8px;background:var(--warn)22;border-radius:6px;font-size:12px"><strong>Obs:</strong> ${a.observacoes}</div>`:''}${!campos.length?'<div style="color:var(--gray-400)">Anamnese sem dados preenchidos</div>':''}</div>`;
+  prev.innerHTML=`<div style="font-size:12.5px;line-height:2">${campos.map(x=>`<div><strong style="color:var(--gray-600)">${x[0]}:</strong> ${x[1]}</div>`).join('')}${(()=>{try{const o=JSON.parse(a.observacoes||'{}');return o.obs?`<div style='margin-top:8px;padding:8px;background:var(--warn)22;border-radius:6px;font-size:12px'><strong>Obs:</strong> ${o.obs}</div>`:''}catch(e){return a.observacoes?`<div style='margin-top:8px;padding:8px;background:var(--warn)22;border-radius:6px;font-size:12px'><strong>Obs:</strong> ${a.observacoes}</div>`:'';}})()}${!campos.length?'<div style="color:var(--gray-400)">Anamnese sem dados preenchidos</div>':''}</div>`;
 }
 
 function limparCliAg(){
@@ -1948,7 +1948,8 @@ async function loadAnamPerfil(cid){
     </div>`;
   });
 
-  const obsText=obs.obs||(!obs.canal&&typeof a.observacoes==='string'?a.observacoes:null);
+  // Só mostra obs se for texto real (não JSON)
+  const obsText=obs.obs||null;
   if(obsText)html+=`<div style="background:var(--gray-50);border-radius:8px;padding:10px 12px;margin-top:4px">
     <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">Observações</div>
     <div style="font-size:13.5px;color:var(--gray-700)">${obsText}</div>
