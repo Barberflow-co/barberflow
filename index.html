@@ -277,11 +277,11 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .trial-banner{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#92400E}
 
 /* STATUS COLORS - novas cores */
-.st-aguardando{background:#FFF8E7;color:#B45309}
-.st-confirmado{background:#EFF6FF;color:#3B82F6}
-.st-em_atendimento{background:#F5F3FF;color:#8B5CF6}
-.st-finalizado{background:#F0FDF4;color:#22C55E}
-.st-cancelado{background:#F8FAFC;color:#94A3B8}
+.st-aguardando{background:#FEF3C7;color:#D97706}
+.st-confirmado{background:#DBEAFE;color:#2563EB}
+.st-em_atendimento{background:#EDE9FE;color:#7C3AED}
+.st-finalizado{background:#DCFCE7;color:#16A34A}
+.st-cancelado{background:#E2E8F0;color:#64748B}
 
 /* MODAL AÇÃO RÁPIDA */
 #m-ag-acao .modal{max-width:360px;padding:0;overflow:visible}
@@ -1336,7 +1336,7 @@ function renderEvCell(a){
   const hrFim=fim.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   
   // Cor do evento
-  const bgCores={aguardando:'#F59E0B',confirmado:'#60A5FA',em_atendimento:'#A78BFA',finalizado:'#4ADE80',cancelado:'#CBD5E1'};
+  const bgCores={aguardando:'#D97706',confirmado:'#2563EB',em_atendimento:'#7C3AED',finalizado:'#16A34A',cancelado:'#94A3B8'};
   const bg=bgCores[st]||'var(--brand)';
   
   return `<div class="ag-ev ${st}" style="background:${bg};color:#fff;height:${altura}px" 
