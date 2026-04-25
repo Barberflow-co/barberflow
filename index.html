@@ -3459,27 +3459,56 @@ async function importarClientes(){
 // ============================================================
 async function exportarClientesCSV(){
   if(!CU){toast('Faça login primeiro','err');return;}
-  const{data:clientes}=await sb.from('clientes').select('*').eq('user_id',getOwn()).order('nome');
+  toast('Preparando exportação...','ok');
+  const ownId=getOwn();
+
+  // Busca clientes e último atendimento de cada um
+  const{data:clientes}=await sb.from('clientes').select('*').eq('user_id',ownId).order('nome');
   if(!clientes?.length){toast('Nenhum cliente para exportar','err');return;}
-  const headers=['Nome','Telefone','Email','Data Nasc.','CPF','Endereço','Canal','Observações','Cadastrado em'];
-  const rows=clientes.map(c=>[
-    c.nome||'',
-    c.telefone||'',
-    c.email||'',
-    c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'',
-    c.cpf||'',
-    c.endereco||'',
-    c.canal||'',
-    (c.observacoes||'').replace(/[\n\r,]/g,' '),
-    new Date(c.created_at).toLocaleDateString('pt-BR')
-  ]);
-  // Ponto e vírgula = padrão Excel Brasil
+
+  // Busca último atendimento finalizado de cada cliente
+  const{data:ags}=await sb.from('agendamentos')
+    .select('cliente_id,data_hora,valor')
+    .eq('user_id',ownId)
+    .eq('status','finalizado')
+    .order('data_hora',{ascending:false});
+
+  // Monta mapa: cliente_id → {ultima_data, total_gasto, total_visitas}
+  const agMap={};
+  (ags||[]).forEach(a=>{
+    if(!agMap[a.cliente_id]){
+      agMap[a.cliente_id]={ultima:a.data_hora,total:0,visitas:0};
+    }
+    agMap[a.cliente_id].total+=(a.valor||0);
+    agMap[a.cliente_id].visitas++;
+  });
+
+  const headers=['Nome','Telefone','Email','Data Nasc.','CPF','CEP','Endereço','Como nos conheceu','Último atendimento','Total de visitas','Total gasto (R$)','Observações','Cadastrado em'];
+  const rows=clientes.map(c=>{
+    const ag=agMap[c.id];
+    return [
+      c.nome||'',
+      c.telefone||'',
+      c.email||'',
+      c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'',
+      c.cpf||'',
+      c.cep||'',
+      c.endereco||'',
+      c.canal||'',
+      ag?.ultima?new Date(ag.ultima).toLocaleDateString('pt-BR'):'Nunca atendido',
+      ag?.visitas||0,
+      ag?.total?ag.total.toFixed(2).replace('.',','):'0,00',
+      (c.observacoes||'').replace(/[\n\r;]/g,' '),
+      new Date(c.created_at).toLocaleDateString('pt-BR'),
+    ];
+  });
+
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='clientes-barberflow.csv';a.click();
   URL.revokeObjectURL(url);
-  toast('Exportado com sucesso!','ok');
+  toast(`${clientes.length} clientes exportados!`,'ok');
 }
 
 async function exportarRelPDF(){
