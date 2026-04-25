@@ -1053,7 +1053,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </select>
       <div style="font-size:12px;color:var(--gray-400);margin-top:5px" id="perm-desc">Recepção: pode criar/editar agendamentos e clientes. Não acessa financeiro.</div>
     </div>
-    <div class="fg"><label class="fl">% Comissão</label><input class="fi" id="eq-comis" type="number" placeholder="Ex: 40" min="0" max="100" style="width:120px"> <span style="font-size:12px;color:var(--gray-400)">% sobre o valor dos serviços</span></div>
+
     <div class="fg"><label class="fl">Cor de identificação</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="cor-picker">
         <div onclick="selCor(this)" data-cor="#0D6EFD" style="width:28px;height:28px;border-radius:50%;background:#0D6EFD;cursor:pointer;border:3px solid #0D6EFD"></div>
@@ -1966,7 +1966,7 @@ async function loadSumidos(){
   const mediaDias=sumidos.filter(c=>c.diasSemVisita).length;
   id('sum-media').textContent=mediaDias>0?Math.round(mediaTotal/mediaDias):0;
   const potencial=sumidos.reduce((s,c)=>s+c.ultimoValor,0);
-  id('sum-potencial').textContent='R$'+potencial.toFixed(0);
+  id('sum-potencial').textContent=fmtMoney(potencial);
 
   // Renderiza tabela
   const tb=id('tb-sumidos');
@@ -2047,7 +2047,7 @@ async function loadDashAdmin(hoje,ownId){
   if(id('s-cli'))id('s-cli').textContent=cCli||0;
   if(id('s-mes'))id('s-mes').textContent=cMes||0;
   const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  if(id('s-fat'))id('s-fat').textContent='R$'+fat2.toFixed(0);
+  if(id('s-fat'))id('s-fat').textContent=fmtMoney(fat2);
   // Busca agendamentos do dia por profissional
   const{data:ags}=await sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
   const el=id('dash-body');if(!el)return;
@@ -2070,7 +2070,7 @@ async function loadDashProf(hoje,ownId){
   if(id('s-cli'))id('s-cli').textContent='—';
   if(id('s-mes'))id('s-mes').textContent=cMes||0;
   const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  if(id('s-fat'))id('s-fat').textContent='R$'+fat2.toFixed(0);
+  if(id('s-fat'))id('s-fat').textContent=fmtMoney(fat2);
   const el=id('dash-body');if(!el)return;
   el.innerHTML='<div class="card"><div class="sh"><div class="st">Minha agenda de hoje</div></div>'+(ags&&ags.length?renderAgs(ags):'<div class="empty"><div class="empty-title">Nenhum agendamento hoje</div></div>')+'</div>';
 }
@@ -2373,7 +2373,7 @@ async function salvarAg(){
 async function loadServicos(){
   await loadServsBD();const tb=id('tb-servicos');
   if(!allServs.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-title">Nenhum serviço cadastrado</div></div></td></tr>';return;}
-  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>R$${(s.preco||0).toFixed(2)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarServ('${s.id}')"></button><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">Excluir</button></td></tr>`).join('');
+  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>R$${fmtMoney(s.preco)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarServ('${s.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">Excluir</button></td></tr>`).join('');
 }
 let servEditId=null;
 async function editarServ(sid){
@@ -2416,7 +2416,7 @@ async function loadEstoque(){
   id('est-val').textContent='R$'+lista.reduce((s,p)=>s+(p.qtd_atual||0)*(p.preco_custo||0),0).toFixed(0);
   const tb=id('tb-estoque');
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhum produto</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>R$${(p.preco_custo||0).toFixed(2)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button>Excluir</button></td></tr>`;}).join('');
+  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>R$${fmtMoney(p.preco_custo)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button>Excluir</button></td></tr>`;}).join('');
 }
 let prodEditId=null;
 async function editarProd(pid){
@@ -2481,7 +2481,7 @@ function addCmdItem(tipo){
 }
 function renderCmdItens(){
   const el=id('cmd-itens');
-  if(!cmdItens.length){el.innerHTML='<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum item adicionado</div>';id('cmd-total').textContent='R$ 0,00';return;}
+  if(!cmdItens.length){el.innerHTML='<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum item adicionado</div>';id('cmd-total').textContent=fmtMoney(0);return;}
   cmdTotal=cmdItens.reduce((s,i)=>s+i.preco,0);
   el.innerHTML=cmdItens.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)">
     <span style="font-size:11px;padding:2px 7px;border-radius:100px;background:${item.tipo==='produto'?'#FEF3C7':'#DBEAFE'};color:${item.tipo==='produto'?'#92400E':'#1E40AF'};font-weight:500;flex-shrink:0">${item.tipo||'serviço'}</span>
@@ -2489,7 +2489,7 @@ function renderCmdItens(){
     <div style="font-size:13.5px;font-weight:600;color:var(--brand)">R$${item.preco.toFixed(2)}</div>
     <button class="btn btn-sm btn-ghost" onclick="remCmdItem(${i})" style="padding:2px 6px;color:var(--gray-400)">×</button>
   </div>`).join('');
-  id('cmd-total').textContent='R$ '+cmdTotal.toFixed(2);
+  id('cmd-total').textContent=fmtMoney(cmdTotal);
 }
 function remCmdItem(i){cmdItens.splice(i,1);renderCmdItens();}
 async function salvarComanda(){
@@ -2508,8 +2508,8 @@ async function loadCaixa(){
   const{data}=await sb.from('caixa').select('*').eq('user_id',getOwn()).gte('data',mesI).order('data',{ascending:false});
   const rec=(data||[]).filter(l=>l.tipo==='receita').reduce((s,l)=>s+(l.valor||0),0);
   const des=(data||[]).filter(l=>l.tipo==='despesa').reduce((s,l)=>s+(l.valor||0),0);
-  id('cx-rec').textContent='R$'+rec.toFixed(0);id('cx-des').textContent='R$'+des.toFixed(0);
-  const sal=rec-des;id('cx-sal').textContent='R$'+sal.toFixed(0);id('cx-sal').style.color=sal>=0?'#166534':'#991B1B';
+  id('cx-rec').textContent=fmtMoney(rec);id('cx-des').textContent=fmtMoney(des);
+  const sal=rec-des;id('cx-sal').textContent=fmtMoney(sal);id('cx-sal').style.color=sal>=0?'#166534':'#991B1B';
   const tb=id('tb-caixa');
   if(!data||!data.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-title">Nenhum lançamento</div></div></td></tr>';return;}
   tb.innerHTML=data.map(l=>`<tr><td>${new Date(l.data).toLocaleDateString('pt-BR')}</td><td>${l.descricao||'—'}</td><td><span class="badge ${l.tipo==='receita'?'b-green':'b-red'}">${l.tipo}</span></td><td style="font-weight:600;color:${l.tipo==='receita'?'#166634':'#991B1B'}">R$${(l.valor||0).toFixed(2)}</td><td>${l.forma_pagamento||'—'}</td></tr>`).join('');
@@ -2530,7 +2530,7 @@ async function loadPag(){
   const{data}=await q;
   const conf=(data||[]).filter(a=>a.status==='confirmado'||a.status==='finalizado').reduce((s,a)=>s+(a.valor||0),0);
   const pend=(data||[]).filter(a=>a.status==='aguardando').reduce((s,a)=>s+(a.valor||0),0);
-  id('pg-total').textContent='R$'+conf.toFixed(0);id('pg-pend').textContent='R$'+pend.toFixed(0);id('pg-qt').textContent=(data||[]).length;
+  id('pg-total').textContent=fmtMoney(conf);id('pg-pend').textContent=fmtMoney(pend);id('pg-qt').textContent=(data||[]).length;
 }
 
 // ============================================================
@@ -2538,13 +2538,37 @@ async function loadPag(){
 // ============================================================
 async function loadRel(){
   if(!CU)return;const ownId=getOwn();
-  let agQ=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId);
-  let fatQ=sb.from('agendamentos').select('valor,profissional_id,equipe(nome)').eq('user_id',ownId);
+  await loadServsBD();
+  let agQ=sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('status','finalizado');
+  let fatQ=sb.from('agendamentos').select('valor,profissional_id,profissional,equipe(nome)').eq('user_id',ownId).eq('status','finalizado');
   if(CE){agQ=agQ.eq('profissional_id',CE.id);fatQ=fatQ.eq('profissional_id',CE.id);}
   const[{count:ca},{count:cc},{data:fat}]=await Promise.all([agQ,sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),fatQ]);
   const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  id('r-ag').textContent=ca||0;id('r-cl').textContent=cc||0;id('r-fat').textContent='R$'+total.toFixed(0);id('r-tkt').textContent='R$'+(ca>0?total/ca:0).toFixed(0);
-  if(!CE&&allProf.length){id('rel-prof-breakdown').style.display='block';const byP={};(fat||[]).forEach(a=>{const pid=a.profissional_id||'sem';if(!byP[pid])byP[pid]={nome:a.equipe?.nome||'Sem profissional',tot:0,qt:0};byP[pid].tot+=a.valor||0;byP[pid].qt++;});id('rel-prof-lista').innerHTML=Object.values(byP).sort((a,b)=>b.tot-a.tot).map(p=>`<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100)"><div style="flex:1;font-weight:500">${p.nome}</div><div style="font-size:13px;color:var(--gray-500);margin-right:16px">${p.qt} atend.</div><div style="font-size:15px;font-weight:700;color:var(--brand)">R$${p.tot.toFixed(0)}</div></div>`).join('');}
+  id('r-ag').textContent=ca||0;id('r-cl').textContent=cc||0;id('r-fat').textContent=fmtMoney(total);id('r-tkt').textContent=fmtMoney(ca>0?total/ca:0);
+
+  if(!CE&&allProf.length){
+    id('rel-prof-breakdown').style.display='block';
+    const byP={};
+    (fat||[]).forEach(a=>{
+      const pid=a.profissional_id||'sem';
+      if(!byP[pid])byP[pid]={nome:a.equipe?.nome||'Sem profissional',tot:0,comissao:0,qt:0};
+      byP[pid].tot+=a.valor||0;
+      byP[pid].qt++;
+      // Calcula comissão pelo % do serviço
+      const serv=allServs.find(s=>s.nome===a.profissional);
+      const pct=serv?.comissao_pct||0;
+      byP[pid].comissao+=(a.valor||0)*(pct/100);
+    });
+    id('rel-prof-lista').innerHTML=Object.values(byP).sort((a,b)=>b.tot-a.tot).map(p=>`
+      <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+        <div style="flex:1;font-weight:500">${p.nome}</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-right:12px">${p.qt} atend.</div>
+        <div style="text-align:right">
+          <div style="font-size:15px;font-weight:700;color:var(--brand)">R$${p.tot.toFixed(0)}</div>
+          <div style="font-size:11px;color:var(--gray-400)">Comissão: R$${p.comissao.toFixed(0)}</div>
+        </div>
+      </div>`).join('');
+  }
 }
 
 // ============================================================
@@ -2555,7 +2579,7 @@ async function loadEquipe(){
   const permLabels={admin:'Admin',financeiro:'Financeiro',recepcao:'Recepção',profissional:'Profissional'};
   const permCls={admin:'perm-admin',financeiro:'perm-financeiro',recepcao:'perm-recepcao',profissional:'perm-profissional'};
   let html=allProf.map(e=>{const cor=e.cor||'#0D6EFD';const ini=e.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const perm=e.permissao||'recepcao';
-    return `<div class="prof-card"><div class="prof-av" style="background:${cor}22;color:${cor}">${ini}</div><div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">${e.nome}</div><div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">${e.cargo||'Profissional'}</div><div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px"><span class="perm-badge ${permCls[perm]||'b-gray'}">${permLabels[perm]||perm}</span>${e.comissao_pct?`<span class="badge b-orange">${e.comissao_pct}%</span>`:''}</div>${e.email?`<div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">📧 ${e.email}</div>`:''}<div style="margin-bottom:8px"><span class="badge ${e.auth_user_id?'b-green':'b-yellow'}">${e.auth_user_id?'Acesso ativo':'Sem acesso'}</span></div><div class="divider"></div><div style="display:flex;gap:6px;justify-content:center"><button class="btn btn-sm btn-outline" onclick="editarEq('${e.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirEq('${e.id}')">Remover</button></div></div>`;
+    return `<div class="prof-card"><div class="prof-av" style="background:${cor}22;color:${cor}">${ini}</div><div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">${e.nome}</div><div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">${e.cargo||'Profissional'}</div><div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px"><span class="perm-badge ${permCls[perm]||'b-gray'}">${permLabels[perm]||perm}</span>''</div>${e.email?`<div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">📧 ${e.email}</div>`:''}<div style="margin-bottom:8px"><span class="badge ${e.auth_user_id?'b-green':'b-yellow'}">${e.auth_user_id?'Acesso ativo':'Sem acesso'}</span></div><div class="divider"></div><div style="display:flex;gap:6px;justify-content:center"><button class="btn btn-sm btn-outline" onclick="editarEq('${e.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirEq('${e.id}')">Remover</button></div></div>`;
   }).join('');
   html+=`<div class="prof-card" style="border-style:dashed;border-color:var(--gray-300);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;cursor:pointer" onclick="om('m-eq')"><div style="font-size:32px;color:var(--gray-300);margin-bottom:8px">+</div><div style="font-size:14px;font-weight:500;color:var(--gray-400)">Adicionar profissional</div></div>`;
   id('eq-grid').innerHTML=html;
@@ -2566,7 +2590,7 @@ async function editarEq(eqId){
   const{data:e}=await sb.from('equipe').select('*').eq('id',eqId).single();if(!e)return;
   eqEditId=eqId;
   id('eq-nome').value=e.nome||'';id('eq-tel').value=e.telefone||'';id('eq-email').value=e.email||'';
-  id('eq-cargo').value=e.cargo||'';id('eq-perm').value=e.permissao||'recepcao';id('eq-comis').value=e.comissao_pct||'';
+  id('eq-cargo').value=e.cargo||'';id('eq-perm').value=e.permissao||'recepcao';
   corSel=e.cor||'#0D6EFD';document.querySelectorAll('#cor-picker div').forEach(x=>{x.style.border=x.dataset.cor===corSel?'3px solid '+x.dataset.cor:'none';});
   id('m-eq').querySelector('.mt').textContent='Editar profissional';
   id('m-eq').querySelector('.mf .btn-primary').textContent='Salvar alterações';
@@ -2574,7 +2598,7 @@ async function editarEq(eqId){
 }
 async function salvarEq(){
   const nome=v('eq-nome'),email=v('eq-email');if(!nome||!email){toast('Nome e e-mail obrigatórios!','err');return;}
-  const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),comissao_pct:parseInt(v('eq-comis'))||null,cor:corSel};
+  const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),cor:corSel};
   let error;
   if(eqEditId){({error}=await sb.from('equipe').update(dados).eq('id',eqEditId));if(!error)toast('Atualizado','ok');}
   else{({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));if(!error)toast('Profissional cadastrado','ok');}
@@ -3262,6 +3286,7 @@ function abrirCurso(id){
 }
 
 function id(x){return document.getElementById(x);}
+function fmtMoney(v){return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function v(x){return(id(x)?.value||'').trim();}
 
 async function init(){
