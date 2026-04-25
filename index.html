@@ -2675,10 +2675,30 @@ async function loadComandas(){
   const{data}=await sb.from('comandas').select('*,clientes(nome),equipe(nome)').eq('user_id',getOwn()).gte('created_at',hoje+'T00:00').order('created_at',{ascending:false});
   const lista=data||[];
   id('com-ab').textContent=lista.filter(c=>c.status==='aberta').length;id('com-fe').textContent=lista.filter(c=>c.status==='fechada').length;
-  id('com-tot').textContent='R$'+lista.reduce((s,c)=>s+(c.total||0),0).toFixed(0);
+  id('com-tot').textContent=fmtMoney(lista.reduce((s,c)=>s+(c.total||0),0));
   const tb=id('tb-comandas');
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhuma comanda hoje</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(c=>`<tr><td>${c.clientes?.nome||'—'}</td><td>${c.equipe?.nome||'—'}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.servicos||'—'}</td><td>R$${(c.total||0).toFixed(2)}</td><td>${c.forma_pagamento||'—'}</td><td><span class="badge st-${c.status==='fechada'?'finalizado':'aguardando'}">${c.status==='fechada'?'Finalizado':'Aberta'}</span></td><td></td></tr>`).join('');
+  // Botão excluir só para admin (não é profissional da equipe e não tem CE)
+  const isAdmin=!CE;
+  tb.innerHTML=lista.map(c=>`<tr>
+    <td>${c.clientes?.nome||'—'}</td>
+    <td>${c.equipe?.nome||'—'}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.servicos||'—'}</td>
+    <td>${fmtMoney(c.total||0)}</td>
+    <td>${c.forma_pagamento||'—'}</td>
+    <td><span class="badge st-${c.status==='fechada'?'finalizado':'aguardando'}">${c.status==='fechada'?'Finalizado':'Aberta'}</span></td>
+    <td>${isAdmin?`<button class="btn btn-sm btn-danger" onclick="excluirComanda('${c.id}')">Excluir</button>`:''}
+    </td></tr>`).join('');
+}
+
+async function excluirComanda(cid){
+  // Apenas admin pode excluir
+  if(CE){toast('Sem permissão para excluir comandas','err');return;}
+  if(!confirm('Excluir esta comanda permanentemente?'))return;
+  const{error}=await sb.from('comandas').delete().eq('id',cid);
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Comanda excluída','ok');
+  loadComandas();
 }
 function addCmdItem(tipo){
   if(tipo==='serv'){
