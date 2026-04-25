@@ -995,6 +995,22 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <span class="tog" onclick="selTog('tg-cabelo',this)">Afro</span>
         </div>
       </div>
+      <div class="fg">
+        <label class="fl">Tons de grisalho</label>
+        <div id="tg-grisalho" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <span class="tog" onclick="selTog('tg-grisalho',this)">Sem grisalho</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">10%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">20%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">30%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">40%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">50%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">60%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">65%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">70%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">80%</span>
+          <span class="tog" onclick="selTog('tg-grisalho',this)">90%</span>
+        </div>
+      </div>
       <div class="fg"><label class="fl">Escala de Norwood</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
     </div></div>
     <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
@@ -1486,6 +1502,7 @@ async function carregarAnamAg(cliId){
   const a=data[0];
   const campos=[
     ['Tipo de cabelo',a.tipo_alopecia],
+    ['Grisalho',a.tempo_alopecia],
     ['Norwood',a.norwood?'Grau '+a.norwood:null],
     ['Tipo de pele',a.tipo_pele],
     ['Material',a.material_pref],
@@ -1652,6 +1669,7 @@ async function abrirAnamModal(){
   document.querySelectorAll('#norwood .sc-btn').forEach(b=>b.classList.remove('active'));
   // Reseta toggles para padrão
   document.querySelectorAll('#tg-cabelo .tog').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#tg-grisalho .tog').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('#tg-pele .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.querySelectorAll('#tg-mat .tog').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.querySelectorAll('#tg-fix .tog').forEach((t,i)=>t.classList.toggle('active',i===1));
@@ -1668,6 +1686,7 @@ async function abrirAnamModal(){
     if(id('an-obs'))id('an-obs').value=a.observacoes||'';
     if(a.norwood)document.querySelectorAll('#norwood .sc-btn').forEach((b,i)=>b.classList.toggle('active',i===a.norwood-1));
     if(a.tipo_alopecia)document.querySelectorAll('#tg-cabelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_alopecia));
+    if(a.tempo_alopecia)document.querySelectorAll('#tg-grisalho .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tempo_alopecia));
     if(a.tipo_pele)document.querySelectorAll('#tg-pele .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.tipo_pele));
     if(a.material_pref)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.material_pref));
     if(a.fixacao_pref)document.querySelectorAll('#tg-fix .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===a.fixacao_pref));
@@ -1688,6 +1707,7 @@ async function salvarAnam(){
     tipo_alopecia:cabelo||null,
     tempo_alopecia:null,
     norwood:norwood?['I','II','III','IV','V','VI','VII'].indexOf(norwood)+1:null,
+    tempo_alopecia:document.querySelector('#tg-grisalho .tog.active')?.textContent?.trim()||null,
     alergias:id('an-alergia')?.value||null,
     medicamentos:id('an-med')?.value||null,
     tipo_pele:pele||null,
