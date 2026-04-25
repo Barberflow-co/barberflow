@@ -594,7 +594,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="view" id="view-clientes">
       <div class="ph"><div><div class="pt">Clientes</div><div class="ps" id="cli-count">0 clientes</div></div><button class="btn btn-md btn-primary" onclick="om('m-cli')">+ Novo cliente</button></div>
       <div class="sb-row"> <input type="text" placeholder="Buscar..." id="s-cli-inp" oninput="filtrarCli()"></div>
-      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"></tbody></table></div>
+      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
     </div>
 
     <!-- PERFIL CLIENTE -->
@@ -1885,7 +1885,10 @@ document.addEventListener('click',e=>{
 // CLIENTES
 // ============================================================
 async function loadCli(){
-  if(!CU)return;const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).order('nome');
+  if(!CU)return;
+  const tb=id('tb-cli');
+  if(tb&&!allCli.length)tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</td></tr>';
+  const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).order('nome');
   allCli=data||[];id('cli-count').textContent=allCli.length+' clientes';renderCli(allCli);
 }
 function renderCli(lista){
