@@ -971,7 +971,15 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg"><label class="fl">CPF</label><input class="fi" id="nc-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)"></div>
       <div class="fg"><label class="fl">Como nos conheceu</label><select class="fs" id="nc-canal"><option value="">Selecionar...</option><option>Facebook</option><option>Instagram</option><option>Google</option><option>Indicação</option><option>TikTok</option><option>Outros</option></select></div>
     </div>
-    <div class="fg"><label class="fl">Endereço</label><input class="fi" id="nc-endereco" placeholder="Rua, número, bairro, cidade"></div>
+    <div class="fg2">
+      <div class="fg" style="max-width:160px"><label class="fl">CEP</label><input class="fi" id="nc-cep" placeholder="00000-000" maxlength="9" oninput="mascaraCEP(this,'nc')"></div>
+      <div class="fg"><label class="fl">Rua</label><input class="fi" id="nc-rua" placeholder="Preenchido automático"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Número</label><input class="fi" id="nc-numero" placeholder="Nº"></div>
+      <div class="fg"><label class="fl">Bairro</label><input class="fi" id="nc-bairro" placeholder="Preenchido automático"></div>
+      <div class="fg"><label class="fl">Cidade / UF</label><input class="fi" id="nc-cidade" placeholder="Preenchido automático"></div>
+    </div>
     <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="nc-obs" placeholder="Informações iniciais..." style="min-height:60px"></textarea></div>
   </div>
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-cli')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarCli()">Cadastrar</button></div>
@@ -1103,7 +1111,15 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg"><label class="fl">CPF</label><input class="fi" id="ec-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)"></div>
       <div class="fg"><label class="fl">Como nos conheceu</label><select class="fs" id="ec-canal"><option value="">Selecionar...</option><option>Facebook</option><option>Instagram</option><option>Google</option><option>Indicação</option><option>TikTok</option><option>Outros</option></select></div>
     </div>
-    <div class="fg"><label class="fl">Endereço</label><input class="fi" id="ec-endereco" placeholder="Rua, número, bairro, cidade"></div>
+    <div class="fg2">
+      <div class="fg" style="max-width:160px"><label class="fl">CEP</label><input class="fi" id="ec-cep" placeholder="00000-000" maxlength="9" oninput="mascaraCEP(this,'ec')"></div>
+      <div class="fg"><label class="fl">Rua</label><input class="fi" id="ec-rua" placeholder="Preenchido automático"></div>
+    </div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Número</label><input class="fi" id="ec-numero" placeholder="Nº"></div>
+      <div class="fg"><label class="fl">Bairro</label><input class="fi" id="ec-bairro" placeholder="Preenchido automático"></div>
+      <div class="fg"><label class="fl">Cidade / UF</label><input class="fi" id="ec-cidade" placeholder="Preenchido automático"></div>
+    </div>
     <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="ec-obs" placeholder="Informações do cliente..." style="min-height:60px"></textarea></div>
   </div>
   <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-cli-edit')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarEditCli()">Salvar alterações</button></div>
@@ -1868,7 +1884,15 @@ async function editarCli(cid){
   id('ec-canal').value=c.canal||'';
   id('ec-obs').value=c.observacoes||'';
   if(id('ec-cpf'))id('ec-cpf').value=c.cpf||'';
-  if(id('ec-endereco'))id('ec-endereco').value=c.endereco||'';
+  if(id('ec-cep'))id('ec-cep').value=c.cep||'';
+  // Tenta separar endereço salvo nos campos
+  if(c.endereco){
+    const partes=c.endereco.split(',').map(x=>x.trim());
+    if(id('ec-rua'))id('ec-rua').value=partes[0]||'';
+    if(id('ec-numero'))id('ec-numero').value=partes[1]||'';
+    if(id('ec-bairro'))id('ec-bairro').value=partes[2]||'';
+    if(id('ec-cidade'))id('ec-cidade').value=partes.slice(3).join(', ')||'';
+  }
   id('m-cli-edit').classList.add('open');
 }
 
@@ -1883,7 +1907,8 @@ async function salvarEditCli(){
     data_nascimento:id('ec-nasc').value||null,canal:id('ec-canal').value,
     observacoes:id('ec-obs').value.trim(),
     cpf:id('ec-cpf')?.value?.trim()||null,
-    endereco:id('ec-endereco')?.value?.trim()||null
+    cep:id('ec-cep')?.value?.trim()||null,
+    endereco:[id('ec-rua')?.value,id('ec-numero')?.value,id('ec-bairro')?.value,id('ec-cidade')?.value].filter(Boolean).join(', ')||null
   }).eq('id',cliEditId);
   if(error){toast('Erro: '+error.message,'err');return;}
   cm('m-cli-edit');toast('Cliente atualizado','ok');cliEditId=null;loadCli();
@@ -1894,7 +1919,9 @@ async function salvarCli(){
   const nome=v('nc-nome');if(!nome){toast('Nome é obrigatório!','err');return;}
   const email=v('nc-email');
   if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('E-mail inválido!','err');return;}
-  const{error}=await sb.from('clientes').insert({user_id:getOwn(),nome,telefone:v('nc-tel'),email:email||null,data_nascimento:v('nc-nasc')||null,observacoes:v('nc-obs'),canal:v('nc-canal'),cpf:v('nc-cpf')||null,endereco:v('nc-endereco')||null});
+  const ncEnd=[v('nc-rua'),v('nc-numero'),v('nc-bairro'),v('nc-cidade')].filter(Boolean).join(', ');
+  const ncCep=v('nc-cep')||null;
+  const{error}=await sb.from('clientes').insert({user_id:getOwn(),nome,telefone:v('nc-tel'),email:email||null,data_nascimento:v('nc-nasc')||null,observacoes:v('nc-obs'),canal:v('nc-canal'),cpf:v('nc-cpf')||null,endereco:ncEnd||null,cep:ncCep});
   if(error){toast('Erro: '+error.message,'err');return;}
   cm('m-cli');toast('Cliente cadastrado','ok');limpar('m-cli');loadCli();loadCliSels();loadDash();
 }
@@ -2885,7 +2912,7 @@ function getTermoHTML(cli, anam){
         <div><strong>Data de nasc.:</strong> ${nasc}</div>
         <div><strong>Telefone:</strong> ${tel}</div>
         <div><strong>CPF:</strong> ${cli?.cpf||'___________________________'}</div>
-        <div style="grid-column:1/-1"><strong>Endereço:</strong> ${cli?.endereco||'___________________________'}</div>
+        <div style="grid-column:1/-1"><strong>Endereço:</strong> ${cli?.endereco||'___________________________'}${cli?.cep?' — CEP: '+cli.cep:''}</div>
         <div><strong>Modelo:</strong> ${modelo}</div>
         <div><strong>Grau de calvície:</strong> ${grau}</div>
         <div><strong>Fixação:</strong> ${fixacao}</div>
@@ -3323,6 +3350,27 @@ function togNorwood(el, grau){
     el.classList.add('active');
     if(inp)inp.value=grau;
   }
+}
+
+function mascaraCEP(el, prefix){
+  let v=el.value.replace(/\D/g,'').substring(0,8);
+  if(v.length>5)v=v.replace(/(\d{5})(\d{1,3})/,'$1-$2');
+  el.value=v;
+  if(v.replace('-','').length===8)buscarCEP(v.replace('-',''),prefix);
+}
+
+async function buscarCEP(cep, prefix){
+  try{
+    const r=await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const d=await r.json();
+    if(d.erro){toast('CEP não encontrado','err');return;}
+    if(id(prefix+'-rua'))id(prefix+'-rua').value=d.logradouro||'';
+    if(id(prefix+'-bairro'))id(prefix+'-bairro').value=d.bairro||'';
+    if(id(prefix+'-cidade'))id(prefix+'-cidade').value=(d.localidade||'')+(d.uf?' / '+d.uf:'');
+    // Foca no campo número após preencher
+    setTimeout(()=>id(prefix+'-numero')?.focus(),100);
+    toast('Endereço preenchido!','ok');
+  }catch(e){toast('Erro ao buscar CEP','err');}
 }
 
 function mascaraCPF(el){
