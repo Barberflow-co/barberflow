@@ -1728,8 +1728,65 @@ async function loadCliSels(){
 }
 
 // ============================================================
-// WHATSAPP PANEL
+// BUSCA DE CLIENTE NO MODAL DE AGENDAMENTO
 // ============================================================
+let buscaTimer=null;
+async function buscarCliente(q){
+  clearTimeout(buscaTimer);
+  const lista=id('ag-cli-lista');
+  if(!q||q.length<1){lista.style.display='none';return;}
+  buscaTimer=setTimeout(async()=>{
+    const{data}=await sb.from('clientes').select('id,nome,telefone').eq('user_id',getOwn()).ilike('nome','%'+q+'%').limit(8);
+    if(!data||!data.length){
+      lista.innerHTML=`<div class="cli-result-new" onclick="cadastrarEAgendar('${q}')">+ Cadastrar "${q}" como novo cliente</div>`;
+    } else {
+      lista.innerHTML=data.map(c=>`<div class="cli-result-item" onclick="selecionarCliAg('${c.id}','${c.nome.replace(/'/g,"\\'")}','${(c.telefone||'').replace(/'/g,"\\'")}')">
+        <div style="font-weight:500">${c.nome}</div>
+        <div style="font-size:12px;color:var(--gray-400)">${c.telefone||'Sem telefone'}</div>
+      </div>`).join('')+`<div class="cli-result-new" onclick="cadastrarEAgendar('${q}')">+ Cadastrar "${q}" como novo cliente</div>`;
+    }
+    lista.style.display='block';
+  },300);
+}
+
+async function selecionarCliAg(cliId,nome,tel){
+  id('ag-cli').value=cliId;
+  id('ag-cli-busca').value=nome;
+  id('ag-cli-lista').style.display='none';
+  const sel=id('ag-cli-selecionado');
+  sel.style.display='flex';
+  id('ag-cli-nome-sel').textContent=nome;
+  id('ag-cli-tel-sel').textContent=tel||'';
+  await carregarAnamAg(cliId);
+  await carregarHistoricoAg(cliId);
+  agTab('anam');
+}
+
+function limparCliAg(){
+  id('ag-cli').value='';
+  id('ag-cli-busca').value='';
+  const sel=id('ag-cli-selecionado');
+  if(sel)sel.style.display='none';
+  const prev=id('ag-anam-preview');
+  if(prev)prev.innerHTML='<div style="text-align:center;color:var(--gray-500);padding:20px"><div style="font-size:24px;margin-bottom:8px">📋</div><div>Selecione um cliente para ver a anamnese</div></div>';
+  const hist=id('ag-hist-preview');
+  if(hist)hist.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:20px"><div style="font-size:24px;margin-bottom:8px">🕐</div><div>Selecione um cliente para ver o histórico</div></div>';
+}
+
+async function cadastrarEAgendar(nome){
+  id('ag-cli-lista').style.display='none';
+  const{error,data}=await sb.from('clientes').insert({user_id:getOwn(),nome}).select().single();
+  if(error){toast('Erro ao cadastrar: '+error.message,'err');return;}
+  toast('Cliente cadastrado ✓','ok');
+  await selecionarCliAg(data.id,data.nome,'');
+  await loadCliSels();
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click',e=>{
+  const lista=id('ag-cli-lista');
+  if(lista&&!lista.contains(e.target)&&e.target!==id('ag-cli-busca'))lista.style.display='none';
+});
 let waOpen=false;
 function toggleWaPanel(){
   waOpen=!waOpen;
