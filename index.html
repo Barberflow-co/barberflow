@@ -2740,10 +2740,10 @@ async function salvarAg(){
       const tel=(cli.telefone||'').replace(/[^\d]/g,'');
       const nome=cli.nome.split(' ')[0];
       const dt=new Date(dados.data_hora);
-      const dtStr=dt.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+      const dtStr=(()=>{const d=dt.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});return d.charAt(0).toUpperCase()+d.slice(1);})();
       const hrStr=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       const serv=dados.profissional||'serviço';
-      const msg=encodeURIComponent(`Olá ${nome}! ✂️ Seu agendamento foi confirmado!\n\n📅 ${dtStr}\n⏰ ${hrStr}\n💈 ${serv}\n\nAguardamos você! Qualquer dúvida é só chamar.`);
+      const msg=encodeURIComponent(`Reservamos o seu horário em nossa agenda!\n\n${dtStr}\n${hrStr}\n${serv}\n\nAguardamos você! Qualquer dúvida é só chamar.`);
       if(confirm(`Enviar confirmação pelo WhatsApp para ${cli.nome}?`)){
         window.open(`https://wa.me/55${tel}?text=${msg}`,'_blank');
       }
