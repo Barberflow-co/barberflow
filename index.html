@@ -599,7 +599,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
             <div class="fg"><label class="fl">Tipo de alopecia</label><select class="fs" id="an-tipo"><option value="">Selecionar...</option><option>Alopecia androgenética</option><option>Alopecia areata</option><option>Alopecia totalis</option><option>Quimioterapia/radioterapia</option><option>Tricotilomania</option><option>Outra</option></select></div>
             <div class="fg"><label class="fl">Há quanto tempo</label><select class="fs" id="an-tempo"><option>Menos de 1 ano</option><option>1 a 3 anos</option><option>3 a 5 anos</option><option>Mais de 5 anos</option></select></div>
           </div>
-          <div class="fg"><label class="fl">Escala de Norwood</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
+          <div class="fg"><label class="fl">Grau de calvície</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
         </div></div>
         <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
           <div class="fg2">
@@ -1011,7 +1011,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <span class="tog" onclick="selTog('tg-grisalho',this)">90%</span>
         </div>
       </div>
-      <div class="fg"><label class="fl">Escala de Norwood</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
+      <div class="fg"><label class="fl">Grau de calvície</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
     </div></div>
     <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
       <div class="fg2">
@@ -1503,7 +1503,7 @@ async function carregarAnamAg(cliId){
   const campos=[
     ['Tipo de cabelo',a.tipo_alopecia],
     ['Grisalho',a.tempo_alopecia],
-    ['Norwood',a.norwood?'Grau '+a.norwood:null],
+    ['Grau de calvície',a.norwood?'Grau '+a.norwood:null],
     ['Tipo de pele',a.tipo_pele],
     ['Material',a.material_pref],
     ['Fixação',a.fixacao_pref],
@@ -1641,7 +1641,7 @@ async function loadAnamPerfil(cid){
   const el=id('p-anam');
   if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-title">Sem anamnese cadastrada</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="abrirAnamModal()">Preencher anamnese</button></div>';return;}
   const a=data[0];
-  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">${[['Tipo de cabelo',a.tipo_alopecia],['Norwood',a.norwood?'Grau '+a.norwood:null],['Tipo de pele',a.tipo_pele],['Material',a.material_pref],['Fixação',a.fixacao_pref],['Alergias',a.alergias]].filter(x=>x[1]).map(x=>`<div><strong>${x[0]}:</strong><br>${x[1]}</div>`).join('')}${a.observacoes?`<div style="grid-column:1/-1"><strong>Obs:</strong> ${a.observacoes}</div>`:''}</div>`;
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">${[['Tipo de cabelo',a.tipo_alopecia],['Grau de calvície',a.norwood?'Grau '+a.norwood:null],['Tipo de pele',a.tipo_pele],['Material',a.material_pref],['Fixação',a.fixacao_pref],['Alergias',a.alergias]].filter(x=>x[1]).map(x=>`<div><strong>${x[0]}:</strong><br>${x[1]}</div>`).join('')}${a.observacoes?`<div style="grid-column:1/-1"><strong>Obs:</strong> ${a.observacoes}</div>`:''}</div>`;
 }
 
 function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');id('p-historico').style.display=tab==='historico'?'block':'none';id('p-anam').style.display=tab==='anam'?'block':'none';}
@@ -2719,7 +2719,7 @@ const CURSOS_DATA = [
   },
   {
     id:5,
-    titulo:'Escala de Norwood e Diagnóstico',
+    titulo:'Grau de calvície e Diagnóstico',
     desc:'Como usar a escala de Norwood para diagnóstico preciso e indicação correta do tipo de prótese ideal para cada cliente.',
     badge:'novo',
     aulas:5,
