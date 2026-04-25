@@ -355,6 +355,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 /* DASHBOARD PERIOD BUTTONS */
 .dash-period{transition:all .15s}
 .dash-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
+.com-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
@@ -542,7 +543,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 
     <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
-      <div class="ph"><div><div class="pt" id="d-greet">Olá,</div><div class="ps" id="d-date"></div></div><button class="btn btn-md btn-primary" onclick="om('m-ag')">+ Novo agendamento</button></div>
+      <div class="ph"><div><div class="pt" id="d-greet" style="font-size:16px"></div><div class="ps" id="d-date"></div></div><button class="btn btn-md btn-primary" onclick="om('m-ag')">+ Novo agendamento</button></div>
 
       <!-- Filtro de período -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
@@ -741,6 +742,20 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <!-- COMANDAS -->
     <div class="view" id="view-comandas">
       <div class="ph"><div><div class="pt">Comandas</div><div class="ps">Controle de atendimentos</div></div><button class="btn btn-md btn-primary" onclick="om('m-comanda')">+ Nova comanda</button></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-outline com-period active" onclick="setComPeriod('hoje',this)">Hoje</button>
+          <button class="btn btn-sm btn-outline com-period" onclick="setComPeriod('semana',this)">Esta semana</button>
+          <button class="btn btn-sm btn-outline com-period" onclick="setComPeriod('mes',this)">Este mês</button>
+          <button class="btn btn-sm btn-outline com-period" onclick="setComPeriod('custom',this)">Personalizado</button>
+        </div>
+        <div id="com-custom-dates" style="display:none;align-items:center;gap:8px">
+          <input type="date" class="fi" id="com-dt-ini" style="padding:6px 10px;font-size:13px;width:140px">
+          <span style="color:var(--gray-400);font-size:13px">até</span>
+          <input type="date" class="fi" id="com-dt-fim" style="padding:6px 10px;font-size:13px;width:140px">
+          <button class="btn btn-sm btn-primary" onclick="loadComandas()">Filtrar</button>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
         <div class="stat-box"><div class="stat-lbl">Abertas hoje</div><div class="stat-val" id="com-ab">0</div></div>
         <div class="stat-box"><div class="stat-lbl">Fechadas hoje</div><div class="stat-val" id="com-fe">0</div></div>
@@ -2434,6 +2449,16 @@ async function loadDashProf(dates,ownId){
   }
   el.innerHTML=html;
 }
+function renderAgs(ags){
+  return ags.map(a=>{
+    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const st=a.status||'aguardando';
+    const bc='st-'+st;
+    const stLabel={aguardando:'Aguardando confirmação',confirmado:'Cliente confirmou',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cliente cancelou'}[st]||st;
+    return `<div class="ar" style="cursor:pointer" onclick="abrirAcaoAg('${a.id}')"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'—'}</div></div><span class="badge ${bc}">${stLabel}</span></div>`;
+  }).join('');
+}
+
 async function iniciarAg(agId){
   await sb.from('agendamentos').update({status:'em_atendimento'}).eq('id',agId);
   toast('Em atendimento ▶','ok');loadAgenda();loadDash();
@@ -2801,9 +2826,39 @@ async function excluirProd(pid){if(!confirm('Remover produto?'))return;await sb.
 // ============================================================
 // COMANDAS
 // ============================================================
+let comPeriod='hoje';
+function setComPeriod(period,el){
+  comPeriod=period;
+  document.querySelectorAll('.com-period').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const customEl=id('com-custom-dates');
+  if(customEl)customEl.style.display=period==='custom'?'flex':'none';
+  if(period!=='custom')loadComandas();
+}
+function getComDates(){
+  const hoje=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  if(comPeriod==='hoje'){const h=fmt(hoje);return{ini:h,fim:h};}
+  if(comPeriod==='semana'){
+    const dow=hoje.getDay();
+    const seg=new Date(hoje);seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
+    const sab=new Date(seg);sab.setDate(seg.getDate()+6);
+    return{ini:fmt(seg),fim:fmt(sab)};
+  }
+  if(comPeriod==='mes'){return{ini:`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`,fim:fmt(hoje)};}
+  if(comPeriod==='custom'){
+    const ini=id('com-dt-ini')?.value;const fim=id('com-dt-fim')?.value;
+    if(!ini||!fim){toast('Selecione as datas','err');return null;}
+    return{ini,fim};
+  }
+  return{ini:fmt(hoje),fim:fmt(hoje)};
+}
 async function loadComandas(){
-  if(!CU)return;const hoje=new Date().toISOString().split('T')[0];
-  const{data}=await sb.from('comandas').select('*,clientes(nome),equipe(nome)').eq('user_id',getOwn()).gte('created_at',hoje+'T00:00').order('created_at',{ascending:false});
+  if(!CU)return;
+  const dates=getComDates();if(!dates)return;
+  const{ini,fim}=dates;
+  const{data}=await sb.from('comandas').select('*,clientes(nome),equipe(nome)').eq('user_id',getOwn()).gte('created_at',ini+'T00:00').lte('created_at',fim+'T23:59').order('created_at',{ascending:false});
   const lista=data||[];
   id('com-ab').textContent=lista.filter(c=>c.status==='aberta').length;id('com-fe').textContent=lista.filter(c=>c.status==='fechada').length;
   id('com-tot').textContent=fmtMoney(lista.reduce((s,c)=>s+(c.total||0),0));
@@ -3862,6 +3917,18 @@ async function init(){
     await loadCtx();
     go('app');
     verificarTrial();
+    // Frase motivacional rotativa
+    const frases=[
+      'Cada corte é uma obra de arte. Bora faturar! ✂️',
+      'Hoje é mais um dia de transformar vidas! 💈',
+      'Foco, disciplina e muito corte. Vamos nessa! 🔥',
+      'Sua dedicação faz a diferença. Bora trabalhar! 💪',
+      'Clientes satisfeitos, negócio crescendo. Segue o flow! 🚀',
+      'Arte, precisão e estilo. É isso que você faz! ✨',
+      'Mais um dia de crescimento. Você está no caminho certo! 📈',
+    ];
+    const frase=frases[new Date().getDay()%frases.length];
+    if(id('d-greet'))id('d-greet').textContent=frase;
     setTimeout(carregarLogoSalva, 500);
     try{
       const lastPage=localStorage.getItem('bf_page');
