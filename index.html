@@ -313,6 +313,19 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .curso-progress{height:4px;background:var(--gray-100);border-radius:100px;margin-top:12px;overflow:hidden}
 .curso-progress-bar{height:100%;background:var(--brand);border-radius:100px;transition:width .3s}
 
+/* PÁGINA PÚBLICA / LINK PAGE */
+#page-link{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Inter',sans-serif}
+.link-page-box{width:100%;max-width:400px;text-align:center}
+.link-page-avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;overflow:hidden;border:3px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
+.link-page-avatar img{width:100%;height:100%;object-fit:cover}
+.link-page-name{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.link-page-bio{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px;line-height:1.5}
+.link-btn{display:flex;align-items:center;gap:12px;width:100%;padding:14px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:10px;backdrop-filter:blur(10px)}
+.link-btn:hover{background:rgba(255,255,255,.15);transform:translateY(-1px)}
+.link-btn-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.link-page-footer{margin-top:28px;font-size:12px;color:rgba(255,255,255,.3)}
+.link-page-footer span{color:rgba(255,255,255,.5);font-weight:600}
+
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #page-loading.hide{opacity:0;pointer-events:none}
@@ -325,6 +338,19 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 </style>
 </head>
 <body>
+
+<!-- PÁGINA PÚBLICA DE LINKS -->
+<div class="page" id="page-link">
+  <div class="link-page-box">
+    <div class="link-page-avatar" id="lp-avatar">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="link-page-name" id="lp-nome">Barbearia</div>
+    <div class="link-page-bio" id="lp-bio"></div>
+    <div id="lp-links"></div>
+    <div class="link-page-footer">Powered by <span>BarberFlow</span></div>
+  </div>
+</div>
 
 <!-- LOADING SCREEN -->
 <div id="page-loading">
@@ -565,7 +591,8 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-outline btn-md" onclick="om('m-ag')">Agendar</button>
-          <button class="btn btn-primary btn-md" onclick="abrirAnamModal()">Anamnese</button>
+          <button class="btn btn-outline btn-md" onclick="abrirAnamModal()">Editar anamnese</button>
+          <button class="btn btn-primary btn-md" onclick="abrirAnamModal()">Ver anamnese</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px">
@@ -752,6 +779,27 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           </div>
           <button class="btn btn-outline btn-md" onclick="alterarSenha()">Alterar senha</button>
         </div>
+        <div class="card"><div class="st" style="margin-bottom:14px">Minha página de links</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Crie sua página personalizada para divulgar no Instagram e WhatsApp.</div>
+          <div class="fg"><label class="fl">Nome da barbearia (na página)</label><input class="fi" id="lp-cfg-nome" placeholder="Ex: Barbearia do João"></div>
+          <div class="fg"><label class="fl">Descrição / Slogan</label><input class="fi" id="lp-cfg-bio" placeholder="Ex: Especialistas em prótese capilar"></div>
+          <div class="fg"><label class="fl">WhatsApp (com DDD)</label><input class="fi" id="lp-cfg-wpp" placeholder="Ex: 11999999999" type="tel"></div>
+          <div class="fg"><label class="fl">Instagram (só o @)</label><input class="fi" id="lp-cfg-ig" placeholder="Ex: @barbearia"></div>
+          <div class="fg"><label class="fl">Endereço completo</label><input class="fi" id="lp-cfg-end" placeholder="Ex: Rua das Flores, 123 - São Paulo"></div>
+          <div class="fg"><label class="fl">Link personalizado</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-400);white-space:nowrap">barberflow.com.br/p/</div>
+              <input class="fi" id="lp-cfg-slug" placeholder="suabarbearia" style="flex:1">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="btn btn-primary btn-md" onclick="salvarLinkPage()">Salvar página</button>
+            <button class="btn btn-outline btn-md" onclick="verLinkPage()">Visualizar</button>
+            <button class="btn btn-outline btn-md" onclick="copiarLinkPage()">Copiar link</button>
+          </div>
+          <div id="lp-link-box" style="display:none;margin-top:12px;background:var(--brand-light);border:1px solid rgba(13,110,253,.2);border-radius:var(--radius);padding:12px;font-size:13px;color:var(--brand);font-weight:500;word-break:break-all" id="lp-link-preview"></div>
+        </div>
+
         <div class="card"><div class="st" style="margin-bottom:12px">Plano atual</div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--brand-light);border-radius:var(--radius);padding:14px;border:1px solid rgba(13,110,253,.2)">
             <div><div style="font-weight:600;color:var(--brand)">Plano Trial — 14 dias grátis</div><div style="font-size:12px;color:var(--gray-500);margin-top:3px">Após o trial escolha o plano ideal</div></div>
@@ -794,8 +842,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
     <div class="aacao-status-btns" id="aacao-btns"></div>
     <div class="aacao-footer">
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditar()">Editar agendamento</button>
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditarCliente()">Editar cliente</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoWhatsApp()">WhatsApp</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditar()">Editar</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="aacaoEditarCliente()">Cliente</button>
       <button class="btn btn-sm" style="background:#FEE2E2;color:#991B1B;border:1.5px solid #FECACA" onclick="aacaoExcluir()">Excluir</button>
     </div>
   </div>
@@ -2053,6 +2102,26 @@ async function aacaoFinalizar(agId,cliId,servico){
   await finalizarAg(agId,cliId,servico);
 }
 
+async function aacaoWhatsApp(){
+  // Busca telefone do cliente
+  const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,telefone)').eq('id',agAcaoId).single();
+  if(!a||!a.clientes?.telefone){toast('Cliente sem telefone cadastrado','err');return;}
+  const tel=(a.clientes.telefone||'').replace(/\D/g,'');
+  const nome=a.clientes.nome.split(' ')[0];
+  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
+  const serv=a.profissional||'seu serviço';
+  const msg=encodeURIComponent(`Olá ${nome}! 😊 Passando para confirmar seu agendamento:
+
+📅 Data: ${dt}
+⏰ Horário: ${hr}
+✂️ Serviço: ${serv}
+
+Aguardamos você! Qualquer dúvida estamos à disposição.`);
+  window.open(`https://wa.me/55${tel}?text=${msg}`,'_blank');
+  cm('m-ag-acao');
+}
+
 function aacaoEditar(){
   cm('m-ag-acao');
   editarAg(agAcaoId);
@@ -2217,7 +2286,7 @@ async function loadEstoque(){
   id('est-val').textContent='R$'+lista.reduce((s,p)=>s+(p.qtd_atual||0)*(p.preco_custo||0),0).toFixed(0);
   const tb=id('tb-estoque');
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhum produto</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>R$${(p.preco_custo||0).toFixed(2)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')"></button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button></td></tr>`;}).join('');
+  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>R$${(p.preco_custo||0).toFixed(2)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button>Excluir</button></td></tr>`;}).join('');
 }
 let prodEditId=null;
 async function editarProd(pid){
@@ -2450,6 +2519,133 @@ function carregarLogoSalva(){
       atualizarLogoSidebar(logo);
     }
   }catch(e){}
+}
+
+// ============================================================
+// LINK PAGE — PÁGINA PÚBLICA
+// ============================================================
+async function salvarLinkPage(){
+  if(!CU)return;
+  const dados={
+    nome:id('lp-cfg-nome').value.trim(),
+    bio:id('lp-cfg-bio').value.trim(),
+    whatsapp:id('lp-cfg-wpp').value.replace(/\D/g,''),
+    instagram:id('lp-cfg-ig').value.trim().replace('@',''),
+    endereco:id('lp-cfg-end').value.trim(),
+    slug:id('lp-cfg-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-'),
+    user_id:CU.id
+  };
+  if(!dados.slug){toast('Defina um link personalizado!','err');return;}
+
+  // Salva no Supabase na tabela profiles como JSON
+  const{error}=await sb.from('profiles').update({
+    link_page:JSON.stringify(dados)
+  }).eq('id',CU.id);
+
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Página salva!','ok');
+  
+  // Mostra o link
+  const link=`${window.location.origin}?p=${dados.slug}`;
+  const box=id('lp-link-box');
+  box.style.display='block';
+  box.textContent=link;
+  
+  // Salva localmente
+  try{localStorage.setItem('bf_linkpage',JSON.stringify(dados));}catch(e){}
+}
+
+function verLinkPage(){
+  const slug=id('lp-cfg-slug')?.value?.trim();
+  if(!slug){toast('Salve a página primeiro!','err');return;}
+  const link=`${window.location.origin}?p=${slug}`;
+  window.open(link,'_blank');
+}
+
+function copiarLinkPage(){
+  const slug=id('lp-cfg-slug')?.value?.trim();
+  if(!slug){toast('Salve a página primeiro!','err');return;}
+  const link=`${window.location.origin}?p=${slug}`;
+  navigator.clipboard.writeText(link).then(()=>toast('Link copiado!','ok'));
+}
+
+async function carregarLinkPageCfg(){
+  if(!CU||!CP)return;
+  try{
+    const dados=CP.link_page?JSON.parse(CP.link_page):null;
+    if(dados){
+      if(id('lp-cfg-nome'))id('lp-cfg-nome').value=dados.nome||'';
+      if(id('lp-cfg-bio'))id('lp-cfg-bio').value=dados.bio||'';
+      if(id('lp-cfg-wpp'))id('lp-cfg-wpp').value=dados.whatsapp||'';
+      if(id('lp-cfg-ig'))id('lp-cfg-ig').value=dados.instagram?'@'+dados.instagram:'';
+      if(id('lp-cfg-end'))id('lp-cfg-end').value=dados.endereco||'';
+      if(id('lp-cfg-slug'))id('lp-cfg-slug').value=dados.slug||'';
+      const link=`${window.location.origin}?p=${dados.slug}`;
+      const box=id('lp-link-box');
+      if(box&&dados.slug){box.style.display='block';box.textContent=link;}
+    }
+  }catch(e){}
+}
+
+async function renderizarLinkPage(slug){
+  // Busca dados da página pelo slug
+  const{data:profiles}=await sb.from('profiles').select('link_page,nome_barbearia').not('link_page','is',null);
+  let dados=null;
+  for(const p of profiles||[]){
+    try{
+      const d=JSON.parse(p.link_page||'{}');
+      if(d.slug===slug){dados=d;break;}
+    }catch(e){}
+  }
+  if(!dados){
+    id('lp-nome').textContent='Página não encontrada';
+    id('lp-bio').textContent='Este link não existe ou foi removido.';
+    go('link');return;
+  }
+
+  // Preenche a página
+  id('lp-nome').textContent=dados.nome||'Barbearia';
+  id('lp-bio').textContent=dados.bio||'';
+
+  // Logo salva
+  const logo=localStorage.getItem('bf_logo');
+  if(logo){
+    id('lp-avatar').innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover">`;
+  }
+
+  // Gera os botões de link
+  const links=[];
+  if(dados.whatsapp){
+    const msg=encodeURIComponent(`Olá! Vi seu perfil no BarberFlow e gostaria de saber mais sobre seus serviços.`);
+    links.push({cor:'#25D366',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,label:'Falar no WhatsApp',href:`https://wa.me/55${dados.whatsapp}?text=${msg}`});
+  }
+  if(dados.instagram){
+    links.push({cor:'#E1306C',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>`,label:'@'+dados.instagram+' no Instagram',href:`https://instagram.com/${dados.instagram}`});
+  }
+  if(dados.endereco){
+    const maps=encodeURIComponent(dados.endereco);
+    links.push({cor:'#4285F4',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,label:'Ver localização',href:`https://maps.google.com/?q=${maps}`});
+  }
+
+  id('lp-links').innerHTML=links.map(l=>`
+    <a href="${l.href}" target="_blank" class="link-btn">
+      <div class="link-btn-icon" style="background:${l.cor}">${l.icon}</div>
+      <span>${l.label}</span>
+    </a>
+  `).join('');
+
+  go('link');
+}
+
+// Verifica se é acesso à página pública via ?p=slug
+async function verificarLinkPage(){
+  const params=new URLSearchParams(window.location.search);
+  const slug=params.get('p');
+  if(slug){
+    await renderizarLinkPage(slug);
+    return true;
+  }
+  return false;
 }
 
 async function salvarCfg(){
@@ -2788,6 +2984,10 @@ function id(x){return document.getElementById(x);}
 function v(x){return(id(x)?.value||'').trim();}
 
 async function init(){
+  // Verifica se é acesso à página pública
+  const isLinkPage=await verificarLinkPage();
+  if(isLinkPage)return;
+
   const{data:{session}}=await sb.auth.getSession();
   if(session){
     CU=session.user;
@@ -2865,6 +3065,7 @@ function sv(name,el){
   if(name==='clientes')loadCli();
   if(name==='sumidos')loadSumidos();
   if(name==='cursos')loadCursos();
+  if(name==='config')carregarLinkPageCfg();
   if(name==='agenda')loadAgenda();
   if(name==='relatorios')loadRel();
   if(name==='equipe')loadEquipe();
