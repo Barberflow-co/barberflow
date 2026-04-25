@@ -352,13 +352,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .lp-animate:nth-child(4){animation-delay:.2s}
 .lp-animate:nth-child(5){animation-delay:.25s}
 
-/* NORWOOD CARDS */
-.norwood-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;border-radius:10px;border:2px solid var(--gray-200);cursor:pointer;transition:all .2s;background:#fff}
-.norwood-card:hover{border-color:var(--brand);background:var(--brand-light)}
-.norwood-card.active{border-color:var(--brand);background:var(--brand-light)}
-.norwood-card span{font-size:11px;font-weight:600;color:var(--gray-600)}
-.norwood-card.active span{color:var(--brand)}
-
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #page-loading.hide{opacity:0;pointer-events:none}
@@ -1175,12 +1168,12 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg2">
         <div class="fg"><label class="fl">Como nos conheceu</label>
           <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="selTog('tg-canal',this)">Facebook</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Instagram</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Google</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Indicação</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">TikTok</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Outros</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">Facebook</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">Instagram</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">Google</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">Indicação</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">TikTok</span>
+            <span class="tog" onclick="togAnam('tg-canal',this)">Outros</span>
           </div>
         </div>
       </div>
@@ -1191,106 +1184,53 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg">
         <label class="fl">Tipo de cabelo</label>
         <div id="tg-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Liso</span>
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Ondulado</span>
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Cacheado</span>
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Crespo</span>
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Alisado</span>
-          <span class="tog" onclick="selTog('tg-cabelo',this)">Afro</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Liso</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Ondulado</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Cacheado</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Crespo</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Alisado</span>
+          <span class="tog" onclick="togAnam('tg-cabelo',this)">Afro</span>
         </div>
       </div>
       <div class="fg">
         <label class="fl">Tons de grisalho</label>
         <div id="tg-grisalho" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="selTog('tg-grisalho',this)">Sem grisalho</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">5%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">10%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">20%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">30%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">40%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">50%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">65%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">80%</span>
-          <span class="tog" onclick="selTog('tg-grisalho',this)">90%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">Sem grisalho</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">5%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">10%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">20%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">30%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">40%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">50%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">65%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">80%</span>
+          <span class="tog" onclick="togAnam('tg-grisalho',this)">90%</span>
         </div>
       </div>
       <div class="fg">
         <label class="fl">Cor do cabelo</label>
         <div id="tg-cor-cabelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1a1a1a;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1 Preto</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#2C1810;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1B Castanho Escuro</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3D2314;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#2 Cast. Médio Escuro</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#5C3317;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#3 Castanho Médio</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#7B4A2D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#4 Castanho Claro</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#A0522D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#5 Loiro Escuro</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#C68B3A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#6 Loiro Médio</span>
-          <span class="tog" onclick="selTog('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#E8C97A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#7 Loiro Claro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1a1a1a;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1 Preto</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#2C1810;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#1B Castanho Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#3D2314;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#2 Cast. Médio Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#5C3317;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#3 Castanho Médio</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#7B4A2D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#4 Castanho Claro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#A0522D;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#5 Loiro Escuro</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#C68B3A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#6 Loiro Médio</span>
+          <span class="tog" onclick="togAnam('tg-cor-cabelo',this)" style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#E8C97A;display:inline-block;border:1px solid rgba(0,0,0,.2)"></span>#7 Loiro Claro</span>
         </div>
       </div>
     </div></div>
 
     <!-- GRAU DE CALVÍCIE COM ILUSTRAÇÕES -->
     <div class="ab"><div class="abh"><div class="abt">Grau de calvície</div></div><div class="abb">
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:4px" id="norwood-visual">
-
-        <!-- Grau III -->
-        <div class="norwood-card" onclick="selNorwood(this,'III')" data-grau="III">
-          <svg viewBox="0 0 80 80" width="60" height="60">
-            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
-            <ellipse cx="40" cy="30" rx="28" ry="18" fill="#4a3728"/>
-            <ellipse cx="20" cy="22" rx="8" ry="10" fill="#D4B896"/>
-            <ellipse cx="60" cy="22" rx="8" ry="10" fill="#D4B896"/>
-          </svg>
-          <span>Grau III</span>
-        </div>
-
-        <!-- Grau IV -->
-        <div class="norwood-card" onclick="selNorwood(this,'IV')" data-grau="IV">
-          <svg viewBox="0 0 80 80" width="60" height="60">
-            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
-            <ellipse cx="40" cy="35" rx="25" ry="12" fill="#4a3728"/>
-            <ellipse cx="15" cy="28" rx="6" ry="12" fill="#4a3728"/>
-            <ellipse cx="65" cy="28" rx="6" ry="12" fill="#4a3728"/>
-            <ellipse cx="40" cy="18" rx="18" ry="8" fill="#D4B896"/>
-          </svg>
-          <span>Grau IV</span>
-        </div>
-
-        <!-- Grau V -->
-        <div class="norwood-card" onclick="selNorwood(this,'V')" data-grau="V">
-          <svg viewBox="0 0 80 80" width="60" height="60">
-            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
-            <ellipse cx="40" cy="36" rx="22" ry="10" fill="#4a3728"/>
-            <ellipse cx="14" cy="30" rx="5" ry="14" fill="#4a3728"/>
-            <ellipse cx="66" cy="30" rx="5" ry="14" fill="#4a3728"/>
-            <ellipse cx="40" cy="17" rx="12" ry="6" fill="#D4B896"/>
-          </svg>
-          <span>Grau V</span>
-        </div>
-
-        <!-- Grau VI -->
-        <div class="norwood-card" onclick="selNorwood(this,'VI')" data-grau="VI">
-          <svg viewBox="0 0 80 80" width="60" height="60">
-            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
-            <ellipse cx="13" cy="32" rx="4" ry="16" fill="#4a3728"/>
-            <ellipse cx="67" cy="32" rx="4" ry="16" fill="#4a3728"/>
-            <ellipse cx="40" cy="52" rx="22" ry="8" fill="#4a3728"/>
-          </svg>
-          <span>Grau VI</span>
-        </div>
-
-        <!-- Grau VII -->
-        <div class="norwood-card" onclick="selNorwood(this,'VII')" data-grau="VII">
-          <svg viewBox="0 0 80 80" width="60" height="60">
-            <ellipse cx="40" cy="45" rx="28" ry="32" fill="#D4B896"/>
-            <ellipse cx="13" cy="35" rx="3" ry="12" fill="#4a3728"/>
-            <ellipse cx="67" cy="35" rx="3" ry="12" fill="#4a3728"/>
-          </svg>
-          <span>Grau VII</span>
-        </div>
-
+      <div id="norwood-visual" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <span class="tog" onclick="togNorwood(this,'III')" data-grau="III">Grau III</span>
+        <span class="tog" onclick="togNorwood(this,'IV')" data-grau="IV">Grau IV</span>
+        <span class="tog" onclick="togNorwood(this,'V')" data-grau="V">Grau V</span>
+        <span class="tog" onclick="togNorwood(this,'VI')" data-grau="VI">Grau VI</span>
+        <span class="tog" onclick="togNorwood(this,'VII')" data-grau="VII">Grau VII</span>
       </div>
-      <!-- Campo hidden para guardar o grau selecionado -->
       <input type="hidden" id="an-norwood-val">
     </div></div>
 
@@ -1299,15 +1239,15 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg2">
         <div class="fg"><label class="fl">Modelo</label>
           <div id="tg-modelo" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="selTog('tg-modelo',this)">Micropele</span>
-            <span class="tog" onclick="selTog('tg-modelo',this)">Híbrida</span>
+            <span class="tog" onclick="togAnam('tg-modelo',this)">Micropele</span>
+            <span class="tog" onclick="togAnam('tg-modelo',this)">Híbrida</span>
           </div>
         </div>
         <div class="fg"><label class="fl">Fixação</label>
           <div id="tg-fix" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="selTog('tg-fix',this)">Fita</span>
-            <span class="tog" onclick="selTog('tg-fix',this)">Cola</span>
-            <span class="tog" onclick="selTog('tg-fix',this)">Ambas</span>
+            <span class="tog" onclick="togAnam('tg-fix',this)">Fita</span>
+            <span class="tog" onclick="togAnam('tg-fix',this)">Cola</span>
+            <span class="tog" onclick="togAnam('tg-fix',this)">Ambas</span>
           </div>
         </div>
       </div>
@@ -1325,10 +1265,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </div>
       <div class="fg"><label class="fl">Tipo de pele</label>
         <div id="tg-pele" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="selTog('tg-pele',this)">Seca</span>
-          <span class="tog" onclick="selTog('tg-pele',this)">Normal</span>
-          <span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span>
-          <span class="tog" onclick="selTog('tg-pele',this)">Mista</span>
+          <span class="tog" onclick="togAnam('tg-pele',this)">Seca</span>
+          <span class="tog" onclick="togAnam('tg-pele',this)">Normal</span>
+          <span class="tog" onclick="togAnam('tg-pele',this)">Oleosa</span>
+          <span class="tog" onclick="togAnam('tg-pele',this)">Mista</span>
         </div>
       </div>
     </div></div>
@@ -1337,9 +1277,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="ab"><div class="abh"><div class="abt">Observações</div></div><div class="abb">
       <div class="fg"><label class="fl">Material preferido</label>
         <div id="tg-mat" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="selTog('tg-mat',this)">Humano</span>
-          <span class="tog" onclick="selTog('tg-mat',this)">Sintético</span>
-          <span class="tog" onclick="selTog('tg-mat',this)">Misto</span>
+          <span class="tog" onclick="togAnam('tg-mat',this)">Humano</span>
+          <span class="tog" onclick="togAnam('tg-mat',this)">Sintético</span>
+          <span class="tog" onclick="togAnam('tg-mat',this)">Misto</span>
         </div>
       </div>
       <div class="fg"><label class="fl">Observações gerais</label><textarea class="ft" id="an-obs" placeholder="Informações importantes sobre o cliente..." style="min-height:70px"></textarea></div>
@@ -2064,7 +2004,7 @@ async function abrirAnamModal(){
       const grau=graus[a.norwood-3]||null;
       if(grau){
         id('an-norwood-val').value=grau;
-        document.querySelectorAll('#norwood-visual .norwood-card').forEach(c=>c.classList.toggle('active',c.dataset.grau===grau));
+        document.querySelectorAll('#norwood-visual .tog').forEach(c=>c.classList.toggle('active',c.dataset.grau===grau));
       }
     }
     // Campos extras do JSON de observações
@@ -3197,11 +3137,28 @@ document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.
 function limpar(mid){const m=id(mid);if(!m)return;m.querySelectorAll('input:not([type=checkbox]):not([type=radio])').forEach(i=>i.value='');m.querySelectorAll('textarea').forEach(t=>t.value='');m.querySelectorAll('select').forEach(s=>s.selectedIndex=0);}
 function upPermDesc(){const d={admin:'Admin: acesso total.',financeiro:'Financeiro: vê relatórios. Não agenda.',recepcao:'Recepção: agenda e clientes. Sem financeiro.',profissional:'Profissional: só sua agenda e ganhos.'};id('perm-desc').textContent=d[v('eq-perm')]||'';}
 function selCor(el){document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;}
-function selNorwood(el, grau){
-  document.querySelectorAll('#norwood-visual .norwood-card').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
+// Toggle para campos da anamnese — permite desselecionar
+function togAnam(gid, el){
+  if(el.classList.contains('active')){
+    el.classList.remove('active'); // Desseleciona
+  } else {
+    document.querySelectorAll('#'+gid+' .tog').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active'); // Seleciona
+  }
+}
+
+function togNorwood(el, grau){
   const inp=id('an-norwood-val');
-  if(inp)inp.value=grau;
+  if(el.classList.contains('active')){
+    // Desseleciona
+    el.classList.remove('active');
+    if(inp)inp.value='';
+  } else {
+    // Seleciona e desseleciona os outros
+    document.querySelectorAll('#norwood-visual .tog').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    if(inp)inp.value=grau;
+  }
 }
 
 function togDia(el){el.classList.toggle('active');}
