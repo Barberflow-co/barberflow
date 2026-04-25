@@ -911,7 +911,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg"><label class="fl">Total</label><div style="padding:10px 13px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:16px;font-weight:700;color:var(--brand)" id="cmd-total">R$ 0,00</div></div>
     </div>
   </div>
-  <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-comanda')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarComanda()">Fechar comanda</button></div>
+  <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-comanda')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarComanda()">Finalizar comanda</button></div>
 </div></div>
 
 <div class="mo" id="m-lanc"><div class="modal">
@@ -1336,7 +1336,7 @@ function renderEvCell(a){
   const hrFim=fim.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   
   // Cor do evento
-  const bgCores={aguardando:cor||'var(--brand)',confirmado:'#166534',em_atendimento:'var(--purple)',finalizado:'var(--gray-400)',cancelado:'var(--danger)'};
+  const bgCores={aguardando:'#D97706',confirmado:'#1E40AF',em_atendimento:'#5B21B6',finalizado:'#166534',cancelado:'#94A3B8'};
   const bg=bgCores[st]||'var(--brand)';
   
   return `<div class="ag-ev ${st}" style="background:${bg};color:#fff;height:${altura}px" 
@@ -1410,7 +1410,7 @@ async function carregarHistoricoAg(cliId){
     const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const cor=a.equipe?.cor||'#94A3B8';
     const st=a.status||'aguardando';
-    const bc=st==='finalizado'?'b-blue':st==='confirmado'?'b-green':'b-yellow';
+    const bc='st-'+st;
     const profTag=a.equipe?.nome?`<span style="font-size:10px;padding:2px 8px;border-radius:100px;background:${cor}22;color:${cor};font-weight:600">${a.equipe.nome}</span>`:'<span style="font-size:10px;color:var(--gray-400)">Sem profissional</span>';
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
       <div style="min-width:70px;text-align:center;background:var(--gray-50);border-radius:8px;padding:5px">
@@ -1567,7 +1567,7 @@ async function loadHistorico(cid){
   const{data}=await sb.from('agendamentos').select('*,equipe(nome)').eq('cliente_id',cid).eq('status','finalizado').order('data_hora',{ascending:false});
   const el=id('p-historico');
   if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-title">Sem histórico</div></div>';return;}
-  el.innerHTML=data.map(a=>{const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});const bc=a.status==='confirmado'||a.status==='finalizado'?'b-green':a.status==='cancelado'?'b-red':'b-yellow';return `<div class="ar"><div class="at" style="min-width:70px"><div style="font-size:12px;font-weight:600;color:var(--gray-700)">${dt}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.profissional||'Serviço'}</div><div class="atp">${a.equipe?.nome?'com '+a.equipe.nome:''}</div></div>${a.valor?`<div style="font-size:13px;font-weight:600;color:var(--brand)">R$${a.valor}</div>`:''}<span class="badge ${bc}">${a.status||'aguard.'}</span></div>`;}).join('');
+  el.innerHTML=data.map(a=>{const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});const bc='st-'+(a.status||'aguardando');return `<div class="ar"><div class="at" style="min-width:70px"><div style="font-size:12px;font-weight:600;color:var(--gray-700)">${dt}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.profissional||'Serviço'}</div><div class="atp">${a.equipe?.nome?'com '+a.equipe.nome:''}</div></div>${a.valor?`<div style="font-size:13px;font-weight:600;color:var(--brand)">R$${a.valor}</div>`:''}<span class="badge ${bc}">${a.status||'aguard.'}</span></div>`;}).join('');
 }
 
 async function loadAnamPerfil(cid){
@@ -1829,7 +1829,7 @@ function renderAgs(ags){
     const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const st=a.status||'aguardando';
     const bc='st-'+st;
-    const stLabel={aguardando:'Aguardando',confirmado:'Confirmado',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cancelado'}[st]||st;
+    const stLabel={aguardando:'Aguardando confirmação',confirmado:'Cliente confirmou',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cliente cancelou'}[st]||st;
     let btns='';
     if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
     else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')"></button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
@@ -2193,7 +2193,7 @@ async function loadComandas(){
   id('com-tot').textContent='R$'+lista.reduce((s,c)=>s+(c.total||0),0).toFixed(0);
   const tb=id('tb-comandas');
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhuma comanda hoje</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(c=>`<tr><td>${c.clientes?.nome||'—'}</td><td>${c.equipe?.nome||'—'}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.servicos||'—'}</td><td>R$${(c.total||0).toFixed(2)}</td><td>${c.forma_pagamento||'—'}</td><td><span class="badge ${c.status==='fechada'?'b-green':'b-yellow'}">${c.status}</span></td><td></td></tr>`).join('');
+  tb.innerHTML=lista.map(c=>`<tr><td>${c.clientes?.nome||'—'}</td><td>${c.equipe?.nome||'—'}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.servicos||'—'}</td><td>R$${(c.total||0).toFixed(2)}</td><td>${c.forma_pagamento||'—'}</td><td><span class="badge st-${c.status==='fechada'?'finalizado':'aguardando'}">${c.status==='fechada'?'Finalizado':'Aberta'}</span></td><td></td></tr>`).join('');
 }
 function addCmdItem(tipo){
   if(tipo==='serv'){
