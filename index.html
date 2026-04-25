@@ -314,7 +314,8 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .curso-progress-bar{height:100%;background:var(--brand);border-radius:100px;transition:width .3s}
 
 /* PÁGINA PÚBLICA / LINK PAGE */
-#page-link{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Inter',sans-serif}
+#page-link{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);min-height:100vh;display:none;align-items:center;justify-content:center;padding:24px;font-family:'Inter',sans-serif}
+#page-link.active{display:flex}
 .link-page-box{width:100%;max-width:400px;text-align:center}
 .link-page-avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;overflow:hidden;border:3px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
 .link-page-avatar img{width:100%;height:100%;object-fit:cover}
@@ -340,7 +341,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 <body>
 
 <!-- PÁGINA PÚBLICA DE LINKS -->
-<div class="page" id="page-link">
+<div class="page" id="page-link" style="display:none">
   <div class="link-page-box">
     <div class="link-page-avatar" id="lp-avatar">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -450,6 +451,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="nav-item active" onclick="sv('dashboard',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
       <div class="nav-item" onclick="sv('agenda',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</div>
       <div class="nav-item nav-wa-btn" onclick="toggleWaPanel()"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp</div>
+      <div class="nav-item nav-admin" onclick="sv('linkpage',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Minha Página</div>
       <div class="nav-label nav-cli-lbl" style="margin-top:4px">Clientes</div>
       <div class="nav-item nav-clientes" onclick="sv('clientes',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Listagem</div>
       <div class="nav-item nav-clientes" onclick="sv('sumidos',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/></svg>Sumidos</div>
@@ -733,6 +735,49 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </div>
     </div>
 
+    <!-- MINHA PÁGINA -->
+    <div class="view" id="view-linkpage">
+      <div class="ph"><div><div class="pt">Minha Página</div><div class="ps">Crie sua página de links para divulgar no Instagram</div></div></div>
+      <div style="max-width:600px;display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Configure sua página</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Preencha os dados abaixo e gere seu link personalizado para colocar na bio do Instagram.</div>
+          <div class="fg"><label class="fl">Nome da barbearia</label><input class="fi" id="lp-cfg-nome" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Barbearia do João"></div>
+          <div class="fg"><label class="fl">Descrição / Slogan</label><input class="fi" id="lp-cfg-bio" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Especialistas em prótese capilar"></div>
+          <div class="fg"><label class="fl">WhatsApp (com DDD)</label><input class="fi" id="lp-cfg-wpp" oninput="atualizarPreviewLinkPage()" placeholder="Ex: 11999999999" type="tel"></div>
+          <div class="fg"><label class="fl">Instagram (só o @)</label><input class="fi" id="lp-cfg-ig" oninput="atualizarPreviewLinkPage()" placeholder="Ex: @barbearia"></div>
+          <div class="fg"><label class="fl">Endereço completo</label><input class="fi" id="lp-cfg-end" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Rua das Flores, 123 - São Paulo"></div>
+          <div class="fg"><label class="fl">Link personalizado</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-400);white-space:nowrap;flex-shrink:0">barberflow-blush.vercel.app?p=</div>
+              <input class="fi" id="lp-cfg-slug" placeholder="suabarbearia" style="flex:1">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button class="btn btn-primary btn-md" onclick="salvarLinkPage()">Salvar página</button>
+            <button class="btn btn-outline btn-md" onclick="verLinkPage()">Visualizar</button>
+            <button class="btn btn-outline btn-md" onclick="copiarLinkPage()">Copiar link</button>
+          </div>
+          <div id="lp-link-box" style="display:none;margin-top:12px;background:var(--brand-light);border:1px solid rgba(13,110,253,.2);border-radius:var(--radius);padding:12px;font-size:13px;color:var(--brand);font-weight:500;word-break:break-all"></div>
+        </div>
+        <!-- Preview -->
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Preview da página</div>
+          <div style="background:#0F172A;border-radius:12px;padding:24px;text-align:center">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.1);margin:0 auto 12px;overflow:hidden;border:2px solid rgba(255,255,255,.2)" id="lp-prev-avatar">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" style="margin:16px auto;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div style="color:#fff;font-weight:700;font-size:16px;margin-bottom:4px" id="lp-prev-nome">Sua barbearia</div>
+            <div style="color:rgba(255,255,255,.5);font-size:13px;margin-bottom:16px" id="lp-prev-bio">Seu slogan aqui</div>
+            <div id="lp-prev-btns" style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">
+              <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:13px;border:1px solid rgba(255,255,255,.1)">Seus links aparecerão aqui</div>
+            </div>
+            <div style="margin-top:16px;font-size:11px;color:rgba(255,255,255,.3)">Powered by <span style="color:rgba(255,255,255,.5);font-weight:600">BarberFlow</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CURSOS -->
     <div class="view" id="view-cursos">
       <div class="ph">
@@ -779,27 +824,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           </div>
           <button class="btn btn-outline btn-md" onclick="alterarSenha()">Alterar senha</button>
         </div>
-        <div class="card"><div class="st" style="margin-bottom:14px">Minha página de links</div>
-          <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Crie sua página personalizada para divulgar no Instagram e WhatsApp.</div>
-          <div class="fg"><label class="fl">Nome da barbearia (na página)</label><input class="fi" id="lp-cfg-nome" placeholder="Ex: Barbearia do João"></div>
-          <div class="fg"><label class="fl">Descrição / Slogan</label><input class="fi" id="lp-cfg-bio" placeholder="Ex: Especialistas em prótese capilar"></div>
-          <div class="fg"><label class="fl">WhatsApp (com DDD)</label><input class="fi" id="lp-cfg-wpp" placeholder="Ex: 11999999999" type="tel"></div>
-          <div class="fg"><label class="fl">Instagram (só o @)</label><input class="fi" id="lp-cfg-ig" placeholder="Ex: @barbearia"></div>
-          <div class="fg"><label class="fl">Endereço completo</label><input class="fi" id="lp-cfg-end" placeholder="Ex: Rua das Flores, 123 - São Paulo"></div>
-          <div class="fg"><label class="fl">Link personalizado</label>
-            <div style="display:flex;align-items:center;gap:8px">
-              <div style="padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-400);white-space:nowrap">barberflow.com.br/p/</div>
-              <input class="fi" id="lp-cfg-slug" placeholder="suabarbearia" style="flex:1">
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:4px">
-            <button class="btn btn-primary btn-md" onclick="salvarLinkPage()">Salvar página</button>
-            <button class="btn btn-outline btn-md" onclick="verLinkPage()">Visualizar</button>
-            <button class="btn btn-outline btn-md" onclick="copiarLinkPage()">Copiar link</button>
-          </div>
-          <div id="lp-link-box" style="display:none;margin-top:12px;background:var(--brand-light);border:1px solid rgba(13,110,253,.2);border-radius:var(--radius);padding:12px;font-size:13px;color:var(--brand);font-weight:500;word-break:break-all" id="lp-link-preview"></div>
-        </div>
-
         <div class="card"><div class="st" style="margin-bottom:12px">Plano atual</div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--brand-light);border-radius:var(--radius);padding:14px;border:1px solid rgba(13,110,253,.2)">
             <div><div style="font-weight:600;color:var(--brand)">Plano Trial — 14 dias grátis</div><div style="font-size:12px;color:var(--gray-500);margin-top:3px">Após o trial escolha o plano ideal</div></div>
@@ -2524,6 +2548,28 @@ function carregarLogoSalva(){
 // ============================================================
 // LINK PAGE — PÁGINA PÚBLICA
 // ============================================================
+function atualizarPreviewLinkPage(){
+  const nome=id('lp-cfg-nome')?.value||'Sua barbearia';
+  const bio=id('lp-cfg-bio')?.value||'Seu slogan aqui';
+  const wpp=id('lp-cfg-wpp')?.value?.replace(/\D/g,'')||'';
+  const ig=id('lp-cfg-ig')?.value?.replace('@','')||'';
+  const end=id('lp-cfg-end')?.value||'';
+  if(id('lp-prev-nome'))id('lp-prev-nome').textContent=nome;
+  if(id('lp-prev-bio'))id('lp-prev-bio').textContent=bio;
+  // Logo
+  const logo=localStorage.getItem('bf_logo');
+  const avEl=id('lp-prev-avatar');
+  if(avEl&&logo)avEl.innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover">`;
+  // Botões preview
+  const btnsEl=id('lp-prev-btns');if(!btnsEl)return;
+  let btns='';
+  if(wpp)btns+=`<div style="padding:12px;border-radius:10px;background:#25D36622;color:#25D366;font-size:13px;border:1px solid #25D36633;text-align:left">Falar no WhatsApp</div>`;
+  if(ig)btns+=`<div style="padding:12px;border-radius:10px;background:#E1306C22;color:#E1306C;font-size:13px;border:1px solid #E1306C33;text-align:left">@${ig} no Instagram</div>`;
+  if(end)btns+=`<div style="padding:12px;border-radius:10px;background:#4285F422;color:#4285F4;font-size:13px;border:1px solid #4285F433;text-align:left">Ver localização</div>`;
+  if(!btns)btns='<div style="padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:13px;border:1px solid rgba(255,255,255,.1)">Preencha os dados acima</div>';
+  btnsEl.innerHTML=btns;
+}
+
 async function salvarLinkPage(){
   if(!CU)return;
   const dados={
@@ -3066,6 +3112,7 @@ function sv(name,el){
   if(name==='sumidos')loadSumidos();
   if(name==='cursos')loadCursos();
   if(name==='config')carregarLinkPageCfg();
+  if(name==='linkpage'){carregarLinkPageCfg();atualizarPreviewLinkPage();}
   if(name==='agenda')loadAgenda();
   if(name==='relatorios')loadRel();
   if(name==='equipe')loadEquipe();
