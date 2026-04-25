@@ -3087,12 +3087,12 @@ async function loadRel(){
   const{ini,fim,label}=dates;
   await loadServsBD();
 
-  let baseQ=sb.from('agendamentos').eq('user_id',ownId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59');
+  let baseQ=sb.from('agendamentos').select('valor,profissional_id,profissional,equipe(nome,cor)').eq('user_id',ownId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59');
   if(CE){baseQ=baseQ.eq('profissional_id',CE.id);}
   const[{count:ca},{count:cc},{data:fat}]=await Promise.all([
-    baseQ.select('*',{count:'exact',head:true}),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59'),
     sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),
-    baseQ.select('valor,profissional_id,profissional,equipe(nome,cor)')
+    baseQ
   ]);
   const total=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
   id('r-ag').textContent=ca||0;
