@@ -828,13 +828,13 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
               <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:11px">Fechamento</label><input class="fi" type="time" id="lp-hora-fecha" value="20:00"></div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="lp-dias-semana">
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Seg</span>
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Ter</span>
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Qua</span>
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Qui</span>
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Sex</span>
-              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Sáb</span>
-              <span class="tog" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Dom</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Seg</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Ter</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Qua</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Qui</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Sex</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Sáb</span>
+              <span class="tog" onclick="togDia(this)" style="font-size:11px">Dom</span>
             </div>
             <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Clique nos dias para ativar/desativar</div>
           </div>
@@ -849,16 +849,36 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         <!-- Preview -->
         <div class="card">
           <div class="st" style="margin-bottom:14px">Preview da página</div>
-          <div style="background:#0F172A;border-radius:12px;padding:24px;text-align:center">
-            <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.1);margin:0 auto 12px;overflow:hidden;border:2px solid rgba(255,255,255,.2)" id="lp-prev-avatar">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" style="margin:16px auto;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div style="background:#0A0A0B;border-radius:16px;overflow:hidden;position:relative">
+            <!-- Gradiente de fundo -->
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(37,99,235,.2),transparent 60%);pointer-events:none"></div>
+            <div style="padding:24px;position:relative;text-align:center">
+              <!-- Avatar -->
+              <div style="width:72px;height:72px;border-radius:50%;background:#131316;border:3px solid #0A0A0B;margin:0 auto 12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4);position:relative" id="lp-prev-avatar">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" style="margin:22px auto;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <!-- Badge verificado -->
+              <div style="width:20px;height:20px;background:#2563EB;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:-16px auto 8px;position:relative">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <!-- Nome -->
+              <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:.5px;margin-bottom:4px" id="lp-prev-nome">Sua barbearia</div>
+              <!-- Bio -->
+              <div style="color:#A1A1AA;font-size:12px;margin-bottom:12px" id="lp-prev-bio">Seu slogan aqui</div>
+              <!-- Status -->
+              <div style="display:flex;justify-content:center;margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#22C55E">
+                  <span style="width:6px;height:6px;background:#22C55E;border-radius:50%;box-shadow:0 0 6px #22C55E;display:inline-block"></span>
+                  Aberto agora
+                </div>
+              </div>
+              <!-- Links preview -->
+              <div id="lp-prev-btns" style="display:flex;flex-direction:column;gap:8px">
+                <div style="padding:12px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:12px;text-align:left">Preencha os dados acima...</div>
+              </div>
+              <!-- Footer -->
+              <div style="margin-top:16px;font-size:10px;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.06);padding-top:12px">Powered by <strong style="color:rgba(255,255,255,.4)">BarberFlow</strong></div>
             </div>
-            <div style="color:#fff;font-weight:700;font-size:16px;margin-bottom:4px" id="lp-prev-nome">Sua barbearia</div>
-            <div style="color:rgba(255,255,255,.5);font-size:13px;margin-bottom:16px" id="lp-prev-bio">Seu slogan aqui</div>
-            <div id="lp-prev-btns" style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">
-              <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:13px;border:1px solid rgba(255,255,255,.1)">Seus links aparecerão aqui</div>
-            </div>
-            <div style="margin-top:16px;font-size:11px;color:rgba(255,255,255,.3)">Powered by <span style="color:rgba(255,255,255,.5);font-weight:600">BarberFlow</span></div>
           </div>
         </div>
       </div>
@@ -2686,23 +2706,27 @@ function carregarFotoLP(){
 
 function atualizarPreviewLinkPage(){
   const nome=id('lp-cfg-nome')?.value||'Sua barbearia';
-  const bio=id('lp-cfg-bio')?.value||'Seu slogan aqui';
-  const wpp=id('lp-cfg-wpp')?.value?.replace(/\D/g,'')||'';
-  const ig=id('lp-cfg-ig')?.value?.replace('@','')||'';
+  const bio=id('lp-cfg-bio')?.value||'';
+  const wpp=(id('lp-cfg-wpp')?.value||'').replace(/[^\d]/g,'');
+  const ig=(id('lp-cfg-ig')?.value||'').replace('@','');
   const end=id('lp-cfg-end')?.value||'';
+
   if(id('lp-prev-nome'))id('lp-prev-nome').textContent=nome;
   if(id('lp-prev-bio'))id('lp-prev-bio').textContent=bio;
+
   // Logo
-  const logo=localStorage.getItem('bf_logo');
+  const logo=localStorage.getItem('bf_lp_foto')||localStorage.getItem('bf_logo');
   const avEl=id('lp-prev-avatar');
-  if(avEl&&logo)avEl.innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover">`;
-  // Botões preview
+  if(avEl&&logo)avEl.innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+
+  // Botões estilo novo design
   const btnsEl=id('lp-prev-btns');if(!btnsEl)return;
+  const arr=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
   let btns='';
-  if(wpp)btns+=`<div style="padding:12px;border-radius:10px;background:#25D36622;color:#25D366;font-size:13px;border:1px solid #25D36633;text-align:left">Falar no WhatsApp</div>`;
-  if(ig)btns+=`<div style="padding:12px;border-radius:10px;background:#E1306C22;color:#E1306C;font-size:13px;border:1px solid #E1306C33;text-align:left">@${ig} no Instagram</div>`;
-  if(end)btns+=`<div style="padding:12px;border-radius:10px;background:#4285F422;color:#4285F4;font-size:13px;border:1px solid #4285F433;text-align:left">Ver localização</div>`;
-  if(!btns)btns='<div style="padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:13px;border:1px solid rgba(255,255,255,.1)">Preencha os dados acima</div>';
+  if(wpp)btns+=`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08)"><div style="width:32px;height:32px;border-radius:8px;background:rgba(34,197,94,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="#22C55E"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:#fff">WhatsApp</div><div style="font-size:10px;color:#71717A">${wpp}</div></div>${arr}</div>`;
+  if(ig)btns+=`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08)"><div style="width:32px;height:32px;border-radius:8px;background:rgba(244,114,182,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F472B6" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:#fff">Instagram</div><div style="font-size:10px;color:#71717A">@${ig}</div></div>${arr}</div>`;
+  if(end)btns+=`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08)"><div style="width:32px;height:32px;border-radius:8px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:#fff">Como chegar</div><div style="font-size:10px;color:#71717A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">${end}</div></div>${arr}</div>`;
+  if(!btns)btns=`<div style="padding:11px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3);font-size:12px">Preencha os dados acima...</div>`;
   btnsEl.innerHTML=btns;
 }
 
@@ -2930,6 +2954,7 @@ document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',e=>{if(e.
 function limpar(mid){const m=id(mid);if(!m)return;m.querySelectorAll('input:not([type=checkbox]):not([type=radio])').forEach(i=>i.value='');m.querySelectorAll('textarea').forEach(t=>t.value='');m.querySelectorAll('select').forEach(s=>s.selectedIndex=0);}
 function upPermDesc(){const d={admin:'Admin: acesso total.',financeiro:'Financeiro: vê relatórios. Não agenda.',recepcao:'Recepção: agenda e clientes. Sem financeiro.',profissional:'Profissional: só sua agenda e ganhos.'};id('perm-desc').textContent=d[v('eq-perm')]||'';}
 function selCor(el){document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;}
+function togDia(el){el.classList.toggle('active');}
 function selTog(gid,el){document.querySelectorAll('#'+gid+' .tog').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
 function selSc(gid,el){document.querySelectorAll('#'+gid+' .sc-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
 function togCI(el){el.classList.toggle('checked');el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';}
