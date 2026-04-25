@@ -298,6 +298,21 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .aacao-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .aacao-footer{display:flex;gap:6px;padding:12px 20px;flex-wrap:wrap}
 
+/* CURSOS */
+.curso-card{background:#fff;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--gray-200);transition:all .2s;cursor:pointer}
+.curso-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
+.curso-thumb{width:100%;height:160px;object-fit:cover;background:linear-gradient(135deg,#0D6EFD,#0A4FBF);display:flex;align-items:center;justify-content:center}
+.curso-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:8px}
+.curso-badge.gratuito{background:#DCFCE7;color:#166534}
+.curso-badge.premium{background:#EDE9FE;color:#5B21B6}
+.curso-badge.novo{background:#DBEAFE;color:#1E40AF}
+.curso-info{padding:16px}
+.curso-titulo{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#0F172A;margin-bottom:6px;line-height:1.4}
+.curso-desc{font-size:13px;color:var(--gray-500);line-height:1.5;margin-bottom:12px}
+.curso-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--gray-400)}
+.curso-progress{height:4px;background:var(--gray-100);border-radius:100px;margin-top:12px;overflow:hidden}
+.curso-progress-bar{height:100%;background:var(--brand);border-radius:100px;transition:width .3s}
+
 /* LOADING SCREEN */
 #page-loading{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #page-loading.hide{opacity:0;pointer-events:none}
@@ -423,6 +438,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="nav-item nav-admin" onclick="sv('estoque',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Estoque</div>
       <div class="nav-item nav-admin" onclick="sv('equipe',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipe</div>
       <div class="nav-item nav-admin" onclick="sv('config',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</div>
+      <div class="nav-item nav-admin" onclick="sv('cursos',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Cursos</div>
     </nav>
     <div class="sb-user">
       <div class="u-av" id="u-av">--</div>
@@ -688,6 +704,14 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
           <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Integração com Z-API em breve. Lembretes serão enviados automaticamente antes dos agendamentos.</p>
         </div>
       </div>
+    </div>
+
+    <!-- CURSOS -->
+    <div class="view" id="view-cursos">
+      <div class="ph">
+        <div><div class="pt">Cursos</div><div class="ps">Capacitação em prótese capilar</div></div>
+      </div>
+      <div id="cursos-lista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px"></div>
     </div>
 
     <!-- CONFIG -->
@@ -2531,6 +2555,125 @@ function toggleWaPanel(){
   }
 }
 
+// ============================================================
+// CURSOS
+// ============================================================
+const CURSOS_DATA = [
+  {
+    id:1,
+    titulo:'Fundamentos da Prótese Capilar',
+    desc:'Aprenda os conceitos básicos sobre tipos de prótese, materiais e técnicas de fixação para começar sua carreira.',
+    badge:'gratuito',
+    aulas:8,
+    duracao:'2h30min',
+    nivel:'Iniciante',
+    cor:'#0D6EFD',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=protese+capilar+iniciante'
+  },
+  {
+    id:2,
+    titulo:'Técnicas de Fixação Avançadas',
+    desc:'Domine as técnicas de fixação com fita, cola e micropele para resultados naturais e duradouros.',
+    badge:'premium',
+    aulas:12,
+    duracao:'4h15min',
+    nivel:'Intermediário',
+    cor:'#7C3AED',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=tecnicas+fixacao+protese+capilar'
+  },
+  {
+    id:3,
+    titulo:'Corte e Personalização de Próteses',
+    desc:'Técnicas profissionais de corte, coloração e personalização para deixar a prótese idêntica ao cabelo natural.',
+    badge:'premium',
+    aulas:15,
+    duracao:'5h00min',
+    nivel:'Avançado',
+    cor:'#D97706',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=corte+personalizacao+protese+capilar'
+  },
+  {
+    id:4,
+    titulo:'Manutenção e Cuidados com a Prótese',
+    desc:'Como orientar seus clientes sobre higienização, manutenção e cuidados para prolongar a vida útil da prótese.',
+    badge:'gratuito',
+    aulas:6,
+    duracao:'1h45min',
+    nivel:'Iniciante',
+    cor:'#16A34A',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=manutencao+protese+capilar'
+  },
+  {
+    id:5,
+    titulo:'Escala de Norwood e Diagnóstico',
+    desc:'Como usar a escala de Norwood para diagnóstico preciso e indicação correta do tipo de prótese ideal para cada cliente.',
+    badge:'novo',
+    aulas:5,
+    duracao:'1h20min',
+    nivel:'Intermediário',
+    cor:'#2563EB',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=escala+norwood+alopecia'
+  },
+  {
+    id:6,
+    titulo:'Gestão e Precificação do Serviço',
+    desc:'Como montar seu negócio de prótese capilar, precificar corretamente e fidelizar clientes.',
+    badge:'novo',
+    aulas:10,
+    duracao:'3h00min',
+    nivel:'Avançado',
+    cor:'#DB2777',
+    progresso:0,
+    link:'https://www.youtube.com/results?search_query=gestao+barbearia+protese+capilar'
+  }
+];
+
+function loadCursos(){
+  const el=id('cursos-lista');if(!el)return;
+  const nivelCor={Iniciante:'#16A34A',Intermediário:'#2563EB',Avançado:'#D97706'};
+
+  el.innerHTML=CURSOS_DATA.map(c=>`
+    <div class="curso-card" onclick="abrirCurso(${c.id})">
+      <div class="curso-thumb" style="background:linear-gradient(135deg,${c.cor}DD,${c.cor}88)">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
+      <div class="curso-info">
+        <span class="curso-badge ${c.badge}">${c.badge.charAt(0).toUpperCase()+c.badge.slice(1)}</span>
+        <div class="curso-titulo">${c.titulo}</div>
+        <div class="curso-desc">${c.desc}</div>
+        <div class="curso-meta">
+          <span>${c.aulas} aulas</span>
+          <span>·</span>
+          <span>${c.duracao}</span>
+          <span>·</span>
+          <span style="color:${nivelCor[c.nivel]||'var(--gray-400)'}">${c.nivel}</span>
+        </div>
+        ${c.progresso>0?`<div class="curso-progress"><div class="curso-progress-bar" style="width:${c.progresso}%"></div></div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px">${c.progresso}% concluído</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function abrirCurso(id){
+  const c=CURSOS_DATA.find(x=>x.id===id);
+  if(!c)return;
+  if(c.badge==='premium'){
+    toast('Curso disponível no plano Profissional ou Enterprise','ok');
+    abrirPlanos();
+    return;
+  }
+  window.open(c.link,'_blank');
+}
+
 function id(x){return document.getElementById(x);}
 function v(x){return(id(x)?.value||'').trim();}
 
@@ -2610,6 +2753,7 @@ function sv(name,el){
   id('tt').textContent=tmap[name]||name;
   if(name==='clientes')loadCli();
   if(name==='sumidos')loadSumidos();
+  if(name==='cursos')loadCursos();
   if(name==='agenda')loadAgenda();
   if(name==='relatorios')loadRel();
   if(name==='equipe')loadEquipe();
