@@ -953,12 +953,16 @@ const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
 let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
-let agDataAtual=new Date(),agProfsSel=[],agView='diario';
+let agDataAtual=new Date(),agProfsSel=[],agView='diario',agProfSemanal=null;
 
 function agSetView(v){
   agView=v;
   id('ag-tab-diario').classList.toggle('active',v==='diario');
   id('ag-tab-semanal').classList.toggle('active',v==='semanal');
+  // Na visão semanal, seleciona o primeiro profissional se ainda não tiver
+  if(v==='semanal'&&!CE&&allProf.length&&!agProfSemanal){
+    agProfSemanal=allProf[0].id;
+  }
   loadAgenda();
 }
 
@@ -1146,7 +1150,36 @@ function renderGradeSemanal(ags,d){
   const dias2=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
   const hoje=new Date();
 
-  let html='<table class="ag-grade-table"><thead><tr><th style="width:60px;background:var(--gray-50);border-bottom:2px solid var(--gray-200)"></th>';
+  // Determina o profissional a exibir
+  let profAtual=null;
+  if(CE){
+    profAtual=CE;
+  } else if(allProf.length){
+    if(!agProfSemanal)agProfSemanal=allProf[0].id;
+    profAtual=allProf.find(p=>p.id===agProfSemanal)||allProf[0];
+    agProfSemanal=profAtual.id;
+  }
+
+  // Seletor de profissional (só para admin)
+  let seletorHtml='';
+  if(!CE&&allProf.length>1){
+    const cor=profAtual?.cor||'#0D6EFD';
+    seletorHtml=`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)">
+      <span style="font-size:13px;color:var(--gray-500);font-weight:500">Profissional:</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${allProf.map(p=>`<button onclick="trocarProfSemanal('${p.id}')" style="padding:4px 12px;border-radius:100px;border:2px solid ${p.id===profAtual?.id?p.cor||'var(--brand)':'var(--gray-200)'};background:${p.id===profAtual?.id?(p.cor||'var(--brand)')+'22':'#fff'};color:${p.id===profAtual?.id?p.cor||'var(--brand)':'var(--gray-500)'};font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px">
+          <span style="width:7px;height:7px;border-radius:50%;background:${p.cor||'#94A3B8'};display:inline-block"></span>${p.nome}
+        </button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Filtra agendamentos pelo profissional selecionado
+  const agsFiltrados=profAtual
+    ? ags.filter(a=>a.profissional_id===profAtual.id)
+    : ags;
+
+  let html=seletorHtml+'<table class="ag-grade-table"><thead><tr><th style="width:60px;background:var(--gray-50);border-bottom:2px solid var(--gray-200)"></th>';
   for(let i=0;i<7;i++){
     const dt=new Date(seg);dt.setDate(seg.getDate()+i);
     const isToday=dt.toDateString()===hoje.toDateString();
@@ -1165,8 +1198,9 @@ function renderGradeSemanal(ags,d){
       const dt=new Date(seg);dt.setDate(seg.getDate()+i);
       const dateStr=dt.toISOString().split('T')[0];
       const hrFull=dateStr+'T'+hrStr+':00';
-      const evs=(ags).filter(a=>{const ah=new Date(a.data_hora);return ah.toDateString()===dt.toDateString()&&ah.getHours()===h;});
-      html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}',null)" ondragover="agDragOver(event,'${hrFull}',null)" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}',null)">`;
+      const profId=profAtual?.id||null;
+      const evs=agsFiltrados.filter(a=>{const ah=new Date(a.data_hora);return ah.toDateString()===dt.toDateString()&&ah.getHours()===h;});
+      html+=`<td class="ag-grade-cell" onclick="abrirAgModal('${hrFull}','${profId||''}')" ondragover="agDragOver(event,'${hrFull}','${profId||''}')" ondragleave="agDragLeave(event)" ondrop="agDrop(event,'${hrFull}','${profId||''}')">`;
       evs.forEach(a=>html+=renderEvCell(a));
       html+='</td>';
     }
@@ -1174,6 +1208,11 @@ function renderGradeSemanal(ags,d){
   }
   html+='</tbody></table>';
   el.innerHTML=html;
+}
+
+function trocarProfSemanal(profId){
+  agProfSemanal=profId;
+  loadAgenda();
 }
 
 function renderEvCell(a){
