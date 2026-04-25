@@ -390,7 +390,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
     <!-- Links -->
     <div class="lp-animate">
-      <div class="lp-section-title">Atalhos</div>
+
       <div class="lp-links" id="lp-links"></div>
     </div>
     <!-- Footer -->
@@ -1205,20 +1205,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--brand);margin-bottom:2px">Cliente</div><div style="font-size:15px;font-weight:700;color:var(--gray-900)" id="an-cli-nome">—</div></div>
     </div>
 
-    <!-- DADOS PESSOAIS -->
-    <div class="ab"><div class="abh"><div class="abt">Dados pessoais</div></div><div class="abb">
-      <div class="fg"><label class="fl">Como nos conheceu</label>
-        <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-          <span class="tog" onclick="togAnam('tg-canal',this)">Facebook</span>
-          <span class="tog" onclick="togAnam('tg-canal',this)">Instagram</span>
-          <span class="tog" onclick="togAnam('tg-canal',this)">Google</span>
-          <span class="tog" onclick="togAnam('tg-canal',this)">Indicação</span>
-          <span class="tog" onclick="togAnam('tg-canal',this)">TikTok</span>
-          <span class="tog" onclick="togAnam('tg-canal',this)">Outros</span>
-        </div>
-      </div>
-    </div></div>
-
     <!-- CABELO -->
     <div class="ab"><div class="abh"><div class="abt">Cabelo</div></div><div class="abb">
       <div class="fg">
@@ -1868,9 +1854,17 @@ async function loadCli(){
 function renderCli(lista){
   const tb=id('tb-cli');
   if(!lista.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const nasc=c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${nasc}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button></td></tr>`;}).join('');
+  tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const nasc=c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${nasc}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button><button class="btn btn-sm btn-danger" onclick="excluirCli('${c.id}','${c.nome}')">Excluir</button></td></tr>`;}).join('');
 }
 function filtrarCli(){const q=v('s-cli-inp').toLowerCase();renderCli(allCli.filter(c=>c.nome.toLowerCase().includes(q)||(c.telefone||'').includes(q)));}
+
+async function excluirCli(cid, nome){
+  if(!confirm(`Excluir o cliente "${nome}" permanentemente? Esta ação não pode ser desfeita.`))return;
+  const{error}=await sb.from('clientes').delete().eq('id',cid);
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Cliente excluído','ok');
+  loadCli();loadCliSels();
+}
 
 let cliEditId=null;
 async function editarCli(cid){
@@ -1934,7 +1928,18 @@ async function verPerfil(cid){
   id('p-nome').textContent=c.nome;id('p-nome2').textContent=c.nome;id('p-meta').textContent=(nv||0)+' visitas';
   id('p-av').textContent=ini;id('p-contato').textContent=[c.telefone,c.email].filter(Boolean).join(' · ')||'Sem contato';
   id('p-badges').innerHTML=`<span class="badge b-blue">${nv||0} visitas</span>`;
-  id('p-info').innerHTML=[c.data_nascimento?`<div>🎂 ${new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR')}</div>`:'',c.observacoes?`<div>📝 ${c.observacoes}</div>`:'',`<div>📅 Desde ${new Date(c.created_at).toLocaleDateString('pt-BR')}</div>`].filter(Boolean).join('');
+  // Monta informações completas do cliente
+  const infos=[];
+  if(c.canal)infos.push({label:'Como nos conheceu',val:c.canal});
+  if(c.data_nascimento)infos.push({label:'Data de nascimento',val:new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR')});
+  if(c.cpf)infos.push({label:'CPF',val:c.cpf});
+  if(c.telefone)infos.push({label:'Telefone',val:c.telefone});
+  if(c.email)infos.push({label:'E-mail',val:c.email});
+  if(c.cep)infos.push({label:'CEP',val:c.cep});
+  if(c.endereco)infos.push({label:'Endereço',val:c.endereco});
+  if(c.observacoes)infos.push({label:'Observações',val:c.observacoes});
+  infos.push({label:'Cliente desde',val:new Date(c.created_at).toLocaleDateString('pt-BR')});
+  id('p-info').innerHTML=infos.map(x=>`<div style="padding:7px 0;border-bottom:1px solid var(--gray-100);display:flex;gap:8px"><span style="color:var(--gray-400);font-size:12px;min-width:130px;flex-shrink:0">${x.label}</span><span style="font-weight:500;color:var(--gray-800)">${x.val}</span></div>`).join('');
   await loadHistorico(cid);await loadAnamPerfil(cid);sv('perfil',null);
 }
 
@@ -1960,9 +1965,6 @@ async function loadAnamPerfil(cid){
   const grauLabel=a.norwood?'Grau '+(graus[a.norwood-1]||a.norwood):null;
 
   const secoes=[
-    {titulo:'Dados pessoais',campos:[
-      ['Como nos conheceu',obs.canal||null],
-    ]},
     {titulo:'Cabelo',campos:[
       ['Tipo de cabelo',a.tipo_alopecia],
       ['Tons de grisalho',a.tempo_alopecia],
@@ -2060,7 +2062,7 @@ async function abrirAnamModal(){
       try{
         const obs=JSON.parse(a.observacoes);
         if(obs.cor_cabelo)document.querySelectorAll('#tg-cor-cabelo .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.cor_cabelo));
-        if(obs.canal)document.querySelectorAll('#tg-canal .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.canal));
+
         if(obs.mat)document.querySelectorAll('#tg-mat .tog').forEach(t=>t.classList.toggle('active',t.textContent.trim()===obs.mat));
         if(obs.medida_testa&&id('an-medida-testa'))id('an-medida-testa').value=obs.medida_testa;
         if(obs.medida_orelha&&id('an-medida-orelha'))id('an-medida-orelha').value=obs.medida_orelha;
@@ -2077,7 +2079,7 @@ async function salvarAnam(){
   const cabelo=document.querySelector('#tg-cabelo .tog.active')?.textContent?.trim();
   const grisalho=document.querySelector('#tg-grisalho .tog.active')?.textContent?.trim();
   const corCabelo=document.querySelector('#tg-cor-cabelo .tog.active')?.textContent?.trim();
-  const canal=document.querySelector('#tg-canal .tog.active')?.textContent?.trim();
+
   const modelo=document.querySelector('#tg-modelo .tog.active')?.textContent?.trim();
   const pele=document.querySelector('#tg-pele .tog.active')?.textContent?.trim();
   const mat=document.querySelector('#tg-mat .tog.active')?.textContent?.trim();
@@ -2095,7 +2097,7 @@ async function salvarAnam(){
     fixacao_pref:fix||null,
     observacoes:JSON.stringify({
       cor_cabelo:corCabelo||null,
-      canal:canal||null,
+
       mat:mat||null,
       medida_testa:id('an-medida-testa')?.value||null,
       medida_orelha:id('an-medida-orelha')?.value||null,
@@ -3111,8 +3113,10 @@ async function salvarLinkPage(){
 
   // Coleta dias ativos
   const diasAtivos=[...document.querySelectorAll('#lp-dias-semana .tog.active')].map(t=>t.textContent.trim());
+  const fotoSalva=localStorage.getItem('bf_lp_foto')||localStorage.getItem('bf_logo')||null;
   
   const dados={
+    foto:fotoSalva,
     nome:id('lp-cfg-nome').value.trim()||'Minha Barbearia',
     bio:id('lp-cfg-bio').value.trim(),
     whatsapp:(id('lp-cfg-wpp').value||'').replace(/[^\d]/g,''),
@@ -3236,10 +3240,10 @@ async function renderizarLinkPage(slug){
   const initials=(dados.nome||'BF').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   if(id('lp-initials'))id('lp-initials').textContent=initials;
 
-  // Logo/foto
-  const logo=localStorage.getItem('bf_lp_foto')||localStorage.getItem('bf_logo');
-  if(logo){
-    id('lp-avatar').innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  // Logo/foto — vem dos dados salvos no banco (não localStorage)
+  const foto=dados.foto||null;
+  if(foto){
+    id('lp-avatar').innerHTML=`<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
   }
 
   // Cidade removida do meta
