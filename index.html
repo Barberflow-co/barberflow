@@ -686,7 +686,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       </div>
     </div>
   </div>
-  <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-ag')">Cancelar</button><button class="btn btn-md btn-primary" onclick="salvarAg()">Confirmar agendamento</button></div>
+  <div class="mf"><button class="btn btn-md btn-ghost" onclick="cm('m-ag')">Cancelar</button><button class="btn btn-md btn-danger" id="btn-excluir-ag" style="display:none" onclick="excluirAg(agEditId)">🗑 Excluir</button><button class="btn btn-md btn-primary" onclick="salvarAg()">Confirmar agendamento</button></div>
 </div></div>
 
 <div class="mo" id="m-eq"><div class="modal">
@@ -1464,6 +1464,97 @@ async function loadAniversarios(){
 // ============================================================
 // AGENDAMENTOS - AÇÕES
 // ============================================================
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function loadDash(){
+  if(!CU)return;
+  const hoje=new Date().toISOString().split('T')[0];
+  if(CE)await loadDashProf(hoje,getOwn());
+  else await loadDashAdmin(hoje,getOwn());
+}
+
+async function loadDashAdmin(hoje,ownId){
+  const mesI=hoje.substring(0,7)+'-01';
+  const[{count:cHoje},{count:cCli},{count:cMes},{data:fat}]=await Promise.all([
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59'),
+    sb.from('clientes').select('*',{count:'exact',head:true}).eq('user_id',ownId),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',mesI),
+    sb.from('agendamentos').select('valor').eq('user_id',ownId).eq('status','finalizado').gte('data_hora',mesI)
+  ]);
+  if(id('s-hoje'))id('s-hoje').textContent=cHoje||0;
+  if(id('s-cli'))id('s-cli').textContent=cCli||0;
+  if(id('s-mes'))id('s-mes').textContent=cMes||0;
+  const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  if(id('s-fat'))id('s-fat').textContent='R$'+fat2.toFixed(0);
+  // Busca agendamentos do dia por profissional
+  const{data:ags}=await sb.from('agendamentos').select('*,clientes(nome),equipe(nome,cor)').eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora');
+  const el=id('dash-body');if(!el)return;
+  if(!ags||!ags.length){el.innerHTML='<div class="card"><div class="sh"><div class="st">Agenda de hoje</div></div><div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div></div>';return;}
+  // Agrupa por profissional
+  const byProf={};
+  ags.forEach(a=>{const pid=a.profissional_id||'sem';if(!byProf[pid])byProf[pid]={nome:a.equipe?.nome||'Sem profissional',cor:a.equipe?.cor||'#94A3B8',ags:[]};byProf[pid].ags.push(a);});
+  el.innerHTML=Object.values(byProf).map(p=>`<div class="card"><div class="sh"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:${p.cor}"></div><div class="st">${p.nome}</div><span class="badge b-gray">${p.ags.length} hoje</span></div></div>${renderAgs(p.ags)}</div>`).join('');
+}
+
+async function loadDashProf(hoje,ownId){
+  const mesI=hoje.substring(0,7)+'-01';
+  const[{data:ags},{count:cMes},{data:fat}]=await Promise.all([
+    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',mesI),
+    sb.from('agendamentos').select('valor').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',mesI)
+  ]);
+  const hoje2=new Date();
+  if(id('s-hoje'))id('s-hoje').textContent=ags?.length||0;
+  if(id('s-cli'))id('s-cli').textContent='—';
+  if(id('s-mes'))id('s-mes').textContent=cMes||0;
+  const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
+  if(id('s-fat'))id('s-fat').textContent='R$'+fat2.toFixed(0);
+  const el=id('dash-body');if(!el)return;
+  el.innerHTML='<div class="card"><div class="sh"><div class="st">Minha agenda de hoje</div></div>'+(ags&&ags.length?renderAgs(ags):'<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nenhum agendamento hoje</div></div>')+'</div>';
+}
+
+function renderAgs(ags){
+  return ags.map(a=>{
+    const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const st=a.status||'aguardando';
+    const bc=st==='confirmado'?'b-green':st==='em_atendimento'?'b-purple':st==='finalizado'?'b-blue':st==='cancelado'?'b-red':'b-yellow';
+    const stLabel={aguardando:'Aguardando',confirmado:'Confirmado',em_atendimento:'Em atendimento',finalizado:'Finalizado',cancelado:'Cancelado'}[st]||st;
+    let btns='';
+    if(st==='aguardando')btns=`<button class="btn btn-sm btn-success" onclick="confAg('${a.id}')">✓</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    else if(st==='confirmado')btns=`<button class="btn btn-sm btn-primary" onclick="iniciarAg('${a.id}')">▶</button><button class="btn btn-sm btn-danger" onclick="cancAg('${a.id}')">✕</button>`;
+    else if(st==='em_atendimento')btns=`<button class="btn btn-sm btn-success" onclick="finalizarAg('${a.id}','${a.cliente_id||''}','${a.profissional||''}')">✅</button>`;
+    return `<div class="ar"><div class="at"><div class="ah">${hr}</div></div><div class="adiv"></div><div class="ai"><div class="an">${a.clientes?.nome||'Cliente'}</div><div class="atp">${a.profissional||'—'}</div></div><span class="badge ${bc}">${stLabel}</span><button class="btn btn-sm btn-outline" onclick="editarAg('${a.id}')" style="padding:4px 7px">✏️</button>${btns}</div>`;
+  }).join('');
+}
+
+async function iniciarAg(agId){
+  await sb.from('agendamentos').update({status:'em_atendimento'}).eq('id',agId);
+  toast('Em atendimento ▶','ok');loadAgenda();loadDash();
+}
+
+async function finalizarAg(agId,cliId,servico){
+  await sb.from('agendamentos').update({status:'finalizado'}).eq('id',agId);
+  await loadCliSels();await loadProfsBD();await loadServsBD();
+  cmdItens=[];
+  if(cliId){id('cmd-cli').value=cliId;}
+  if(CE){id('cmd-prof').value=CE.id;}
+  const sv2=allServs.find(s=>s.nome===servico);
+  if(sv2){cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0});}
+  renderCmdItens();
+  id('m-comanda').classList.add('open');
+  toast('Atendimento finalizado ✓','ok');
+  loadAgenda();loadDash();
+}
+
+async function excluirAg(agId){
+  if(!confirm('Excluir este agendamento permanentemente?'))return;
+  const{error}=await sb.from('agendamentos').delete().eq('id',agId);
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Agendamento excluído','ok');
+  cm('m-ag');loadAgenda();loadDash();
+}
+
 async function confAg(agId){await sb.from('agendamentos').update({status:'confirmado'}).eq('id',agId);toast('Confirmado ✓','ok');loadAgenda();loadDash();}
 async function cancAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
 
@@ -1471,6 +1562,7 @@ function abrirAgModal(hrFull, profId){
   agEditId=null;
   id('m-ag-titulo').textContent='Novo agendamento';
   id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';
+  if(id('btn-excluir-ag'))id('btn-excluir-ag').style.display='none';
   limparCliAg();
   agTab('anam');
   // Preenche data e hora se clicou num horário
@@ -1525,6 +1617,7 @@ async function editarAg(agId){
   if(sv2)id('ag-serv').value=sv2.id;
   // Atualiza botão
   id('m-ag').querySelector('.mf .btn-primary').textContent='Salvar alterações';
+  if(id('btn-excluir-ag'))id('btn-excluir-ag').style.display='inline-flex';
   // Carrega anamnese e histórico
   if(a.cliente_id){await carregarAnamAg(a.cliente_id);await carregarHistoricoAg(a.cliente_id);agTab('anam');}
   id('m-ag').classList.add('open');
