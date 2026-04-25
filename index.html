@@ -901,8 +901,11 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg"><label class="fl">Cliente *</label><select class="fs" id="cmd-cli"><option value="">Selecionar...</option></select></div>
       <div class="fg"><label class="fl">Profissional</label><select class="fs" id="cmd-prof"><option value="">Selecionar...</option></select></div>
     </div>
-    <div class="fg"><label class="fl">Adicionar serviço</label><select class="fs" id="cmd-serv" onchange="addCmdItem()"><option value="">+ Adicionar serviço...</option></select></div>
-    <div id="cmd-itens" style="min-height:50px;border:1px solid var(--gray-200);border-radius:var(--radius);padding:10px;margin-bottom:12px"><div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum serviço adicionado</div></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Adicionar serviço</label><select class="fs" id="cmd-serv" onchange="addCmdItem('serv')"><option value="">+ Adicionar serviço...</option></select></div>
+      <div class="fg"><label class="fl">Adicionar produto</label><select class="fs" id="cmd-prod-sel" onchange="addCmdItem('prod')"><option value="">+ Adicionar produto...</option></select></div>
+    </div>
+    <div id="cmd-itens" style="min-height:50px;border:1px solid var(--gray-200);border-radius:var(--radius);padding:10px;margin-bottom:12px"><div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum item adicionado</div></div>
     <div class="fg2">
       <div class="fg"><label class="fl">Forma de pagamento</label><select class="fs" id="cmd-pag"><option>Pix</option><option>Dinheiro</option><option>Cartão de débito</option><option>Cartão de crédito</option><option>Pendente</option></select></div>
       <div class="fg"><label class="fl">Total</label><div style="padding:10px 13px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:16px;font-weight:700;color:var(--brand)" id="cmd-total">R$ 0,00</div></div>
@@ -1052,7 +1055,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
-let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
+let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],allEstoque=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
 let agDataAtual=new Date(),agProfsSel=[],agView='diario',agProfSemanal=null;
 
 function agSetView(v){
@@ -1846,27 +1849,35 @@ async function finalizarAg(agId,cliId,servico){
   // Busca dados completos do agendamento
   const{data:ag}=await sb.from('agendamentos').select('*').eq('id',agId).single();
   
-  await loadCliSels();await loadProfsBD();await loadServsBD();
+  // Carrega todos os selects PRIMEIRO
+  await loadCliSels();
+  await loadProfsBD();
+  await loadServsBD();
+  await loadCmdEstoque();
+  
   cmdItens=[];
 
-  // Preenche cliente
+  // Preenche DEPOIS de carregar os selects
   const realCliId=ag?.cliente_id||cliId;
-  if(realCliId)id('cmd-cli').value=realCliId;
+  if(realCliId&&id('cmd-cli'))id('cmd-cli').value=realCliId;
 
-  // Preenche profissional — usa o do agendamento ou o logado
-  const realProfId=ag?.profissional_id||null;
-  if(realProfId)id('cmd-prof').value=realProfId;
-  else if(CE)id('cmd-prof').value=CE.id;
+  // Profissional — pequeno delay para garantir que o select foi populado
+  setTimeout(()=>{
+    const realProfId=ag?.profissional_id||null;
+    if(realProfId&&id('cmd-prof')){
+      id('cmd-prof').value=realProfId;
+    } else if(CE&&id('cmd-prof')){
+      id('cmd-prof').value=CE.id;
+    }
+  },100);
 
-  // Preenche serviço com valor do agendamento
+  // Serviço com valor do agendamento
   const nomeServ=ag?.profissional||servico;
   const sv2=allServs.find(s=>s.nome===nomeServ);
   if(sv2){
-    // Usa o valor do agendamento se disponível, senão usa o preço do serviço
     const preco=ag?.valor||sv2.preco||0;
     cmdItens.push({id:sv2.id,nome:sv2.nome,preco:preco});
   } else if(nomeServ&&ag?.valor){
-    // Serviço não encontrado mas tem nome e valor no agendamento
     cmdItens.push({id:'avulso',nome:nomeServ,preco:ag.valor});
   }
 
@@ -2184,16 +2195,29 @@ async function loadComandas(){
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhuma comanda hoje</div></div></td></tr>';return;}
   tb.innerHTML=lista.map(c=>`<tr><td>${c.clientes?.nome||'—'}</td><td>${c.equipe?.nome||'—'}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.servicos||'—'}</td><td>R$${(c.total||0).toFixed(2)}</td><td>${c.forma_pagamento||'—'}</td><td><span class="badge ${c.status==='fechada'?'b-green':'b-yellow'}">${c.status}</span></td><td></td></tr>`).join('');
 }
-function addCmdItem(){
-  const sel=id('cmd-serv');const opt=sel.options[sel.selectedIndex];if(!opt.value)return;
-  const sv2=allServs.find(s=>s.id===opt.value);if(!sv2)return;
-  cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0});renderCmdItens();sel.value='';
+function addCmdItem(tipo){
+  if(tipo==='serv'){
+    const sel=id('cmd-serv');const opt=sel.options[sel.selectedIndex];if(!opt.value)return;
+    const sv2=allServs.find(s=>s.id===opt.value);if(!sv2)return;
+    cmdItens.push({id:sv2.id,nome:sv2.nome,preco:sv2.preco||0,tipo:'serviço'});
+    renderCmdItens();sel.value='';
+  } else if(tipo==='prod'){
+    const sel=id('cmd-prod-sel');const opt=sel.options[sel.selectedIndex];if(!opt.value)return;
+    const pr=allEstoque.find(p=>p.id===opt.value);if(!pr)return;
+    cmdItens.push({id:pr.id,nome:pr.nome,preco:pr.preco_custo||0,tipo:'produto'});
+    renderCmdItens();sel.value='';
+  }
 }
 function renderCmdItens(){
   const el=id('cmd-itens');
-  if(!cmdItens.length){el.innerHTML='<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum serviço adicionado</div>';id('cmd-total').textContent='R$ 0,00';return;}
+  if(!cmdItens.length){el.innerHTML='<div style="text-align:center;color:var(--gray-400);font-size:13px;padding:8px">Nenhum item adicionado</div>';id('cmd-total').textContent='R$ 0,00';return;}
   cmdTotal=cmdItens.reduce((s,i)=>s+i.preco,0);
-  el.innerHTML=cmdItens.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)"><div style="flex:1;font-size:13.5px;font-weight:500">${item.nome}</div><div style="font-size:13.5px;color:var(--brand)">R$${item.preco.toFixed(2)}</div><button class="btn btn-sm btn-ghost" onclick="remCmdItem(${i})" style="padding:2px 6px">×</button></div>`).join('');
+  el.innerHTML=cmdItens.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)">
+    <span style="font-size:11px;padding:2px 7px;border-radius:100px;background:${item.tipo==='produto'?'#FEF3C7':'#DBEAFE'};color:${item.tipo==='produto'?'#92400E':'#1E40AF'};font-weight:500;flex-shrink:0">${item.tipo||'serviço'}</span>
+    <div style="flex:1;font-size:13.5px;font-weight:500">${item.nome}</div>
+    <div style="font-size:13.5px;font-weight:600;color:var(--brand)">R$${item.preco.toFixed(2)}</div>
+    <button class="btn btn-sm btn-ghost" onclick="remCmdItem(${i})" style="padding:2px 6px;color:var(--gray-400)">×</button>
+  </div>`).join('');
   id('cmd-total').textContent='R$ '+cmdTotal.toFixed(2);
 }
 function remCmdItem(i){cmdItens.splice(i,1);renderCmdItens();}
@@ -2307,7 +2331,7 @@ async function salvarCfg(){
 function om(mid){
   if(['m-ag','m-cli','m-comanda'].includes(mid))loadCliSels();
   if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfsBD();loadServsBD();}
-  if(mid==='m-comanda'){loadProfsBD();cmdItens=[];renderCmdItens();}
+  if(mid==='m-comanda'){loadProfsBD();loadCmdEstoque();cmdItens=[];renderCmdItens();}
   if(mid==='m-prod'){prodEditId=null;if(id('m-prod'))id('m-prod').querySelector('.mt').textContent='Novo produto';if(id('m-prod'))id('m-prod').querySelector('.mf .btn-primary').textContent='Adicionar produto';}
   if(mid==='m-serv'){servEditId=null;if(id('m-serv'))id('m-serv').querySelector('.mt').textContent='Novo serviço';if(id('m-serv'))id('m-serv').querySelector('.mf .btn-primary').textContent='Salvar serviço';}
   if(mid==='m-eq'){eqEditId=null;id('m-eq').querySelector('.mt').textContent='Novo profissional';id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';}
@@ -2325,6 +2349,20 @@ function selSc(gid,el){document.querySelectorAll('#'+gid+' .sc-btn').forEach(x=>
 function togCI(el){el.classList.toggle('checked');el.querySelector('.cb').textContent=el.classList.contains('checked')?'✓':'';}
 function toast(msg,type='ok'){const t=id('toast');t.textContent=msg;t.className='toast show '+(type==='ok'?'t-ok':'t-err');setTimeout(()=>t.classList.remove('show'),3500);}
 
+async function loadCmdEstoque(){
+  if(!CU)return;
+  const{data}=await sb.from('estoque').select('*').eq('user_id',getOwn()).order('nome');
+  allEstoque=data||[];
+  const sel=id('cmd-prod-sel');if(!sel)return;
+  sel.innerHTML='<option value="">+ Adicionar produto...</option>';
+  allEstoque.forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.id;
+    o.textContent=p.nome+(p.preco_custo?' · R$'+p.preco_custo:'');
+    sel.appendChild(o);
+  });
+}
+
 async function loadServsBD(){
   if(!CU)return;const{data}=await sb.from('servicos').select('*').eq('user_id',getOwn()).eq('ativo',true).order('nome');
   allServs=data||[];
@@ -2334,7 +2372,13 @@ async function loadServsBD(){
 async function loadProfsBD(){
   if(!CU)return;const{data}=await sb.from('equipe').select('*').eq('user_id',getOwn()).order('nome');
   allProf=data||[];
-  ['ag-prof','cmd-prof'].forEach(sid=>{const sel=id(sid);if(!sel)return;sel.innerHTML='<option value="">Selecionar...</option>';allProf.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.nome;sel.appendChild(o);});});
+  ['ag-prof','cmd-prof'].forEach(sid=>{
+    const sel=id(sid);if(!sel)return;
+    const valorAtual=sel.value; // salva valor atual
+    sel.innerHTML='<option value="">Selecionar...</option>';
+    allProf.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.nome;sel.appendChild(o);});
+    if(valorAtual)sel.value=valorAtual; // restaura valor
+  });
   if(CE){const sel=id('ag-prof');if(sel){sel.value=CE.id;sel.disabled=true;}}
 }
 
