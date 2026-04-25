@@ -1570,7 +1570,7 @@ body.dark #page-app{background:#12121A}
 
 <!-- MODAL ASSINATURA -->
 <div class="mo" id="m-planos" style="z-index:9998">
-  <div class="modal" style="max-width:560px">
+  <div class="modal" style="max-width:600px">
     <div class="mh" style="border-bottom:1px solid var(--gray-100)">
       <div>
         <div class="mt" id="pw-title">Assine o BarberFlow</div>
@@ -1579,37 +1579,80 @@ body.dark #page-app{background:#12121A}
       <button class="mc" id="pw-close-btn" onclick="cm('m-planos')">✕</button>
     </div>
     <div class="mb">
+
       <!-- Aviso trial expirado -->
       <div id="pw-expired-warn" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#991B1B;text-align:center">
-         Seu período de teste de 7 dias expirou. Assine para continuar usando.
+        Seu período de teste de 7 dias expirou. Assine para continuar usando.
       </div>
+
+      <!-- Toggle Mensal / Anual -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px">
+        <span id="pw-label-mensal" style="font-size:14px;font-weight:600;color:var(--brand)">Mensal</span>
+        <div onclick="togglePlanosPeriod()" id="pw-period-toggle" style="width:48px;height:26px;background:var(--gray-200);border-radius:100px;cursor:pointer;position:relative;transition:background .2s">
+          <div id="pw-period-knob" style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>
+        </div>
+        <span id="pw-label-anual" style="font-size:14px;font-weight:500;color:var(--gray-500)">
+          Anual
+          <span style="background:#16A34A;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:4px">-20%</span>
+        </span>
+      </div>
+
+      <!-- Desconto anual info -->
+      <div id="pw-anual-info" style="display:none;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#166534;text-align:center">
+        🎓 <strong>Plano anual inclui acesso a todos os cursos de prótese capilar!</strong> Economize pagando uma vez por ano.
+      </div>
+
       <!-- Cards de planos -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+
+        <!-- Starter -->
         <div class="plan-card" onclick="selPlan(this,'starter')" id="plan-starter">
           <div class="plan-name">Starter</div>
-          <div class="plan-price">R$49<span>/mês</span></div>
-          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
-            ✓ 1 profissional<br>✓ Agenda<br>✓ Clientes<br>✓ Financeiro básico
+          <div class="plan-price" id="price-starter">R$ 49<span>/mês</span></div>
+          <div id="price-starter-anual" style="display:none;font-size:11px;color:var(--gray-400);margin-top:2px">R$ 470/ano</div>
+          <div class="plan-features" style="margin-top:10px;font-size:11px;line-height:1.9;color:var(--gray-500)">
+            ✓ 1 profissional<br>✓ Agenda completa<br>✓ Clientes<br>✓ Financeiro básico<br>✓ Minha página
           </div>
         </div>
+
+        <!-- Profissional -->
         <div class="plan-card" onclick="selPlan(this,'pro')" id="plan-pro" style="border-color:var(--brand)">
           <div class="plan-badge">⭐ Popular</div>
           <div class="plan-name">Profissional</div>
-          <div class="plan-price">R$89<span>/mês</span></div>
-          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
-            ✓ 5 profissionais<br>✓ Tudo do Starter<br>✓ Relatórios<br>✓ Estoque
+          <div class="plan-price" id="price-pro">R$ 89<span>/mês</span></div>
+          <div id="price-pro-anual" style="display:none;font-size:11px;color:var(--gray-400);margin-top:2px">R$ 854/ano</div>
+          <div class="plan-features" style="margin-top:10px;font-size:11px;line-height:1.9;color:var(--gray-500)">
+            ✓ 5 profissionais<br>✓ Tudo do Starter<br>✓ Relatórios avançados<br>✓ Estoque<br>✓ Importar clientes
           </div>
         </div>
+
+        <!-- Enterprise -->
         <div class="plan-card" onclick="selPlan(this,'enterprise')" id="plan-enterprise">
           <div class="plan-name">Enterprise</div>
-          <div class="plan-price">R$189<span>/mês</span></div>
-          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
-            ✓ Ilimitados<br>✓ Tudo do Pro<br>✓ Suporte VIP<br>✓ API acesso
+          <div class="plan-price" id="price-enterprise">R$ 189<span>/mês</span></div>
+          <div id="price-enterprise-anual" style="display:none;font-size:11px;color:var(--gray-400);margin-top:2px">R$ 1.814/ano</div>
+          <div class="plan-features" style="margin-top:10px;font-size:11px;line-height:1.9;color:var(--gray-500)">
+            ✓ Ilimitados<br>✓ Tudo do Pro<br>✓ Suporte VIP<br>✓ Acesso à API<br>✓ Onboarding guiado
           </div>
         </div>
+
       </div>
-      <div style="text-align:center;font-size:12px;color:var(--gray-400);margin-bottom:4px">
-        💳 Cartão de crédito ·  PIX · Cancele quando quiser
+
+      <!-- Benefício cursos anual -->
+      <div id="pw-cursos-benefit" style="display:none;border:1px solid var(--gray-200);border-radius:8px;padding:12px 16px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:8px">🎓 Incluído no plano anual — Cursos exclusivos:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;color:var(--gray-500)">
+          <div>✓ Técnica de aplicação completa</div>
+          <div>✓ Manutenção profissional</div>
+          <div>✓ Coloração e tonalização</div>
+          <div>✓ Vendas e captação de clientes</div>
+          <div>✓ Gestão financeira</div>
+          <div>✓ Marketing para barbearias</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:12px;color:var(--gray-400)">
+        Pix · Cartão · Cancele quando quiser
       </div>
     </div>
     <div class="mf">
@@ -4507,6 +4550,35 @@ let waOpen=false;
 // ============================================================
 const TRIAL_DIAS = 7;
 let planoSelecionado = 'pro';
+let planosPeriod = 'mensal';
+
+function togglePlanosPeriod(){
+  planosPeriod=planosPeriod==='mensal'?'anual':'mensal';
+  const isAnual=planosPeriod==='anual';
+  const knob=id('pw-period-knob');
+  const toggle=id('pw-period-toggle');
+  const labelM=id('pw-label-mensal');
+  const labelA=id('pw-label-anual');
+  const anualInfo=id('pw-anual-info');
+  const cursosBenefit=id('pw-cursos-benefit');
+  if(knob)knob.style.left=isAnual?'25px':'3px';
+  if(toggle)toggle.style.background=isAnual?'var(--brand)':'var(--gray-200)';
+  if(labelM){labelM.style.color=isAnual?'var(--gray-500)':'var(--brand)';labelM.style.fontWeight=isAnual?'500':'600';}
+  if(labelA){labelA.style.color=isAnual?'var(--brand)':'var(--gray-500)';labelA.style.fontWeight=isAnual?'600':'500';}
+  if(anualInfo)anualInfo.style.display=isAnual?'block':'none';
+  if(cursosBenefit)cursosBenefit.style.display=isAnual?'block':'none';
+  const precos={
+    starter:{mensal:'R$ 49<span>/mês</span>',anual:'R$ 39<span>/mês</span>'},
+    pro:{mensal:'R$ 89<span>/mês</span>',anual:'R$ 71<span>/mês</span>'},
+    enterprise:{mensal:'R$ 189<span>/mês</span>',anual:'R$ 151<span>/mês</span>'},
+  };
+  const precosAnual={starter:'R$ 470/ano (economia de R$ 118)',pro:'R$ 854/ano (economia de R$ 214)',enterprise:'R$ 1.814/ano (economia de R$ 454)'};
+  ['starter','pro','enterprise'].forEach(p=>{
+    const el=id('price-'+p);const elA=id('price-'+p+'-anual');
+    if(el)el.innerHTML=precos[p][planosPeriod];
+    if(elA){elA.style.display=isAnual?'block':'none';if(isAnual)elA.textContent=precosAnual[p];}
+  });
+}
 
 function verificarTrial(){
   if(!CP||CE)return; // profissional da equipe não paga
@@ -4553,10 +4625,12 @@ function selPlan(el, plano){
 }
 
 function iniciarPagamento(){
-  const precos={starter:'R$49/mês',pro:'R$89/mês',enterprise:'R$189/mês'};
   const nomes={starter:'Starter',pro:'Profissional',enterprise:'Enterprise'};
-  // Por enquanto abre WhatsApp para fechar o negócio manualmente
-  const msg=encodeURIComponent(`Olá! Quero assinar o plano ${nomes[planoSelecionado]} do BarberFlow (${precos[planoSelecionado]}). Meu e-mail: ${CU?.email||''}`);
+  const precosMensal={starter:'R$ 49/mês',pro:'R$ 89/mês',enterprise:'R$ 189/mês'};
+  const precosAnual={starter:'R$ 470/ano',pro:'R$ 854/ano',enterprise:'R$ 1.814/ano'};
+  const preco=planosPeriod==='anual'?precosAnual[planoSelecionado]:precosMensal[planoSelecionado];
+  const periodo=planosPeriod==='anual'?'anual (inclui cursos)':'mensal';
+  const msg=encodeURIComponent(`Olá! Quero assinar o plano ${nomes[planoSelecionado]} do BarberFlow — ${preco} — cobrança ${periodo}. Meu e-mail: ${CU?.email||''}`);
   window.open(`https://wa.me/5512988535336?text=${msg}`,'_blank');
   toast('Redirecionando para finalizar assinatura...','ok');
 }
