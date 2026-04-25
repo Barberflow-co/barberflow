@@ -1613,25 +1613,28 @@ async function loadSumidos(){
     return;
   }
 
-  // Para cada cliente, busca o último agendamento finalizado
+  // Para cada cliente, busca o último agendamento PAGO (valor > 0 e finalizado)
   const sumidos=[];
   for(const c of clientes){
-    const{data:ags}=await sb.from('agendamentos')
+    // Busca agendamentos pagos (valor > 0 e finalizado)
+    const{data:agsPagos}=await sb.from('agendamentos')
       .select('data_hora,valor')
       .eq('cliente_id',c.id)
       .eq('status','finalizado')
+      .gt('valor',0)
       .order('data_hora',{ascending:false})
       .limit(1);
-    
-    const ultimoAg=ags&&ags.length?ags[0]:null;
-    const ultimaVisita=ultimoAg?new Date(ultimoAg.data_hora):null;
-    
-    // Conta como sumido se: nunca veio OU último atendimento foi antes da data limite
-    if(!ultimaVisita||ultimaVisita<dataLimite){
-      const diasSemVisita=ultimaVisita
-        ?Math.floor((new Date()-ultimaVisita)/(1000*60*60*24))
-        :null;
-      sumidos.push({...c, ultimaVisita, diasSemVisita, ultimoValor:ultimoAg?.valor||0});
+
+    // Se nunca teve serviço pago, ignora
+    if(!agsPagos||!agsPagos.length) continue;
+
+    const ultimoAg=agsPagos[0];
+    const ultimaVisita=new Date(ultimoAg.data_hora);
+
+    // Só conta como sumido se o último serviço PAGO foi antes da data limite
+    if(ultimaVisita<dataLimite){
+      const diasSemVisita=Math.floor((new Date()-ultimaVisita)/(1000*60*60*24));
+      sumidos.push({...c, ultimaVisita, diasSemVisita, ultimoValor:ultimoAg.valor||0});
     }
   }
 
