@@ -280,45 +280,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   <div class="loading-sub">Carregando...</div>
 </div>
 
-<!-- PAYWALL / ASSINATURA -->
-<div class="page" id="page-paywall" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px">
-  <div class="paywall-box">
-    <div class="paywall-logo">BarberFlow</div>
-    <div class="paywall-icon" id="pw-icon">🔒</div>
-    <div class="paywall-title" id="pw-title">Seu período de teste acabou</div>
-    <div class="paywall-sub" id="pw-sub">Escolha um plano para continuar usando o BarberFlow e gerenciar sua barbearia com facilidade.</div>
-    
-    <div class="plan-card" onclick="selPlan(this,'starter')" id="plan-starter">
-      <div class="plan-name">Starter</div>
-      <div class="plan-price">R$49<span>/mês</span></div>
-      <div class="plan-features">✓ 1 profissional · ✓ Agenda · ✓ Clientes · ✓ Financeiro básico</div>
-    </div>
-    
-    <div class="plan-card popular" onclick="selPlan(this,'pro')" id="plan-pro">
-      <div class="plan-badge">⭐ Mais popular</div>
-      <div class="plan-name">Profissional</div>
-      <div class="plan-price">R$89<span>/mês</span></div>
-      <div class="plan-features">✓ Até 5 profissionais · ✓ Tudo do Starter · ✓ Relatórios · ✓ Estoque</div>
-    </div>
-    
-    <div class="plan-card" onclick="selPlan(this,'enterprise')" id="plan-enterprise">
-      <div class="plan-name">Enterprise</div>
-      <div class="plan-price">R$189<span>/mês</span></div>
-      <div class="plan-features">✓ Profissionais ilimitados · ✓ Tudo do Pro · ✓ Suporte prioritário</div>
-    </div>
-
-    <button class="btn btn-primary btn-md" style="width:100%;margin-top:16px;font-size:15px" onclick="iniciarPagamento()">
-      Assinar agora →
-    </button>
-    <div style="margin-top:12px;font-size:12px;color:#94A3B8">
-      Pagamento seguro · Cancele quando quiser
-    </div>
-    <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;color:#94A3B8;font-size:12px;cursor:pointer;text-decoration:underline">
-      Sair da conta
-    </button>
-  </div>
-</div>
-
 <!-- LOGIN -->
 <div class="page active" id="page-login">
   <div class="auth-left">
@@ -434,8 +395,8 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
   </aside>
 
   <div class="main">
-    <div id="trial-bar" style="display:none;background:linear-gradient(90deg,#F59E0B,#EF4444);color:#fff;text-align:center;padding:7px;font-size:13px;font-weight:500;cursor:pointer" onclick="go('paywall')">
-      ⏰ <span id="trial-msg">Período de teste</span> — Clique para assinar
+    <div id="trial-bar" style="display:none;background:linear-gradient(90deg,#F59E0B,#EF4444);color:#fff;text-align:center;padding:7px;font-size:13px;font-weight:500;cursor:pointer" onclick="abrirPlanos()">
+      ⏰ <span id="trial-msg">Período de teste</span> — <strong>Clique para ver os planos</strong>
     </div>
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:12px">
@@ -928,6 +889,59 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         🔗 Abrir WhatsApp Web
       </button>
       <div style="font-size:11px;color:#999;margin-top:12px">Abre em janela separada mas mantém o BarberFlow aberto</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASSINATURA -->
+<div class="mo" id="m-planos" style="z-index:9998">
+  <div class="modal" style="max-width:560px">
+    <div class="mh" style="border-bottom:1px solid var(--gray-100)">
+      <div>
+        <div class="mt" id="pw-title">Assine o BarberFlow</div>
+        <div style="font-size:13px;color:var(--gray-500)" id="pw-sub">Escolha o plano ideal para sua barbearia</div>
+      </div>
+      <button class="mc" id="pw-close-btn" onclick="cm('m-planos')">✕</button>
+    </div>
+    <div class="mb">
+      <!-- Aviso trial expirado -->
+      <div id="pw-expired-warn" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#991B1B;text-align:center">
+        🔒 Seu período de teste de 7 dias expirou. Assine para continuar usando.
+      </div>
+      <!-- Cards de planos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="plan-card" onclick="selPlan(this,'starter')" id="plan-starter">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">R$49<span>/mês</span></div>
+          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
+            ✓ 1 profissional<br>✓ Agenda<br>✓ Clientes<br>✓ Financeiro básico
+          </div>
+        </div>
+        <div class="plan-card" onclick="selPlan(this,'pro')" id="plan-pro" style="border-color:var(--brand)">
+          <div class="plan-badge">⭐ Popular</div>
+          <div class="plan-name">Profissional</div>
+          <div class="plan-price">R$89<span>/mês</span></div>
+          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
+            ✓ 5 profissionais<br>✓ Tudo do Starter<br>✓ Relatórios<br>✓ Estoque
+          </div>
+        </div>
+        <div class="plan-card" onclick="selPlan(this,'enterprise')" id="plan-enterprise">
+          <div class="plan-name">Enterprise</div>
+          <div class="plan-price">R$189<span>/mês</span></div>
+          <div class="plan-features" style="margin-top:8px;font-size:11px;line-height:1.7;color:var(--gray-500)">
+            ✓ Ilimitados<br>✓ Tudo do Pro<br>✓ Suporte VIP<br>✓ API acesso
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--gray-400);margin-bottom:4px">
+        💳 Cartão de crédito · 📱 PIX · Cancele quando quiser
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost btn-md" id="pw-cancel-btn" onclick="cm('m-planos')">Agora não</button>
+      <button class="btn btn-primary btn-md" onclick="iniciarPagamento()" style="min-width:160px">
+        Assinar agora →
+      </button>
     </div>
   </div>
 </div>
@@ -2049,32 +2063,41 @@ const TRIAL_DIAS = 7;
 let planoSelecionado = 'pro';
 
 function verificarTrial(){
-  if(!CP)return;
-  // Admin owner — verifica trial
-  if(CE)return; // profissional da equipe não precisa pagar
-  const criado = new Date(CP.created_at||Date.now());
-  const agora = new Date();
-  const diasPassados = Math.floor((agora - criado) / (1000*60*60*24));
-  const diasRestantes = TRIAL_DIAS - diasPassados;
-  
-  if(diasPassados >= TRIAL_DIAS){
-    // Trial expirado — vai para paywall
-    id('pw-icon').textContent='🔒';
-    id('pw-title').textContent='Seu período de teste acabou';
+  if(!CP||CE)return; // profissional da equipe não paga
+  const criado=new Date(CP.created_at||Date.now());
+  const agora=new Date();
+  const diasPassados=Math.floor((agora-criado)/(1000*60*60*24));
+  const diasRestantes=TRIAL_DIAS-diasPassados;
+
+  if(diasPassados>=TRIAL_DIAS){
+    // Trial expirado — abre modal sem opção de fechar
+    id('pw-title').textContent='Seu período de teste expirou';
     id('pw-sub').textContent='Assine um plano para continuar usando o BarberFlow.';
+    id('pw-expired-warn').style.display='block';
+    id('pw-close-btn').style.display='none';
+    id('pw-cancel-btn').style.display='none';
     id('trial-bar').style.display='none';
-    go('paywall');
+    id('m-planos').classList.add('open');
     return;
   }
-  
-  // Trial ainda ativo — mostra aviso
-  const tb = id('trial-bar');
+
+  // Trial ativo — mostra barra de aviso
+  const tb=id('trial-bar');
   if(tb){
     tb.style.display='block';
-    id('trial-msg').textContent = diasRestantes<=1
-      ? '⚠️ Último dia de teste gratuito!'
-      : `Teste gratuito: ${diasRestantes} dias restantes`;
+    id('trial-msg').textContent=diasRestantes<=1
+      ?'⚠️ Último dia de teste gratuito!'
+      :`Teste gratuito: ${diasRestantes} dia${diasRestantes>1?'s':''} restante${diasRestantes>1?'s':''}`;
   }
+}
+
+function abrirPlanos(){
+  id('pw-title').textContent='Assine o BarberFlow';
+  id('pw-sub').textContent='Escolha o plano ideal para sua barbearia';
+  id('pw-expired-warn').style.display='none';
+  id('pw-close-btn').style.display='flex';
+  id('pw-cancel-btn').style.display='inline-flex';
+  id('m-planos').classList.add('open');
 }
 
 function selPlan(el, plano){
