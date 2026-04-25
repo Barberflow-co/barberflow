@@ -2704,15 +2704,25 @@ async function carregarLinkPageCfg(){
 }
 
 async function renderizarLinkPage(slug){
-  // Busca dados da página pelo slug
-  const{data:profiles}=await sb.from('profiles').select('link_page,nome_barbearia').not('link_page','is',null);
+  // Busca dados da página via fetch direto (funciona sem login)
   let dados=null;
-  for(const p of profiles||[]){
-    try{
-      const d=JSON.parse(p.link_page||'{}');
-      if(d.slug===slug){dados=d;break;}
-    }catch(e){}
-  }
+  try{
+    // Usa fetch direto com a anon key para funcionar sem login
+    const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=not.is.null`,{
+      headers:{
+        'apikey':'sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo',
+        'Authorization':'Bearer sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo'
+      }
+    });
+    const profiles=await res.json();
+    for(const p of profiles||[]){
+      try{
+        const d=JSON.parse(p.link_page||'{}');
+        if(d.slug===slug){dados=d;break;}
+      }catch(e){}
+    }
+  }catch(e){console.error('Erro ao buscar página:',e);}
+
   if(!dados){
     id('lp-nome').textContent='Página não encontrada';
     id('lp-bio').textContent='Este link não existe ou foi removido.';
