@@ -368,10 +368,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 <!-- PÁGINA PÚBLICA DE LINKS -->
 <div class="page" id="page-link">
   <div class="lp-container">
-    <!-- Header com capa e avatar -->
+    <!-- Header com avatar -->
     <div class="lp-header lp-animate">
-      <div class="lp-cover" id="lp-cover"></div>
-      <div class="lp-avatar-wrap">
+      <div class="lp-avatar-wrap" style="position:relative;margin:0 auto;bottom:0;transform:none;left:0;width:100px;height:100px">
         <div id="lp-avatar"><span class="lp-avatar-placeholder" id="lp-initials">BF</span></div>
         <div class="lp-verified">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -383,12 +382,9 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <h1 class="lp-name" id="lp-nome">Barbearia</h1>
       <p class="lp-bio" id="lp-bio"></p>
       <div class="lp-meta">
-        <div class="lp-meta-item" style="color:#22C55E">
-          <span class="lp-status-dot"></span>Aberto agora
-        </div>
-        <div class="lp-meta-item" id="lp-cidade" style="display:none">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span id="lp-cidade-txt"></span>
+        <div class="lp-meta-item" id="lp-status-item">
+          <span class="lp-status-dot" id="lp-status-dot"></span>
+          <span id="lp-status-txt" style="font-weight:500">Aberto agora</span>
         </div>
       </div>
     </div>
@@ -824,6 +820,25 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
               <input class="fi" id="lp-cfg-slug" placeholder="suabarbearia" style="flex:1">
             </div>
           </div>
+          <!-- Horários de funcionamento -->
+          <div class="fg" style="margin-top:4px">
+            <label class="fl">Horário de funcionamento</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+              <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:11px">Abertura</label><input class="fi" type="time" id="lp-hora-abre" value="09:00"></div>
+              <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:11px">Fechamento</label><input class="fi" type="time" id="lp-hora-fecha" value="20:00"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="lp-dias-semana">
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Seg</span>
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Ter</span>
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Qua</span>
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Qui</span>
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Sex</span>
+              <span class="tog active" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Sáb</span>
+              <span class="tog" onclick="selTog('lp-dias-semana',this)" style="font-size:11px">Dom</span>
+            </div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Clique nos dias para ativar/desativar</div>
+          </div>
+
           <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
             <button class="btn btn-primary btn-md" onclick="salvarLinkPage()">Salvar página</button>
             <button class="btn btn-outline btn-md" onclick="verLinkPage()">Visualizar</button>
@@ -2696,6 +2711,9 @@ async function salvarLinkPage(){
   const slug=id('lp-cfg-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
   if(!slug){toast('Defina um link personalizado!','err');return;}
 
+  // Coleta dias ativos
+  const diasAtivos=[...document.querySelectorAll('#lp-dias-semana .tog.active')].map(t=>t.textContent.trim());
+  
   const dados={
     nome:id('lp-cfg-nome').value.trim()||'Minha Barbearia',
     bio:id('lp-cfg-bio').value.trim(),
@@ -2703,7 +2721,10 @@ async function salvarLinkPage(){
     instagram:(id('lp-cfg-ig').value||'').trim().replace('@',''),
     endereco:(id('lp-cfg-end').value||'').trim(),
     slug:slug,
-    user_id:CU.id
+    user_id:CU.id,
+    hora_abre:id('lp-hora-abre')?.value||'09:00',
+    hora_fecha:id('lp-hora-fecha')?.value||'20:00',
+    dias:diasAtivos
   };
 
   // Garante que o profile existe antes de atualizar
@@ -2750,6 +2771,13 @@ async function carregarLinkPageCfg(){
       if(id('lp-cfg-ig'))id('lp-cfg-ig').value=dados.instagram?'@'+dados.instagram:'';
       if(id('lp-cfg-end'))id('lp-cfg-end').value=dados.endereco||'';
       if(id('lp-cfg-slug'))id('lp-cfg-slug').value=dados.slug||'';
+      if(id('lp-hora-abre')&&dados.hora_abre)id('lp-hora-abre').value=dados.hora_abre;
+      if(id('lp-hora-fecha')&&dados.hora_fecha)id('lp-hora-fecha').value=dados.hora_fecha;
+      if(dados.dias){
+        document.querySelectorAll('#lp-dias-semana .tog').forEach(t=>{
+          t.classList.toggle('active',dados.dias.includes(t.textContent.trim()));
+        });
+      }
       const link=`${window.location.origin}?p=${dados.slug}`;
       const box=id('lp-link-box');
       if(box&&dados.slug){box.style.display='block';box.textContent=link;}
@@ -2788,6 +2816,24 @@ async function renderizarLinkPage(slug){
   id('lp-nome').textContent=dados.nome||'Barbearia';
   id('lp-bio').textContent=dados.bio||'';
 
+  // Calcula se está aberto agora
+  const agora=new Date();
+  const diasSemana=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const diaHoje=diasSemana[agora.getDay()];
+  const horaAtual=agora.getHours()*60+agora.getMinutes();
+  const horaAbre=dados.hora_abre?parseInt(dados.hora_abre.split(':')[0])*60+parseInt(dados.hora_abre.split(':')[1]):9*60;
+  const horaFecha=dados.hora_fecha?parseInt(dados.hora_fecha.split(':')[0])*60+parseInt(dados.hora_fecha.split(':')[1]):20*60;
+  const diaAtivo=!dados.dias||dados.dias.includes(diaHoje);
+  const estaAberto=diaAtivo&&horaAtual>=horaAbre&&horaAtual<horaFecha;
+  const dot=id('lp-status-dot');const txt=id('lp-status-txt');
+  if(dot&&txt){
+    dot.style.background=estaAberto?'#22C55E':'#EF4444';
+    dot.style.boxShadow=estaAberto?'0 0 8px #22C55E':'0 0 8px #EF4444';
+    txt.textContent=estaAberto?'Aberto agora':'Fechado';
+    txt.style.color=estaAberto?'#22C55E':'#EF4444';
+    if(dot.style.animation&&!estaAberto)dot.style.animation='none';
+  }
+
   // Iniciais para o avatar placeholder
   const initials=(dados.nome||'BF').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   if(id('lp-initials'))id('lp-initials').textContent=initials;
@@ -2798,16 +2844,10 @@ async function renderizarLinkPage(slug){
     id('lp-avatar').innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
   }
 
-  // Cidade (pega parte do endereço)
-  if(dados.endereco){
-    const parts=dados.endereco.split(',');
-    const cidade=parts[parts.length-1]?.trim()||dados.endereco;
-    const cidEl=id('lp-cidade');
-    if(cidEl){cidEl.style.display='flex';id('lp-cidade-txt').textContent=cidade;}
-  }
+  // Cidade removida do meta
 
   // Gera os botões com novo design
-  const wppMsg=encodeURIComponent('Olá! Vi seu perfil no BarberFlow e gostaria de saber mais sobre seus serviços.');
+  const wppMsg=encodeURIComponent('Olá! Quero agendar um horário.');
   const links=[];
   if(dados.whatsapp){
     links.push({
