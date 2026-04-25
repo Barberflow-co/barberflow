@@ -373,6 +373,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="nav-item nav-wa-btn" onclick="toggleWaPanel()"><span class="nav-icon">💬</span>WhatsApp</div>
       <div class="nav-label nav-cli-lbl" style="margin-top:8px">Clientes</div>
       <div class="nav-item nav-clientes" onclick="sv('clientes',this)"><span class="nav-icon">👥</span>Listagem</div>
+      <div class="nav-item nav-clientes" onclick="sv('sumidos',this)"><span class="nav-icon">👻</span>Sumidos</div>
 
       <div class="nav-item nav-clientes" onclick="sv('aniversarios',this)"><span class="nav-icon">🎂</span>Aniversários</div>
       <div class="nav-label nav-fin-lbl" style="margin-top:8px">Financeiro</div>
@@ -463,6 +464,47 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     </div>
 
     <!-- PERFIL CLIENTE -->
+    <!-- CLIENTES SUMIDOS -->
+    <div class="view" id="view-sumidos">
+      <div class="ph">
+        <div>
+          <div class="pt">👻 Clientes Sumidos</div>
+          <div class="ps" id="sumidos-count">Carregando...</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="font-size:13px;color:var(--gray-500)">Sem visita há mais de</label>
+          <select class="fs" id="sumidos-dias" onchange="loadSumidos()" style="width:130px">
+            <option value="30">30 dias</option>
+            <option value="60" selected>60 dias</option>
+            <option value="90">90 dias</option>
+            <option value="180">6 meses</option>
+            <option value="365">1 ano</option>
+          </select>
+        </div>
+      </div>
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+        <div class="card" style="text-align:center;padding:16px">
+          <div style="font-size:28px;font-weight:700;color:var(--danger)" id="sum-total">0</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:4px">clientes sumidos</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px">
+          <div style="font-size:28px;font-weight:700;color:var(--warn)" id="sum-media">0</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:4px">dias sem visita (média)</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px">
+          <div style="font-size:28px;font-weight:700;color:var(--brand)" id="sum-potencial">R$0</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:4px">receita potencial</div>
+        </div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Cliente</th><th>Telefone</th><th>Último atendimento</th><th>Dias sem visita</th><th></th></tr></thead>
+          <tbody id="tb-sumidos"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="view" id="view-perfil">
       <div class="ph">
         <div style="display:flex;align-items:center;gap:14px">
@@ -1557,6 +1599,92 @@ async function salvarAnam(){
 // ============================================================
 // ANIVERSÁRIOS
 // ============================================================
+async function loadSumidos(){
+  if(!CU)return;
+  const dias=parseInt(id('sumidos-dias')?.value||'60');
+  const dataLimite=new Date();
+  dataLimite.setDate(dataLimite.getDate()-dias);
+  const dataLimiteStr=dataLimite.toISOString();
+  const ownId=getOwn();
+
+  // Busca todos os clientes
+  const{data:clientes}=await sb.from('clientes').select('*').eq('user_id',ownId);
+  if(!clientes||!clientes.length){
+    id('tb-sumidos').innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-icon">👻</div><div class="empty-title">Nenhum cliente cadastrado</div></div></td></tr>';
+    id('sumidos-count').textContent='Nenhum cliente';
+    return;
+  }
+
+  // Para cada cliente, busca o último agendamento finalizado
+  const sumidos=[];
+  for(const c of clientes){
+    const{data:ags}=await sb.from('agendamentos')
+      .select('data_hora,valor')
+      .eq('cliente_id',c.id)
+      .eq('status','finalizado')
+      .order('data_hora',{ascending:false})
+      .limit(1);
+    
+    const ultimoAg=ags&&ags.length?ags[0]:null;
+    const ultimaVisita=ultimoAg?new Date(ultimoAg.data_hora):null;
+    
+    // Conta como sumido se: nunca veio OU último atendimento foi antes da data limite
+    if(!ultimaVisita||ultimaVisita<dataLimite){
+      const diasSemVisita=ultimaVisita
+        ?Math.floor((new Date()-ultimaVisita)/(1000*60*60*24))
+        :null;
+      sumidos.push({...c, ultimaVisita, diasSemVisita, ultimoValor:ultimoAg?.valor||0});
+    }
+  }
+
+  // Ordena por mais tempo sem visita
+  sumidos.sort((a,b)=>{
+    if(!a.ultimaVisita)return-1;
+    if(!b.ultimaVisita)return 1;
+    return b.diasSemVisita-a.diasSemVisita;
+  });
+
+  // Atualiza stats
+  id('sum-total').textContent=sumidos.length;
+  id('sumidos-count').textContent=`${sumidos.length} cliente${sumidos.length!==1?'s':''} sem visita há mais de ${dias} dias`;
+  const mediaTotal=sumidos.filter(c=>c.diasSemVisita).reduce((s,c)=>s+c.diasSemVisita,0);
+  const mediaDias=sumidos.filter(c=>c.diasSemVisita).length;
+  id('sum-media').textContent=mediaDias>0?Math.round(mediaTotal/mediaDias):0;
+  const potencial=sumidos.reduce((s,c)=>s+c.ultimoValor,0);
+  id('sum-potencial').textContent='R$'+potencial.toFixed(0);
+
+  // Renderiza tabela
+  const tb=id('tb-sumidos');
+  if(!sumidos.length){
+    tb.innerHTML=`<tr><td colspan="5"><div class="empty"><div class="empty-icon">🎉</div><div class="empty-title">Nenhum cliente sumido!</div><div class="empty-sub">Todos os clientes visitaram nos últimos ${dias} dias</div></div></td></tr>`;
+    return;
+  }
+
+  tb.innerHTML=sumidos.map(c=>{
+    const tel=(c.telefone||'').replace(/\D/g,'');
+    const nome1=encodeURIComponent(c.nome.split(' ')[0]);
+    const msgWa=encodeURIComponent(`Olá ${c.nome.split(' ')[0]}! 👋 Sentimos sua falta aqui na barbearia. Quando podemos te esperar de volta?`);
+    const ultimaStr=c.ultimaVisita
+      ?c.ultimaVisita.toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'})
+      :'Nunca visitou';
+    const diasStr=c.diasSemVisita?`${c.diasSemVisita} dias`:'—';
+    const urgencia=!c.diasSemVisita||c.diasSemVisita>180?'danger':c.diasSemVisita>90?'warn':'gray-400';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="av" style="background:var(--danger)22;color:var(--danger)">${c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>
+        <div style="font-weight:500">${c.nome}</div>
+      </div></td>
+      <td>${c.telefone||'—'}</td>
+      <td style="color:var(--gray-500);font-size:13px">${ultimaStr}</td>
+      <td><span style="font-weight:600;color:var(--${urgencia})">${diasStr}</span></td>
+      <td style="display:flex;gap:6px">
+        ${tel?`<button class="btn btn-sm btn-success" onclick="window.open('https://wa.me/55${tel}?text=${msgWa}','_blank')" title="Enviar WhatsApp">💬 WhatsApp</button>`:''}
+        <button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
 async function loadAniversarios(){
   if(!CU)return;
   const now=new Date();
@@ -2256,6 +2384,7 @@ function sv(name,el){
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
   id('tt').textContent=tmap[name]||name;
   if(name==='clientes')loadCli();
+  if(name==='sumidos')loadSumidos();
   if(name==='agenda')loadAgenda();
   if(name==='relatorios')loadRel();
   if(name==='equipe')loadEquipe();
