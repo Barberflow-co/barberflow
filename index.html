@@ -3526,12 +3526,9 @@ async function init(){
     setTimeout(carregarLogoSalva, 500);
     try{
       const lastPage=localStorage.getItem('bf_page');
-      // Páginas que dependem de contexto anterior — volta para o pai
-      const paginasPai={perfil:'clientes',sumidos:'clientes',aniversarios:'clientes'};
-      const pageToLoad=paginasPai[lastPage]||lastPage;
-      if(pageToLoad&&pageToLoad!=='dashboard'){
-        const navItem=document.querySelector(`[onclick*="sv('${pageToLoad}'"]`);
-        await sv(pageToLoad,navItem);
+      if(lastPage&&lastPage!=='dashboard'){
+        const navItem=document.querySelector(`[onclick*="sv('${lastPage}'"]`);
+        await sv(lastPage,navItem);
       } else {
         loadDash();
       }
@@ -3589,7 +3586,9 @@ async function sv(name,el){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   const view=id('view-'+name);if(view)view.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
-  try{localStorage.setItem('bf_page',name);}catch(e){}
+  // Salva página pai se for sub-página (perfil volta para clientes)
+  const _savePage={perfil:'clientes'}[name]||name;
+  try{localStorage.setItem('bf_page',_savePage);}catch(e){}
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
   id('tt').textContent=tmap[name]||name;
   if(name==='dashboard')await loadDash();
