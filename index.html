@@ -1256,7 +1256,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div style="background:var(--brand-light);border-radius:var(--radius);padding:12px;margin-bottom:16px;font-size:13px;color:var(--brand)">💡 O profissional poderá acessar o sistema com seu próprio login.</div>
     <div class="fg2">
       <div class="fg"><label class="fl">Nome completo *</label><input class="fi" id="eq-nome" placeholder="Nome do profissional"></div>
-      <div class="fg"><label class="fl">Telefone</label><input class="fi" id="eq-tel" placeholder="(11) 9 9999-9999"></div>
+      <div class="fg"><label class="fl">Telefone</label><input class="fi" id="eq-tel" placeholder="(11) 9 9999-9999" maxlength="16" oninput="mascaraTelInput(this)"></div>
     </div>
     <div class="fg2">
       <div class="fg"><label class="fl">E-mail *</label><input class="fi" id="eq-email" type="email" placeholder="profissional@email.com"></div>
