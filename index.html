@@ -2641,33 +2641,36 @@ function atualizarPreviewLinkPage(){
 }
 
 async function salvarLinkPage(){
-  if(!CU)return;
+  if(!CU){toast('Você precisa estar logado!','err');return;}
+  const slug=id('lp-cfg-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
+  if(!slug){toast('Defina um link personalizado!','err');return;}
+
   const dados={
-    nome:id('lp-cfg-nome').value.trim(),
+    nome:id('lp-cfg-nome').value.trim()||'Minha Barbearia',
     bio:id('lp-cfg-bio').value.trim(),
-    whatsapp:id('lp-cfg-wpp').value.replace(/\D/g,''),
-    instagram:id('lp-cfg-ig').value.trim().replace('@',''),
-    endereco:id('lp-cfg-end').value.trim(),
-    slug:id('lp-cfg-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-'),
+    whatsapp:(id('lp-cfg-wpp').value||'').replace(/[^\d]/g,''),
+    instagram:(id('lp-cfg-ig').value||'').trim().replace('@',''),
+    endereco:(id('lp-cfg-end').value||'').trim(),
+    slug:slug,
     user_id:CU.id
   };
-  if(!dados.slug){toast('Defina um link personalizado!','err');return;}
 
-  // Salva no Supabase na tabela profiles como JSON
-  const{error}=await sb.from('profiles').update({
-    link_page:JSON.stringify(dados)
-  }).eq('id',CU.id);
-
-  if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Página salva!','ok');
+  // Garante que o profile existe antes de atualizar
+  const{data:existing}=await sb.from('profiles').select('id').eq('id',CU.id).single();
   
-  // Mostra o link
+  let error;
+  if(existing){
+    ({error}=await sb.from('profiles').update({link_page:JSON.stringify(dados)}).eq('id',CU.id));
+  } else {
+    ({error}=await sb.from('profiles').insert({id:CU.id,link_page:JSON.stringify(dados)}));
+  }
+
+  if(error){toast('Erro ao salvar: '+error.message,'err');return;}
+  
+  toast('Página salva!','ok');
   const link=`${window.location.origin}?p=${dados.slug}`;
   const box=id('lp-link-box');
-  box.style.display='block';
-  box.textContent=link;
-  
-  // Salva localmente
+  if(box){box.style.display='block';box.textContent=link;}
   try{localStorage.setItem('bf_linkpage',JSON.stringify(dados));}catch(e){}
 }
 
