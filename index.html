@@ -718,6 +718,25 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
     <div class="view" id="view-config">
       <div class="ph"><div><div class="pt">Configurações</div></div></div>
       <div style="max-width:600px;display:flex;flex-direction:column;gap:16px">
+
+        <!-- Logo / Foto -->
+        <div class="card"><div class="st" style="margin-bottom:14px">Logo / Foto do negócio</div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <div id="logo-preview" style="width:80px;height:80px;border-radius:12px;background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer" onclick="document.getElementById('logo-input').click()">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:500;color:var(--gray-700);margin-bottom:4px">Adicionar logo ou foto</div>
+              <div style="font-size:12px;color:var(--gray-400);margin-bottom:10px">PNG, JPG até 2MB. Aparece no sistema e nas comunicações.</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-outline btn-sm" onclick="document.getElementById('logo-input').click()">Escolher imagem</button>
+                <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-500);border:none" id="logo-remove-btn" onclick="removerLogo()" style="display:none">Remover</button>
+              </div>
+              <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="previewLogo(this)">
+            </div>
+          </div>
+        </div>
+
         <div class="card"><div class="st" style="margin-bottom:14px">Dados do negócio</div>
           <div class="fg"><label class="fl">Nome da barbearia</label><input class="fi" id="c-barb"></div>
           <div class="fg2">
@@ -736,7 +755,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
         <div class="card"><div class="st" style="margin-bottom:12px">Plano atual</div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--brand-light);border-radius:var(--radius);padding:14px;border:1px solid rgba(13,110,253,.2)">
             <div><div style="font-weight:600;color:var(--brand)">Plano Trial — 14 dias grátis</div><div style="font-size:12px;color:var(--gray-500);margin-top:3px">Após o trial escolha o plano ideal</div></div>
-            <button class="btn btn-sm btn-primary">Ver planos</button>
+            <button class="btn btn-sm btn-primary" onclick="abrirPlanos()">Ver planos</button>
           </div>
         </div>
       </div>
@@ -2342,6 +2361,68 @@ async function excluirEq(eqId){if(!confirm('Remover profissional?'))return;await
 // ============================================================
 // CONFIG
 // ============================================================
+// ============================================================
+// LOGO / FOTO
+// ============================================================
+function previewLogo(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){toast('Imagem muito grande! Máximo 2MB','err');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const preview=id('logo-preview');
+    preview.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+    preview.style.border='2px solid var(--brand)';
+    id('logo-remove-btn').style.display='inline-flex';
+    // Salva no localStorage por enquanto
+    try{localStorage.setItem('bf_logo',e.target.result);}catch(err){}
+    // Atualiza logo no topbar/sidebar
+    atualizarLogoSidebar(e.target.result);
+    toast('Logo atualizada','ok');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerLogo(){
+  const preview=id('logo-preview');
+  preview.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+  preview.style.border='2px dashed var(--gray-300)';
+  id('logo-remove-btn').style.display='none';
+  try{localStorage.removeItem('bf_logo');}catch(e){}
+  atualizarLogoSidebar(null);
+  toast('Logo removida','ok');
+}
+
+function atualizarLogoSidebar(src){
+  const mark=document.querySelector('.sb-mark');
+  if(!mark)return;
+  if(src){
+    mark.innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
+    mark.style.background='transparent';
+    mark.style.padding='0';
+  } else {
+    mark.innerHTML='BF';
+    mark.style.background='';
+    mark.style.padding='';
+  }
+}
+
+function carregarLogoSalva(){
+  try{
+    const logo=localStorage.getItem('bf_logo');
+    if(logo){
+      const preview=id('logo-preview');
+      if(preview){
+        preview.innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:cover">`;
+        preview.style.border='2px solid var(--brand)';
+        const btn=id('logo-remove-btn');
+        if(btn)btn.style.display='inline-flex';
+      }
+      atualizarLogoSidebar(logo);
+    }
+  }catch(e){}
+}
+
 async function salvarCfg(){
   if(!CU||!CP)return;
   const{error}=await sb.from('profiles').update({nome_barbearia:v('c-barb'),nome:v('c-nome'),telefone:v('c-tel')}).eq('id',CU.id);
@@ -2684,6 +2765,7 @@ async function init(){
     await loadCtx();
     go('app');
     verificarTrial();
+    setTimeout(carregarLogoSalva, 500);
     try{
       const lastPage=localStorage.getItem('bf_page');
       if(lastPage&&lastPage!=='dashboard'){
