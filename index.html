@@ -1175,10 +1175,12 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
       <div class="fg2">
         <div class="fg"><label class="fl">Como nos conheceu</label>
           <div id="tg-canal" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <span class="tog" onclick="selTog('tg-canal',this)">Instagram</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Indicação</span>
-            <span class="tog" onclick="selTog('tg-canal',this)">Google</span>
             <span class="tog" onclick="selTog('tg-canal',this)">Facebook</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Instagram</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Google</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Indicação</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">TikTok</span>
+            <span class="tog" onclick="selTog('tg-canal',this)">Outros</span>
           </div>
         </div>
       </div>
@@ -1954,9 +1956,64 @@ async function loadHistorico(cid){
 async function loadAnamPerfil(cid){
   const{data}=await sb.from('anamneses').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(1);
   const el=id('p-anam');
-  if(!data||!data.length){el.innerHTML='<div class="empty"><div class="empty-title">Sem anamnese cadastrada</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="abrirAnamModal()">Preencher anamnese</button></div>';return;}
+  if(!data||!data.length){
+    el.innerHTML='<div class="empty"><div class="empty-title">Sem anamnese cadastrada</div><button class="btn btn-md btn-primary" style="margin-top:12px" onclick="abrirAnamModal()">Preencher anamnese</button></div>';
+    return;
+  }
   const a=data[0];
-  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13.5px">${[['Tipo de cabelo',a.tipo_alopecia],['Grau de calvície',a.norwood?'Grau '+a.norwood:null],['Tipo de pele',a.tipo_pele],['Material',a.material_pref],['Fixação',a.fixacao_pref],['Alergias',a.alergias]].filter(x=>x[1]).map(x=>`<div><strong>${x[0]}:</strong><br>${x[1]}</div>`).join('')}${a.observacoes?`<div style="grid-column:1/-1"><strong>Obs:</strong> ${a.observacoes}</div>`:''}</div>`;
+  let obs={};
+  try{if(a.observacoes)obs=JSON.parse(a.observacoes);}catch(e){}
+
+  const graus=['III','IV','V','VI','VII'];
+  const grauLabel=a.norwood?'Grau '+(graus[a.norwood-3]||a.norwood):null;
+
+  const secoes=[
+    {titulo:'Dados pessoais',campos:[
+      ['Como nos conheceu',obs.canal||null],
+    ]},
+    {titulo:'Cabelo',campos:[
+      ['Tipo de cabelo',a.tipo_alopecia],
+      ['Tons de grisalho',a.tempo_alopecia],
+      ['Cor do cabelo',obs.cor_cabelo||null],
+      ['Grau de calvície',grauLabel],
+    ]},
+    {titulo:'Prótese',campos:[
+      ['Modelo',a.material_pref],
+      ['Fixação',a.fixacao_pref],
+      ['Testa / Nuca',obs.medida_testa?obs.medida_testa+' cm':null],
+      ['Orelha a Orelha',obs.medida_orelha?obs.medida_orelha+' cm':null],
+    ]},
+    {titulo:'Saúde',campos:[
+      ['Tipo de pele',a.tipo_pele],
+      ['Alergias',a.alergias],
+      ['Medicamentos',a.medicamentos],
+    ]},
+  ];
+
+  let html='';
+  secoes.forEach(s=>{
+    const camposFiltrados=s.campos.filter(c=>c[1]);
+    if(!camposFiltrados.length)return;
+    html+=`<div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:8px">${s.titulo}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${camposFiltrados.map(c=>`<div style="background:var(--gray-50);border-radius:8px;padding:10px 12px">
+          <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">${c[0]}</div>
+          <div style="font-size:13.5px;font-weight:500;color:var(--gray-800)">${c[1]}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  const obsText=obs.obs||(!obs.canal&&typeof a.observacoes==='string'?a.observacoes:null);
+  if(obsText)html+=`<div style="background:var(--gray-50);border-radius:8px;padding:10px 12px;margin-top:4px">
+    <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">Observações</div>
+    <div style="font-size:13.5px;color:var(--gray-700)">${obsText}</div>
+  </div>`;
+
+  if(!html)html='<div class="empty"><div class="empty-title">Ficha sem dados preenchidos</div></div>';
+  html+=`<button class="btn btn-outline btn-sm" style="margin-top:14px;width:100%" onclick="abrirAnamModal()">Editar ficha de anamnese</button>`;
+  el.innerHTML=html;
 }
 
 function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');id('p-historico').style.display=tab==='historico'?'block':'none';id('p-anam').style.display=tab==='anam'?'block':'none';}
