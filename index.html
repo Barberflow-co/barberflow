@@ -1535,21 +1535,31 @@ async function salvarAg(){
   if(!cliId||!data||!hora){toast('Preencha os campos obrigatórios!','err');return;}
   const profId=v('ag-prof');const servId=v('ag-serv');
   const sv2=allServs.find(s=>s.id===servId);
-  const servNome=sv2?sv2.nome:(servId||v('ag-serv'));
+  const servNome=sv2?sv2.nome:(servId||'');
   const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
   const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
+
+  // Fecha o modal IMEDIATAMENTE sem esperar o banco
+  agEditId=null;
+  cm('m-ag');
+  limpar('m-ag');
+  id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';
+
+  // Salva no banco em background
   let error;
   if(agEditId){
     ({error}=await sb.from('agendamentos').update(dados).eq('id',agEditId));
-    if(!error)toast('Agendamento atualizado ✓','ok');
   } else {
     ({error}=await sb.from('agendamentos').insert({user_id:ownId,...dados}));
-    if(!error)toast('Agendamento criado ✓','ok');
   }
   if(error){toast('Erro: '+error.message,'err');return;}
-  agEditId=null;
-  id('m-ag').querySelector('.mf .btn-primary').textContent='Confirmar agendamento';
-  cm('m-ag');loadDash();loadAgenda();limpar('m-ag');
+  
+  toast('Agendamento salvo ✓','ok');
+  
+  // Navega para o dia do agendamento e recarrega
+  agDataAtual=new Date(data+'T12:00');
+  loadAgenda();
+  loadDash();
 }
 
 // ============================================================
@@ -1887,6 +1897,21 @@ async function loadCtx(){
     }
   }
   await loadServsBD();await loadProfsBD();await loadCliSels();
+  // Ativa realtime — atualiza agenda automaticamente quando há mudanças
+  ativarRealtime();
+}
+
+function ativarRealtime(){
+  try{
+    sb.channel('agendamentos-changes')
+      .on('postgres_changes',{event:'*',schema:'public',table:'agendamentos'},()=>{
+        // Recarrega agenda e dashboard automaticamente
+        const agView=document.getElementById('view-agenda');
+        if(agView&&agView.classList.contains('active'))loadAgenda();
+        loadDash();
+      })
+      .subscribe();
+  }catch(e){console.log('Realtime não disponível');}
 }
 
 function go(p){
