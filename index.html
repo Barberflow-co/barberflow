@@ -3343,6 +3343,7 @@ function sv(name,el){
   try{localStorage.setItem('bf_page',name);}catch(e){}
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
   id('tt').textContent=tmap[name]||name;
+  if(name==='dashboard')loadDash();
   if(name==='clientes')loadCli();
   if(name==='sumidos')loadSumidos();
   if(name==='cursos')loadCursos();
