@@ -402,7 +402,6 @@ body.dark .nav-item.active{background:#1E2A4A!important;color:#4D8BFF!important}
 body.dark .nav-label{color:#9A9ABE!important;font-weight:600!important;background:transparent!important}
 body.dark .tabs,body.dark .tab{border-color:#2A2A3E!important;color:#A0A0BE!important;background:transparent!important}
 body.dark .tab.active{border-color:#4D8BFF!important;color:#4D8BFF!important}
-body.dark .ab{border-color:#2A2A3E!important}
 body.dark .abh{background:#1E1E2E!important;border-color:#2A2A3E!important}
 body.dark .abt{color:#EBEBFF!important}
 body.dark .ar{border-color:#2A2A3E!important;background:transparent!important}
@@ -428,12 +427,10 @@ body.dark [style*="background:var(--gray-50)"],[style*="background: var(--gray-5
 body.dark [style*="color:var(--gray-"]{color:#A0A0BE!important}
 body.dark [style*="border-bottom:1px solid var(--gray-100)"]{border-color:#2A2A3E!important}
 body.dark [style*="border:1px solid var(--gray-200)"]{border-color:#2A2A3E!important}
-body.dark .sb-brand{border-color:#2A2A3E!important}
 body.dark .u-name{color:#EBEBFF!important}
 body.dark .u-role{color:#A0A0BE!important}
 body.dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1)}
 /* Elementos específicos faltando */
-body.dark #trial-bar{background:#1E3A5F!important;color:#93C5FD!important;border-color:#1E40AF!important}
 body.dark #trial-bar *{color:#93C5FD!important}
 body.dark .perm-badge{background:#2A2A3E!important;color:#A0A0BE!important;border-color:#3A3A52!important}
 body.dark .perm-admin{background:#1E2A4A!important;color:#93C5FD!important;border-color:#1E40AF!important}
@@ -445,9 +442,6 @@ body.dark .badge.b-green{background:#1E3A2A!important;color:#86EFAC!important}
 body.dark .badge.b-red{background:#3A1E1E!important;color:#FCA5A5!important}
 body.dark .badge.b-blue{background:#1E2A3A!important;color:#93C5FD!important}
 body.dark .badge.b-gray{background:#2A2A3E!important;color:#A0A0BE!important}
-body.dark .ag-view-tabs{background:#16161E!important;border-color:#2A2A3E!important}
-body.dark .ag-view-tab{color:#A0A0BE!important;border-color:transparent!important}
-body.dark .ag-view-tab.active{color:#4D8BFF!important;border-color:#4D8BFF!important}
 body.dark .ag-topbar,body.dark #view-agenda>div:first-child{background:#16161E!important;border-color:#2A2A3E!important}
 body.dark .ag-topbar *,body.dark #view-agenda>div:first-child *{color:#EBEBFF!important}
 body.dark .btn-sm.btn-outline{background:transparent!important}
@@ -923,36 +917,6 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
     </div>
 
     <!-- ANAMNESE -->
-    <div class="view" id="view-anamnese">
-      <div class="ph"><div><div class="pt">Ficha de Anamnese</div><div class="ps">Preencha na primeira consulta</div></div><button class="btn btn-md btn-primary" onclick="salvarAnam()">Salvar ficha</button></div>
-      <div style="max-width:800px">
-        <div class="fg" style="margin-bottom:20px"><label class="fl">Cliente *</label><select class="fs" id="an-cli-view"><option value="">Selecionar cliente...</option></select></div>
-        <div class="ab"><div class="abh"><span style="font-size:18px"></span><div class="abt">Tipo de cabelo</div></div><div class="abb">
-          <div class="fg2">
-            <div class="fg"><label class="fl">Tipo de alopecia</label><select class="fs" id="an-tipo"><option value="">Selecionar...</option><option>Alopecia androgenética</option><option>Alopecia areata</option><option>Alopecia totalis</option><option>Quimioterapia/radioterapia</option><option>Tricotilomania</option><option>Outra</option></select></div>
-            <div class="fg"><label class="fl">Há quanto tempo</label><select class="fs" id="an-tempo"><option>Menos de 1 ano</option><option>1 a 3 anos</option><option>3 a 5 anos</option><option>Mais de 5 anos</option></select></div>
-          </div>
-          <div class="fg"><label class="fl">Grau de calvície</label><div class="sc-row" id="norwood"><div class="sc-btn" onclick="selSc('norwood',this)">I</div><div class="sc-btn" onclick="selSc('norwood',this)">II</div><div class="sc-btn" onclick="selSc('norwood',this)">III</div><div class="sc-btn" onclick="selSc('norwood',this)">IV</div><div class="sc-btn" onclick="selSc('norwood',this)">V</div><div class="sc-btn" onclick="selSc('norwood',this)">VI</div><div class="sc-btn" onclick="selSc('norwood',this)">VII</div></div></div>
-        </div></div>
-        <div class="ab"><div class="abh"><div class="abt">Saúde</div></div><div class="abb">
-          <div class="fg2">
-            <div class="fg"><label class="fl">Alergias</label><input class="fi" id="an-alergia-view" placeholder="Ex: cola látex..."></div>
-            <div class="fg"><label class="fl">Medicamentos</label><input class="fi" id="an-med-view" placeholder="Ex: Finasterida..."></div>
-          </div>
-          <div class="fg"><label class="fl">Tipo de pele</label><div id="tg-pele-view"><span class="tog active" onclick="selTog('tg-pele',this)">Seca</span><span class="tog" onclick="selTog('tg-pele',this)">Normal</span><span class="tog" onclick="selTog('tg-pele',this)">Oleosa</span><span class="tog" onclick="selTog('tg-pele',this)">Mista</span></div></div>
-        </div></div>
-        <div class="ab"><div class="abh"><div class="abt">Preferências</div></div><div class="abb">
-          <div class="fg3">
-            <div class="fg"><label class="fl">Material</label><div id="tg-mat-view"><span class="tog active" onclick="selTog('tg-mat',this)">Humano</span><span class="tog" onclick="selTog('tg-mat',this)">Sintético</span><span class="tog" onclick="selTog('tg-mat',this)">Misto</span></div></div>
-            <div class="fg"><label class="fl">Fixação</label><div id="tg-fix-view"><span class="tog" onclick="selTog('tg-fix',this)">Fita</span><span class="tog active" onclick="selTog('tg-fix',this)">Cola</span><span class="tog" onclick="selTog('tg-fix',this)">Ambas</span></div></div>
-            <div class="fg"><label class="fl">Esportes?</label><div id="tg-esp"><span class="tog active" onclick="selTog('tg-esp',this)">Sim</span><span class="tog" onclick="selTog('tg-esp',this)">Não</span></div></div>
-          </div>
-          <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="an-obs-view" placeholder="Informações importantes..."></textarea></div>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- ANIVERSÁRIOS -->
     <div class="view" id="view-aniversarios">
       <div class="ph"><div><div class="pt">Aniversários</div><div class="ps">Clientes que fazem aniversário este mês</div></div></div>
       <div id="aniv-lista"></div>
@@ -4456,33 +4420,6 @@ function togNorwood(el, grau){
   }
 }
 
-function toggleDarkMode(){
-  const dark=document.body.classList.toggle('dark');
-  const icon=id('sb-dark-icon');
-  const label=id('sb-dark-label');
-  if(dark){
-    // Ícone sol (modo claro)
-    icon.innerHTML='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-    if(label)label.textContent='Modo claro';
-  } else {
-    icon.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-    if(label)label.textContent='Modo escuro';
-  }
-  try{localStorage.setItem('bf_dark',dark?'1':'0');}catch(e){}
-}
-
-function toggleSidebar(){
-  const sb=id('sidebar');
-  const main=document.querySelector('.main');
-  const icon=id('sb-toggle-icon');
-  const label=document.querySelector('.sb-toggle-label');
-  const collapsed=sb.classList.toggle('collapsed');
-  if(main)main.style.marginLeft=collapsed?'56px':'var(--sidebar-w)';
-  // Rotaciona ícone
-  if(icon)icon.style.transform=collapsed?'rotate(180deg)':'rotate(0deg)';
-  try{localStorage.setItem('bf_sb_collapsed',collapsed?'1':'0');}catch(e){}
-}
-
 function mascaraTelInput(el){
   let v=el.value.replace(/\D/g,'').substring(0,11);
   if(v.length===11)v=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3');
@@ -4605,26 +4542,6 @@ async function selecionarCliAg(cliId,nome,tel){
   await carregarAnamAg(cliId);
   await carregarHistoricoAg(cliId);
   agTab('anam');
-}
-
-function limparCliAg(){
-  id('ag-cli').value='';
-  id('ag-cli-busca').value='';
-  const sel=id('ag-cli-selecionado');
-  if(sel)sel.style.display='none';
-  const prev=id('ag-anam-preview');
-  if(prev)prev.innerHTML='<div style="text-align:center;color:var(--gray-500);padding:20px"><div style="font-size:24px;margin-bottom:8px">📋</div><div>Selecione um cliente para ver a anamnese</div></div>';
-  const hist=id('ag-hist-preview');
-  if(hist)hist.innerHTML='<div style="text-align:center;color:var(--gray-400);padding:20px"><div style="font-size:24px;margin-bottom:8px">🕐</div><div>Selecione um cliente para ver o histórico</div></div>';
-}
-
-async function cadastrarEAgendar(nome){
-  id('ag-cli-lista').style.display='none';
-  const{error,data}=await sb.from('clientes').insert({user_id:getOwn(),nome}).select().single();
-  if(error){toast('Erro ao cadastrar: '+error.message,'err');return;}
-  toast('Cliente cadastrado','ok');
-  await selecionarCliAg(data.id,data.nome,'');
-  await loadCliSels();
 }
 
 // Fecha dropdown ao clicar fora
