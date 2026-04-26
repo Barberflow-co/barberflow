@@ -3842,17 +3842,41 @@ async function salvarEq(){
   const nome=v('eq-nome'),email=v('eq-email');if(!nome||!email){toast('Nome e e-mail obrigatórios!','err');return;}
   const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),cor:corSel};
   let error;
-  if(eqEditId){({error}=await sb.from('equipe').update(dados).eq('id',eqEditId));if(!error)toast('Atualizado','ok');}
-  else{
+  if(eqEditId){
+    ({error}=await sb.from('equipe').update(dados).eq('id',eqEditId));
+    if(!error)toast('Atualizado','ok');
+  } else {
     ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
     if(!error){
-      toast('Profissional cadastrado','ok');
-      // Só redireciona para agenda se permissão for "profissional"
+      toast('Membro cadastrado','ok');
+      // Envia convite por e-mail apenas para permissão "profissional"
       if(dados.permissao==='profissional'){
+        toast('Enviando convite por e-mail...','ok');
+        // Usa signUp com senha temporária — profissional recebe e-mail de confirmação
+        const{data:invData,error:invErr}=await sb.auth.admin?.inviteUserByEmail
+          ? await sb.auth.admin.inviteUserByEmail(email,{
+              data:{nome,permissao:'profissional',owner_id:getOwn()},
+              redirectTo:window.location.origin
+            })
+          // Fallback: cria conta com senha temporária e manda e-mail de reset
+          : await sb.auth.signUp({
+              email,
+              password:Math.random().toString(36).slice(-12)+'A1!',
+              options:{
+                data:{nome,permissao:'profissional',owner_id:getOwn()},
+                emailRedirectTo:window.location.origin
+              }
+            });
+        if(invErr){
+          toast('Cadastrado! Mas erro ao enviar e-mail: '+invErr.message,'err');
+        } else {
+          toast(`Convite enviado para ${email}! O profissional receberá um e-mail para acessar a agenda.`,'ok');
+        }
+        // Redireciona para agenda
         setTimeout(()=>{
           const navItem=document.querySelector('[onclick*="sv(\'agenda\'"]');
           sv('agenda',navItem);
-        },600);
+        },1500);
       }
     }
   }
@@ -4866,6 +4890,24 @@ async function init(){
 async function loadCtx(){
   if(!CU)return;
   const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
+  // Verifica se é membro de equipe de outro usuário (profissional convidado)
+  if(!prof){
+    // Busca na tabela equipe pelo e-mail
+    const{data:eqMembro}=await sb.from('equipe').select('*').eq('email',CU.email).limit(1);
+    if(eqMembro&&eqMembro.length){
+      const membro=eqMembro[0];
+      CE=membro;
+      CP={nome_barbearia:'BarberFlow',logo:null};
+      id('u-name').textContent=membro.nome;
+      id('u-role').textContent=membro.permissao||'profissional';
+      id('u-av').textContent=membro.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+      // Atualiza auth_user_id na equipe
+      if(!membro.auth_user_id){
+        await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
+      }
+      return;
+    }
+  }
   if(prof){
     CP=prof;CE=null;applyPerm('admin');
     setUI(prof.nome||'Admin','Admin — Proprietário','#0D6EFD');
