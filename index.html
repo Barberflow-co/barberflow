@@ -3843,7 +3843,20 @@ async function salvarEq(){
   const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),cor:corSel};
   let error;
   if(eqEditId){({error}=await sb.from('equipe').update(dados).eq('id',eqEditId));if(!error)toast('Atualizado','ok');}
-  else{({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));if(!error)toast('Profissional cadastrado','ok');}
+  else{
+    ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
+    if(!error){
+      toast('Profissional cadastrado','ok');
+      // Só mostra link da agenda para permissão "profissional"
+      if(dados.permissao==='profissional'){
+        setTimeout(()=>{
+          if(confirm(`${nome} foi cadastrado!\n\nDeseja abrir a agenda agora para visualizar os agendamentos?`)){
+            sv('agenda', document.querySelector('[onclick*="sv(\'agenda\'"]'));
+          }
+        }, 500);
+      }
+    }
+  }
   if(error){toast('Erro: '+error.message,'err');return;}
   eqEditId=null;cm('m-eq');limpar('m-eq');
   id('m-eq').querySelector('.mt').textContent='Novo profissional';
