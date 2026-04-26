@@ -1799,7 +1799,6 @@ function miniCalSel(day,m,y){
 async function loadAgenda(){
   if(!CU)return;
   const ownId=getOwn();
-  renderMiniCal();
   // Label de data
   const d=agDataAtual;
   const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -1826,6 +1825,7 @@ async function loadAgenda(){
   if(CE)qMes=qMes.eq('profissional_id',CE.id);
   const{data:agMes}=await qMes;
   agDiasComAg=new Set((agMes||[]).map(a=>a.data_hora.split('T')[0]));
+  renderMiniCal(); // Renderiza APÓS ter os dados dos dias com agendamentos
   const pfEl=id('ag-prof-filtro');
   if(pfEl){
     if(!CE&&allProf.length){
@@ -3883,25 +3883,32 @@ async function salvarEq(){
         const senha=v('eq-senha');
         if(senha&&senha.length>=6){
           try{
-            const SUPA_URL='https://owanynpsbutuhcaclkif.supabase.co';
-            const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
-            await fetch(`${SUPA_URL}/auth/v1/signup`,{
-              method:'POST',
-              headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-              body:JSON.stringify({email,password:senha,data:{nome,permissao:'profissional',owner_id:getOwn()}})
+            // Salva sessão atual ANTES do signUp (signUp troca a sessão)
+            const{data:{session:sessaoAtual}}=await sb.auth.getSession();
+            const{error:signErr}=await sb.auth.signUp({
+              email,password:senha,
+              options:{data:{nome,permissao:'profissional',owner_id:getOwn()}}
             });
-            toast(`✅ ${nome} cadastrado! Login: ${email} | Senha: ${senha}`,'ok');
-            // Abre WhatsApp com as credenciais
-            if(dados.telefone){
-              const tel=(dados.telefone||'').replace(/\D/g,'');
-              const msg=encodeURIComponent(`Olá ${nome}! Seu acesso ao sistema foi criado:\n\n🌐 Site: ${window.location.origin}\n📧 Login: ${email}\n🔑 Senha: ${senha}\n\nGuarde bem sua senha!`);
-              setTimeout(()=>window.open(`https://wa.me/55${tel}?text=${msg}`,'_blank'),500);
+            // Restaura sessão do admin imediatamente
+            if(sessaoAtual){
+              await sb.auth.setSession({
+                access_token:sessaoAtual.access_token,
+                refresh_token:sessaoAtual.refresh_token
+              });
             }
-          }catch(e){
-            toast(`✅ ${nome} cadastrado!`,'ok');
-          }
+            if(signErr&&signErr.message!=='User already registered'){
+              toast('Cadastrado! Erro ao criar acesso: '+signErr.message,'err');
+            } else {
+              toast(`✅ ${nome} cadastrado! Login: ${email} | Senha: ${senha}`,'ok');
+              if(dados.telefone){
+                const tel=(dados.telefone||'').replace(/\D/g,'');
+                const msg=encodeURIComponent(`Olá ${nome}! Seu acesso ao BarberFlow foi criado:\n\n🌐 ${window.location.origin}\n📧 Login: ${email}\n🔑 Senha: ${senha}\n\nGuarde bem sua senha!`);
+                setTimeout(()=>window.open(`https://wa.me/55${tel}?text=${msg}`,'_blank'),500);
+              }
+            }
+          }catch(e){toast(`✅ ${nome} cadastrado!`,'ok');}
         } else {
-          toast(`✅ ${nome} cadastrado! Defina uma senha para ele acessar o sistema.`,'ok');
+          toast(`✅ ${nome} cadastrado! Defina uma senha para ele acessar.`,'ok');
         }
       } else {
         toast('Membro cadastrado com sucesso!','ok');
