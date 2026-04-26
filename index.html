@@ -4506,14 +4506,18 @@ async function loadServsBD(){
 }
 
 async function loadProfsBD(){
-  if(!CU)return;const{data}=await sb.from('equipe').select('*').eq('user_id',getOwn()).order('nome');
-  allProf=data||[];
+  if(!CU)return;
+  const{data}=await sb.from('equipe').select('*').eq('user_id',getOwn()).order('nome');
+  const todos=data||[];
+  // allProf = só permissão "profissional" — usados nas colunas da agenda
+  allProf=todos.filter(p=>p.permissao==='profissional');
+  // Selects de agendamento/comanda usam só profissionais também
   ['ag-prof','cmd-prof'].forEach(sid=>{
     const sel=id(sid);if(!sel)return;
-    const valorAtual=sel.value; // salva valor atual
+    const valorAtual=sel.value;
     sel.innerHTML='<option value="">Selecionar...</option>';
     allProf.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.nome;sel.appendChild(o);});
-    if(valorAtual)sel.value=valorAtual; // restaura valor
+    if(valorAtual)sel.value=valorAtual;
   });
   if(CE){const sel=id('ag-prof');if(sel){sel.value=CE.id;sel.disabled=true;}}
 }
