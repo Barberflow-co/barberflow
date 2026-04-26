@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BarberFlow — Sistema para Prótese Capilar</title>
+  <!-- v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -4977,7 +4978,7 @@ async function loadCtx(){
       // Esconde menu para profissional — só Dashboard e Agenda
       if(membro.permissao==='profissional'){
         document.body.classList.add('is-prof');
-        setTimeout(()=>aplicarMenuProf(),200);
+        aplicarMenuProf();setTimeout(()=>aplicarMenuProf(),500);
       }
       // Atualiza auth_user_id na equipe
       if(!membro.auth_user_id){
