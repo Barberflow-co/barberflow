@@ -1820,7 +1820,8 @@ async function loadAgenda(){
   // Busca dias com agendamentos no mês para o mini calendário
   const dMes=agDataAtual;
   const mesIni=`${dMes.getFullYear()}-${String(dMes.getMonth()+1).padStart(2,'0')}-01`;
-  const mesFim=`${dMes.getFullYear()}-${String(dMes.getMonth()+1).padStart(2,'0')}-31`;
+  const ultimoDia=new Date(dMes.getFullYear(),dMes.getMonth()+1,0).getDate();
+  const mesFim=`${dMes.getFullYear()}-${String(dMes.getMonth()+1).padStart(2,'0')}-${String(ultimoDia).padStart(2,'0')}`;
   let qMes=sb.from('agendamentos').select('data_hora').eq('user_id',ownId).gte('data_hora',mesIni+'T00:00').lte('data_hora',mesFim+'T23:59').neq('status','cancelado');
   if(CE)qMes=qMes.eq('profissional_id',CE.id);
   const{data:agMes}=await qMes;
