@@ -1354,6 +1354,16 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
     </div>
     <div class="fg2">
       <div class="fg"><label class="fl">E-mail *</label><input class="fi" id="eq-email" type="email" placeholder="profissional@email.com"></div>
+      <div class="fg" id="eq-senha-group">
+        <label class="fl">Senha de acesso *</label>
+        <div style="position:relative">
+          <input class="fi" id="eq-senha" type="password" placeholder="Mínimo 6 caracteres" style="padding-right:44px">
+          <button type="button" onclick="toggleSenhaEq()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px">
+            <svg id="eq-senha-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px">💡 Anote e envie esta senha para o profissional acessar</div>
+      </div>
       <div class="fg"><label class="fl">Cargo</label><input class="fi" id="eq-cargo" placeholder="Ex: Especialista em prótese"></div>
     </div>
     <div class="fg"><label class="fl">Permissão de acesso *</label>
@@ -3831,6 +3841,11 @@ let eqEditId=null;
 async function editarEq(eqId){
   const{data:e}=await sb.from('equipe').select('*').eq('id',eqId).single();if(!e)return;
   eqEditId=eqId;
+  // Esconde campo senha ao editar
+  const senhaGroup=id('eq-senha-group');
+  if(senhaGroup)senhaGroup.style.display='none';
+  id('m-eq').querySelector('.mt').textContent='Editar membro';
+  id('m-eq').querySelector('.mf .btn-primary').textContent='Salvar alterações';
   id('eq-nome').value=e.nome||'';id('eq-tel').value=e.telefone||'';id('eq-email').value=e.email||'';
   id('eq-cargo').value=e.cargo||'';id('eq-perm').value=e.permissao||'recepcao';
   corSel=e.cor||'#0D6EFD';document.querySelectorAll('#cor-picker div').forEach(x=>{x.style.border=x.dataset.cor===corSel?'3px solid '+x.dataset.cor:'none';});
@@ -3848,29 +3863,30 @@ async function salvarEq(){
   } else {
     ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
     if(!error){
-      // Envia convite por e-mail apenas para permissão "profissional"
-      // Usa fetch direto para NÃO trocar a sessão do usuário logado
       if(dados.permissao==='profissional'){
-        try{
-          const SUPA_URL='https://owanynpsbutuhcaclkif.supabase.co';
-          const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
-          const resp=await fetch(`${SUPA_URL}/auth/v1/signup`,{
-            method:'POST',
-            headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-            body:JSON.stringify({
-              email,
-              password:Math.random().toString(36).slice(-8)+'Aa1!@',
-              data:{nome,permissao:'profissional',owner_id:getOwn()}
-            })
-          });
-          const result=await resp.json();
-          if(result.error&&result.error!=='User already registered'){
-            toast('Cadastrado! Avise o profissional para acessar o sistema com o e-mail cadastrado.','ok');
-          } else {
-            toast(`✅ ${nome} cadastrado! Convite enviado para ${email}`,'ok');
+        // Cria conta com a senha definida pelo admin
+        const senha=v('eq-senha');
+        if(senha&&senha.length>=6){
+          try{
+            const SUPA_URL='https://owanynpsbutuhcaclkif.supabase.co';
+            const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
+            await fetch(`${SUPA_URL}/auth/v1/signup`,{
+              method:'POST',
+              headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+              body:JSON.stringify({email,password:senha,data:{nome,permissao:'profissional',owner_id:getOwn()}})
+            });
+            toast(`✅ ${nome} cadastrado! Login: ${email} | Senha: ${senha}`,'ok');
+            // Abre WhatsApp com as credenciais
+            if(dados.telefone){
+              const tel=(dados.telefone||'').replace(/\D/g,'');
+              const msg=encodeURIComponent(`Olá ${nome}! Seu acesso ao sistema foi criado:\n\n🌐 Site: ${window.location.origin}\n📧 Login: ${email}\n🔑 Senha: ${senha}\n\nGuarde bem sua senha!`);
+              setTimeout(()=>window.open(`https://wa.me/55${tel}?text=${msg}`,'_blank'),500);
+            }
+          }catch(e){
+            toast(`✅ ${nome} cadastrado!`,'ok');
           }
-        }catch(e){
-          toast(`✅ ${nome} cadastrado com sucesso!`,'ok');
+        } else {
+          toast(`✅ ${nome} cadastrado! Defina uma senha para ele acessar o sistema.`,'ok');
         }
       } else {
         toast('Membro cadastrado com sucesso!','ok');
@@ -3879,6 +3895,9 @@ async function salvarEq(){
   }
   if(error){toast('Erro: '+error.message,'err');return;}
   eqEditId=null;cm('m-eq');limpar('m-eq');
+  // Reexibe campo senha para próximo cadastro
+  const senhaGroup=id('eq-senha-group');
+  if(senhaGroup)senhaGroup.style.display='block';
   id('m-eq').querySelector('.mt').textContent='Novo profissional';
   id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';
   loadEquipe();
@@ -4405,6 +4424,17 @@ function toggleDarkMode(){
     if(label)label.textContent='Modo escuro';
   }
   try{localStorage.setItem('bf_dark',dark?'1':'0');}catch(e){}
+}
+
+function toggleSenhaEq(){
+  const inp=id('eq-senha');
+  const eye=id('eq-senha-eye');
+  if(!inp)return;
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  eye.innerHTML=show
+    ?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    :'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
 }
 
 function toggleSidebar(){
