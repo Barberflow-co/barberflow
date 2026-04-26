@@ -3847,13 +3847,12 @@ async function salvarEq(){
     ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
     if(!error){
       toast('Profissional cadastrado','ok');
-      // Só mostra link da agenda para permissão "profissional"
+      // Só redireciona para agenda se permissão for "profissional"
       if(dados.permissao==='profissional'){
         setTimeout(()=>{
-          if(confirm(`${nome} foi cadastrado!\n\nDeseja abrir a agenda agora para visualizar os agendamentos?`)){
-            sv('agenda', document.querySelector('[onclick*="sv(\'agenda\'"]'));
-          }
-        }, 500);
+          const navItem=document.querySelector('[onclick*="sv(\'agenda\'"]');
+          sv('agenda',navItem);
+        },600);
       }
     }
   }
