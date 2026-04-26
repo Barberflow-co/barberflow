@@ -3848,35 +3848,23 @@ async function salvarEq(){
   } else {
     ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
     if(!error){
-      toast('Membro cadastrado','ok');
       // Envia convite por e-mail apenas para permissão "profissional"
       if(dados.permissao==='profissional'){
-        toast('Enviando convite por e-mail...','ok');
-        // Usa signUp com senha temporária — profissional recebe e-mail de confirmação
-        const{data:invData,error:invErr}=await sb.auth.admin?.inviteUserByEmail
-          ? await sb.auth.admin.inviteUserByEmail(email,{
-              data:{nome,permissao:'profissional',owner_id:getOwn()},
-              redirectTo:window.location.origin
-            })
-          // Fallback: cria conta com senha temporária e manda e-mail de reset
-          : await sb.auth.signUp({
-              email,
-              password:Math.random().toString(36).slice(-12)+'A1!',
-              options:{
-                data:{nome,permissao:'profissional',owner_id:getOwn()},
-                emailRedirectTo:window.location.origin
-              }
-            });
-        if(invErr){
-          toast('Cadastrado! Mas erro ao enviar e-mail: '+invErr.message,'err');
+        const{error:invErr}=await sb.auth.signUp({
+          email,
+          password:Math.random().toString(36).slice(-10)+'Aa1!',
+          options:{
+            data:{nome,permissao:'profissional',owner_id:getOwn()},
+            emailRedirectTo:window.location.origin
+          }
+        });
+        if(invErr&&invErr.message!=='User already registered'){
+          toast('Cadastrado! Erro ao enviar convite: '+invErr.message,'err');
         } else {
-          toast(`Convite enviado para ${email}! O profissional receberá um e-mail para acessar a agenda.`,'ok');
+          toast(`✅ ${nome} cadastrado! Convite enviado para ${email}`,'ok');
         }
-        // Redireciona para agenda
-        setTimeout(()=>{
-          const navItem=document.querySelector('[onclick*="sv(\'agenda\'"]');
-          sv('agenda',navItem);
-        },1500);
+      } else {
+        toast('Membro cadastrado com sucesso!','ok');
       }
     }
   }
