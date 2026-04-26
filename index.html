@@ -3902,7 +3902,20 @@ async function salvarEq(){
   id('m-eq').querySelector('.mf .btn-primary').textContent='Cadastrar profissional';
   loadEquipe();
 }
-async function excluirEq(eqId){if(!confirm('Remover profissional?'))return;await sb.from('equipe').delete().eq('id',eqId);toast('Removido','ok');loadEquipe();}
+async function excluirEq(eqId){
+  if(!confirm('Remover este membro da equipe?'))return;
+  // Verifica se tem agendamentos vinculados
+  const{count}=await sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('profissional_id',eqId);
+  if(count>0){
+    toast(`Não é possível remover — este profissional tem ${count} agendamento(s) no histórico.`,'err');
+    return;
+  }
+  const{error}=await sb.from('equipe').delete().eq('id',eqId);
+  if(error){toast('Erro ao remover: '+error.message,'err');return;}
+  toast('Membro removido com sucesso!','ok');
+  loadEquipe();
+  await loadProfsBD();
+}
 
 // ============================================================
 // CONFIG
