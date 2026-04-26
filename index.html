@@ -181,6 +181,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .ag-mini-day{text-align:center;padding:4px 2px;font-size:12px;cursor:pointer;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;margin:1px auto;transition:all .15s}
 .ag-mini-day:hover{background:var(--gray-100)}
 .ag-mini-day.selected{background:var(--brand);color:#fff;font-weight:600}
+.ag-mini-day.has-ag{position:relative}
+.ag-mini-day.has-ag::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--brand)}
+.ag-mini-day.selected.has-ag::after{background:#fff}
+.ag-mini-day.today.has-ag::after{background:var(--brand)}
 .ag-mini-day.today:not(.selected){color:var(--brand);font-weight:700}
 .ag-mini-day.other-month{color:var(--gray-300)}
 .ag-mini-day.has-ev::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin:-2px auto 0}
@@ -1734,7 +1738,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
-let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],allEstoque=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0;
+let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],allEstoque=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0,agDiasComAg=new Set();
 let agDataAtual=new Date(),agProfsSel=[],agView='diario',agProfSemanal=null;
 
 function agSetView(v){
@@ -1774,7 +1778,9 @@ function renderMiniCal(){
   for(let day=1;day<=total;day++){
     const isToday=day===hoje.getDate()&&m===hoje.getMonth()&&y===hoje.getFullYear();
     const isSel=day===agDataAtual.getDate()&&m===agDataAtual.getMonth()&&y===agDataAtual.getFullYear();
-    html+=`<div class="ag-mini-day${isSel?' selected':isToday?' today':''}" onclick="miniCalSel(${day},${m},${y})">${day}</div>`;
+    const dayKey=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const hasAg=agDiasComAg.has(dayKey);
+    html+=`<div class="ag-mini-day${isSel?' selected':isToday?' today':''}${hasAg?' has-ag':''}" onclick="miniCalSel(${day},${m},${y})">${day}</div>`;
   }
   html+='</div>';
   el.innerHTML=html;
@@ -1811,6 +1817,14 @@ async function loadAgenda(){
   // Profissionais
   await loadProfsBD();
   if(!agProfsSel.length)agProfsSel=allProf.map(p=>p.id);
+  // Busca dias com agendamentos no mês para o mini calendário
+  const dMes=agDataAtual;
+  const mesIni=`${dMes.getFullYear()}-${String(dMes.getMonth()+1).padStart(2,'0')}-01`;
+  const mesFim=`${dMes.getFullYear()}-${String(dMes.getMonth()+1).padStart(2,'0')}-31`;
+  let qMes=sb.from('agendamentos').select('data_hora').eq('user_id',ownId).gte('data_hora',mesIni+'T00:00').lte('data_hora',mesFim+'T23:59').neq('status','cancelado');
+  if(CE)qMes=qMes.eq('profissional_id',CE.id);
+  const{data:agMes}=await qMes;
+  agDiasComAg=new Set((agMes||[]).map(a=>a.data_hora.split('T')[0]));
   const pfEl=id('ag-prof-filtro');
   if(pfEl){
     if(!CE&&allProf.length){
