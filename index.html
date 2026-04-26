@@ -3849,19 +3849,28 @@ async function salvarEq(){
     ({error}=await sb.from('equipe').insert({user_id:getOwn(),...dados}));
     if(!error){
       // Envia convite por e-mail apenas para permissão "profissional"
+      // Usa fetch direto para NÃO trocar a sessão do usuário logado
       if(dados.permissao==='profissional'){
-        const{error:invErr}=await sb.auth.signUp({
-          email,
-          password:Math.random().toString(36).slice(-10)+'Aa1!',
-          options:{
-            data:{nome,permissao:'profissional',owner_id:getOwn()},
-            emailRedirectTo:window.location.origin
+        try{
+          const SUPA_URL='https://owanynpsbutuhcaclkif.supabase.co';
+          const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
+          const resp=await fetch(`${SUPA_URL}/auth/v1/signup`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+            body:JSON.stringify({
+              email,
+              password:Math.random().toString(36).slice(-8)+'Aa1!@',
+              data:{nome,permissao:'profissional',owner_id:getOwn()}
+            })
+          });
+          const result=await resp.json();
+          if(result.error&&result.error!=='User already registered'){
+            toast('Cadastrado! Avise o profissional para acessar o sistema com o e-mail cadastrado.','ok');
+          } else {
+            toast(`✅ ${nome} cadastrado! Convite enviado para ${email}`,'ok');
           }
-        });
-        if(invErr&&invErr.message!=='User already registered'){
-          toast('Cadastrado! Erro ao enviar convite: '+invErr.message,'err');
-        } else {
-          toast(`✅ ${nome} cadastrado! Convite enviado para ${email}`,'ok');
+        }catch(e){
+          toast(`✅ ${nome} cadastrado com sucesso!`,'ok');
         }
       } else {
         toast('Membro cadastrado com sucesso!','ok');
