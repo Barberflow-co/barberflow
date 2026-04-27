@@ -2777,13 +2777,28 @@ async function loadDashProf(dates,ownId){
   const[{data:agsHoje},{count:cMes},{data:fat}]=await Promise.all([
     sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
     sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59'),
-    sb.from('agendamentos').select('valor,profissional').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59')
+    sb.from('agendamentos').select('valor,profissional,servico_id').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59')
   ]);
+
+  // Busca comissões dos serviços realizados
+  const servicoIds=[...new Set((fat||[]).map(a=>a.servico_id).filter(Boolean))];
+  let comissaoMap={};
+  if(servicoIds.length){
+    const{data:servs}=await sb.from('servicos').select('id,comissao_pct').in('id',servicoIds);
+    (servs||[]).forEach(s=>comissaoMap[s.id]=s.comissao_pct||0);
+  }
+
+  // Calcula comissão total
+  const comissaoTotal=(fat||[]).reduce((sum,a)=>{
+    const pct=comissaoMap[a.servico_id]||0;
+    return sum+(a.valor||0)*(pct/100);
+  },0);
+
   if(id('s-hoje'))id('s-hoje').textContent=agsHoje?.length||0;
   if(id('s-cli'))id('s-cli').textContent='—';
   if(id('s-mes'))id('s-mes').textContent=cMes||0;
-  const fat2=(fat||[]).reduce((s,a)=>s+(a.valor||0),0);
-  if(id('s-fat'))id('s-fat').textContent=fmtMoney(fat2);
+  if(id('s-fat'))id('s-fat').textContent=fmtMoney(comissaoTotal);
+  if(id('s-fat-lbl'))id('s-fat-lbl').textContent='Minhas Comissões';
   if(id('s-fat-sub'))id('s-fat-sub').textContent=label;
   if(id('s-mes-sub'))id('s-mes-sub').textContent=label;
   const el=id('dash-body');if(!el)return;
@@ -2791,14 +2806,20 @@ async function loadDashProf(dates,ownId){
   // Serviços do profissional no período
   if(fat&&fat.length){
     const byS={};
-    fat.forEach(a=>{const s=a.profissional||'Sem serviço';if(!byS[s])byS[s]={qt:0,tot:0};byS[s].qt++;byS[s].tot+=a.valor||0;});
+    fat.forEach(a=>{
+      const s=a.profissional||'Sem serviço';
+      const pct=comissaoMap[a.servico_id]||0;
+      const comissao=(a.valor||0)*(pct/100);
+      if(!byS[s])byS[s]={qt:0,tot:0,comissao:0};
+      byS[s].qt++;byS[s].tot+=a.valor||0;byS[s].comissao+=comissao;
+    });
     const sorted=Object.entries(byS).sort((a,b)=>b[1].qt-a[1].qt);
     html+=`<div class="card"><div class="sh"><div class="st">Meus serviços</div><span class="badge b-gray">${label}</span></div>
       ${sorted.map(([nome,d],i)=>`<div style="display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--gray-100)">
         <div style="width:20px;height:20px;border-radius:50%;background:var(--brand-light);color:var(--brand);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px">${i+1}</div>
         <div style="flex:1;font-size:13px;font-weight:500">${nome}</div>
         <span class="badge b-gray" style="margin-right:8px">${d.qt}x</span>
-        <span style="font-size:13px;font-weight:600;color:var(--brand)">${fmtMoney(d.tot)}</span>
+        <div style="text-align:right"><div style="font-size:13px;font-weight:600;color:var(--brand)">${fmtMoney(d.comissao)}</div><div style="font-size:10px;color:var(--gray-400)">comissão</div></div>
       </div>`).join('')}
     </div>`;
   }
@@ -4681,7 +4702,9 @@ function toggleDarkMode(){
 function aplicarMenuProf(){
   // Esconde tudo exceto itens com data-prof="1"
   document.querySelectorAll('.nav-item').forEach(el=>{
-    el.style.display=el.dataset.prof==='1'?'flex':'none';
+    const fn=el.getAttribute('onclick')||'';
+    const keep=fn.includes("'dashboard'") || fn.includes("'agenda'") || fn.includes("'linkpage'");
+    el.style.display=keep?'flex':'none';
   });
   document.querySelectorAll('.nav-label').forEach(el=>{
     el.style.display='none';
@@ -4700,11 +4723,27 @@ function toggleSenhaEq(){
 }
 
 function toggleSidebar(){
-  const sb=document.querySelector('.sidebar');
+  const sb=document.getElementById('sidebar');
+  const main=document.querySelector('.main');
   const ov=document.querySelector('.sidebar-overlay');
-  if(sb){
+  const isMobile=window.innerWidth<=768;
+  if(isMobile){
+    // Mobile: desliza sidebar de fora para dentro
     sb.classList.toggle('open');
     if(ov)ov.style.display=sb.classList.contains('open')?'block':'none';
+  } else {
+    // Desktop: recolhe/expande sidebar
+    const isCollapsed=sb.classList.toggle('collapsed');
+    if(main)main.style.marginLeft=isCollapsed?'56px':'240px';
+    // Atualiza ícone
+    const icon=document.getElementById('sb-toggle-icon');
+    if(icon){
+      icon.innerHTML=isCollapsed
+        ?'<path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>'
+        :'<path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>';
+    }
+    // Salva estado
+    try{localStorage.setItem('bf_sidebar',isCollapsed?'collapsed':'');}catch(e){}
   }
 }
 // Fecha sidebar ao clicar em item do menu no mobile
@@ -5174,6 +5213,17 @@ async function init(){
     verificarTrial();
     // Restaura modo escuro
     try{
+      // Restaura estado do sidebar
+      try{
+        if(localStorage.getItem('bf_sidebar')==='collapsed'){
+          const sb=document.getElementById('sidebar');
+          const main=document.querySelector('.main');
+          if(sb)sb.classList.add('collapsed');
+          if(main)main.style.marginLeft='56px';
+          const icon=document.getElementById('sb-toggle-icon');
+          if(icon)icon.innerHTML='<path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>';
+        }
+      }catch(e){}
       if(localStorage.getItem('bf_dark')==='1'){
         document.body.classList.add('dark');
         const icon=id('sb-dark-icon');
