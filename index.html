@@ -1409,6 +1409,11 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         </div>
         <div style="font-size:11px;color:var(--gray-400);margin-top:4px">💡 Anote e envie esta senha para o profissional acessar</div>
       </div>
+      <div class="fg" id="eq-comissao-group">
+        <label class="fl">Comissão padrão (%)</label>
+        <input class="fi" id="eq-comissao" type="number" placeholder="Ex: 40" min="0" max="100">
+        <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Usada quando o serviço não tem comissão definida</div>
+      </div>
       <div class="fg"><label class="fl">Cargo</label><input class="fi" id="eq-cargo" placeholder="Ex: Especialista em prótese"></div>
     </div>
     <div class="fg"><label class="fl">Permissão de acesso *</label>
@@ -2780,17 +2785,20 @@ async function loadDashProf(dates,ownId){
     sb.from('agendamentos').select('valor,profissional,servico_id').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59')
   ]);
 
-  // Busca comissões dos serviços realizados
-  const servicoIds=[...new Set((fat||[]).map(a=>a.servico_id).filter(Boolean))];
-  let comissaoMap={};
-  if(servicoIds.length){
-    const{data:servs}=await sb.from('servicos').select('id,comissao_pct').in('id',servicoIds);
-    (servs||[]).forEach(s=>comissaoMap[s.id]=s.comissao_pct||0);
-  }
+  // Busca comissões de todos os serviços do owner para poder cruzar por nome também
+  const{data:todosServs}=await sb.from('servicos').select('id,nome,comissao_pct').eq('user_id',ownId);
+  const comissaoById={};
+  const comissaoByNome={};
+  (todosServs||[]).forEach(s=>{
+    comissaoById[s.id]=s.comissao_pct||0;
+    comissaoByNome[(s.nome||'').toLowerCase()]=s.comissao_pct||0;
+  });
 
-  // Calcula comissão total
+  // Calcula comissão total — tenta por servico_id, depois por nome do serviço
   const comissaoTotal=(fat||[]).reduce((sum,a)=>{
-    const pct=comissaoMap[a.servico_id]||0;
+    let pct=0;
+    if(a.servico_id && comissaoById[a.servico_id]!==undefined) pct=comissaoById[a.servico_id];
+    else if(a.profissional) pct=comissaoByNome[(a.profissional||'').toLowerCase()]||0;
     return sum+(a.valor||0)*(pct/100);
   },0);
 
@@ -2808,7 +2816,9 @@ async function loadDashProf(dates,ownId){
     const byS={};
     fat.forEach(a=>{
       const s=a.profissional||'Sem serviço';
-      const pct=comissaoMap[a.servico_id]||0;
+      let pct=0;
+      if(a.servico_id && comissaoById[a.servico_id]!==undefined) pct=comissaoById[a.servico_id];
+      else if(a.profissional) pct=comissaoByNome[(a.profissional||'').toLowerCase()]||0;
       const comissao=(a.valor||0)*(pct/100);
       if(!byS[s])byS[s]={qt:0,tot:0,comissao:0};
       byS[s].qt++;byS[s].tot+=a.valor||0;byS[s].comissao+=comissao;
@@ -3088,7 +3098,7 @@ async function salvarAg(){
   const sv2=allServs.find(s=>s.id===servId);
   const servNome=sv2?sv2.nome:(servId||'');
   const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
-  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
+  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,servico_id:servId||null,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
 
   // Fecha o modal IMEDIATAMENTE sem esperar o banco
   agEditId=null;
@@ -4081,7 +4091,7 @@ async function editarEq(eqId){
   if(senhaGroup)senhaGroup.style.display='none';
   id('m-eq').querySelector('.mt').textContent='Editar membro';
   id('m-eq').querySelector('.mf .btn-primary').textContent='Salvar alterações';
-  id('eq-nome').value=e.nome||'';id('eq-tel').value=e.telefone||'';id('eq-email').value=e.email||'';
+  id('eq-nome').value=e.nome||'';id('eq-tel').value=e.telefone||'';id('eq-email').value=e.email||'';if(id('eq-comissao'))id('eq-comissao').value=e.comissao_pct||'';
   id('eq-cargo').value=e.cargo||'';id('eq-perm').value=e.permissao||'recepcao';
   corSel=e.cor||'#0D6EFD';document.querySelectorAll('#cor-picker div').forEach(x=>{x.style.border=x.dataset.cor===corSel?'3px solid '+x.dataset.cor:'none';});
   id('m-eq').querySelector('.mt').textContent='Editar profissional';
@@ -4090,7 +4100,7 @@ async function editarEq(eqId){
 }
 async function salvarEq(){
   const nome=v('eq-nome'),email=v('eq-email');if(!nome||!email){toast('Nome e e-mail obrigatórios!','err');return;}
-  const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),cor:corSel};
+  const dados={nome,telefone:v('eq-tel'),email,cargo:v('eq-cargo'),permissao:v('eq-perm'),cor:corSel,comissao_pct:parseInt(v('eq-comissao'))||null};
   let error;
   if(eqEditId){
     ({error}=await sb.from('equipe').update(dados).eq('id',eqEditId));
