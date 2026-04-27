@@ -5222,30 +5222,28 @@ async function init(){
 
 async function loadCtx(){
   if(!CU)return;
-  const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
-  // Verifica se é membro de equipe de outro usuário (profissional convidado)
-  if(!prof){
-    // Busca na tabela equipe pelo e-mail
-    const{data:eqMembro}=await sb.from('equipe').select('*').eq('email',CU.email).limit(1);
-    if(eqMembro&&eqMembro.length){
-      const membro=eqMembro[0];
-      CE=membro;
-      CP={nome_barbearia:'BarberFlow',logo:null};
-      id('u-name').textContent=membro.nome;
-      id('u-role').textContent=membro.permissao||'profissional';
-      id('u-av').textContent=membro.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-      // Esconde menu para profissional — só Dashboard e Agenda
-      if(membro.permissao==='profissional'){
-        document.body.classList.add('is-prof');
-        aplicarMenuProf();setTimeout(()=>aplicarMenuProf(),500);
-      }
-      // Atualiza auth_user_id na equipe
-      if(!membro.auth_user_id){
-        await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
-      }
-      return;
+  
+  // Verifica PRIMEIRO se é membro de equipe (profissional convidado)
+  const{data:eqMembro}=await sb.from('equipe').select('*').eq('email',CU.email).limit(1);
+  if(eqMembro&&eqMembro.length){
+    const membro=eqMembro[0];
+    CE=membro;
+    CP={nome_barbearia:'BarberFlow',logo:null};
+    id('u-name').textContent=membro.nome;
+    id('u-role').textContent=membro.permissao||'profissional';
+    id('u-av').textContent=membro.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    if(membro.permissao==='profissional'){
+      document.body.classList.add('is-prof');
+      aplicarMenuProf();setTimeout(()=>aplicarMenuProf(),500);
     }
+    if(!membro.auth_user_id){
+      await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
+    }
+    return;
   }
+
+  // Se não é equipe, busca profile de admin
+  const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
   if(prof){
     CP=prof;CE=null;applyPerm('admin');
     setUI(prof.nome||'Admin','Admin — Proprietário','#0D6EFD');
