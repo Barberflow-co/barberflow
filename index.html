@@ -372,6 +372,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .dash-period{transition:all .15s}
 .dash-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 .com-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
+.manut-filter.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 .rel-period.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
 
 /* MODO ESCURO */
@@ -711,6 +712,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
       <div class="nav-item nav-admin" onclick="sv('linkpage',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><span class="nav-text">Minha Página</span></div>
       <div class="nav-label nav-cli-lbl" style="margin-top:4px">Clientes</div>
       <div class="nav-item nav-clientes" onclick="sv('clientes',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-text">Listagem</span></div>
+      <div class="nav-item nav-clientes" onclick="sv('manutencao',this)" id="nav-manutencao"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg><span class="nav-text">Manutenção</span><span id="badge-manutencao" style="display:none;background:#EF4444;color:#fff;border-radius:100px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:auto">0</span></div>
       <div class="nav-item nav-clientes" onclick="sv('sumidos',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/></svg><span class="nav-text">Sumidos</span></div>
       <div class="nav-item nav-clientes" onclick="sv('aniversarios',this)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M12 1v4M8 3l4 2 4-2"/></svg><span class="nav-text">Aniversários</span></div>
       <div class="nav-label nav-fin-lbl" style="margin-top:4px">Financeiro</div>
@@ -786,6 +788,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         <div class="stat-box"><div class="stat-lbl">Faturamento</div><div class="stat-val" style="font-size:18px" id="s-fat">R$ 0</div><div class="stat-sub" id="s-fat-sub">no período</div></div>
       </div>
 
+      <div id="dash-lembretes" style="display:none"></div>
       <div id="dash-body" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px"></div>
     </div>
 
@@ -904,9 +907,23 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
             <div class="tab active" onclick="pTab('historico',this)">Histórico</div>
             <div class="tab" onclick="pTab('anam',this)">Anamnese</div>
             <div class="tab" onclick="pTab('termo',this)">Termo</div>
+            <div class="tab" onclick="pTab('retorno',this)">Retorno</div>
           </div>
           <div id="p-historico"></div>
           <div id="p-anam" style="display:none"></div>
+          <div id="p-retorno" style="display:none">
+            <div style="padding:4px 0 12px">
+              <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px">Defina quando este cliente deve retornar para manutenção da prótese.</div>
+              <div class="fg2">
+                <div class="fg"><label class="fl">Data do último serviço</label><input type="date" class="fi" id="ret-ultimo" onchange="atualizarPrevisaoRetorno()"></div>
+                <div class="fg"><label class="fl">Próximo retorno em</label><select class="fs" id="ret-prazo" onchange="atualizarPrevisaoRetorno()"><option value="30">30 dias</option><option value="45">45 dias</option><option value="60" selected>60 dias</option><option value="90">90 dias</option><option value="custom">Personalizado</option></select></div>
+              </div>
+              <div class="fg" id="ret-custom-group" style="display:none"><label class="fl">Data personalizada</label><input type="date" class="fi" id="ret-data-custom"></div>
+              <div id="ret-previsao" style="background:var(--brand-light);border:1px solid rgba(13,110,253,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--brand);margin-bottom:12px;display:none"></div>
+              <button class="btn btn-primary btn-md" onclick="salvarRetorno()">Salvar retorno</button>
+            </div>
+            <div id="ret-historico" style="margin-top:8px"></div>
+          </div>
           <div id="p-termo" style="display:none">
             <div id="p-termo-preview" style="margin-bottom:12px"></div>
             <div style="display:flex;gap:8px">
@@ -925,6 +942,18 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
     </div>
 
     <!-- ANAMNESE -->
+    <!-- VIEW MANUTENÇÃO -->
+    <div class="view" id="view-manutencao">
+      <div class="ph"><div><div class="pt">Controle de Manutenção</div><div class="ps">Clientes com prazo de retorno próximo ou vencido</div></div></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline manut-filter active" onclick="setManutFilter(0,this)">Todos</button>
+        <button class="btn btn-sm btn-outline manut-filter" onclick="setManutFilter(7,this)">Próximos 7 dias</button>
+        <button class="btn btn-sm btn-outline manut-filter" onclick="setManutFilter(15,this)">Próximos 15 dias</button>
+        <button class="btn btn-sm btn-outline manut-filter" onclick="setManutFilter(-1,this)">Vencidos</button>
+      </div>
+      <div id="manut-lista" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
     <div class="view" id="view-aniversarios">
       <div class="ph"><div><div class="pt">Aniversários</div><div class="ps">Clientes que fazem aniversário este mês</div></div></div>
       <div id="aniv-lista"></div>
@@ -2382,7 +2411,7 @@ async function loadAnamPerfil(cid){
   el.innerHTML=html;
 }
 
-function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');id('p-historico').style.display=tab==='historico'?'block':'none';id('p-anam').style.display=tab==='anam'?'block':'none';id('p-termo').style.display=tab==='termo'?'block':'none';if(tab==='termo')carregarTermoPerfil();}
+function pTab(tab,el){document.querySelectorAll('#view-perfil .tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');id('p-historico').style.display=tab==='historico'?'block':'none';id('p-anam').style.display=tab==='anam'?'block':'none';id('p-termo').style.display=tab==='termo'?'block':'none';id('p-retorno').style.display=tab==='retorno'?'block':'none';if(tab==='termo')carregarTermoPerfil();if(tab==='retorno')carregarRetorno();}
 
 // ============================================================
 // ANAMNESE
@@ -2651,7 +2680,7 @@ async function loadDash(){
   if(!CU)return;
   const dates=getDashDates();if(!dates)return;
   if(CE)await loadDashProf(dates,getOwn());
-  else await loadDashAdmin(dates,getOwn());
+  else{await loadDashAdmin(dates,getOwn());verificarLembretes();}
 }
 
 async function loadDashAdmin(dates,ownId){
@@ -3532,6 +3561,218 @@ async function loadRel(){
   el.innerHTML=html;
 }
 
+
+
+// ============================================================
+// CONTROLE DE MANUTENÇÃO / RETORNO
+// ============================================================
+let manutFiltro = 0;
+
+function setManutFilter(dias, el){
+  manutFiltro = dias;
+  document.querySelectorAll('.manut-filter').forEach(b => b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  loadManutencao();
+}
+
+async function loadManutencao(){
+  if(!CU) return;
+  const el = id('manut-lista');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
+
+  // Busca todos os registros de retorno
+  const{data:retornos} = await sb.from('retornos').select('*,clientes(nome,telefone)').eq('user_id',getOwn()).order('data_retorno',{ascending:true});
+  
+  if(!retornos?.length){
+    el.innerHTML = '<div class="empty"><div class="empty-title">Nenhum retorno cadastrado</div><div class="empty-sub">Acesse o perfil de um cliente → aba Retorno para cadastrar</div></div>';
+    return;
+  }
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  
+  // Filtra
+  let lista = retornos.map(r => {
+    const dataRet = new Date(r.data_retorno + 'T12:00');
+    const diffDias = Math.ceil((dataRet - hoje) / (1000*60*60*24));
+    return {...r, diffDias};
+  });
+
+  if(manutFiltro === -1) lista = lista.filter(r => r.diffDias < 0);
+  else if(manutFiltro > 0) lista = lista.filter(r => r.diffDias >= 0 && r.diffDias <= manutFiltro);
+
+  // Atualiza badge no menu
+  const vencidos = retornos.filter(r => {
+    const d = new Date(r.data_retorno + 'T12:00'); d.setHours(0,0,0,0);
+    return d <= hoje;
+  }).length;
+  const badge = id('badge-manutencao');
+  if(badge){ badge.style.display = vencidos > 0 ? 'inline' : 'none'; badge.textContent = vencidos; }
+
+  if(!lista.length){
+    el.innerHTML = '<div class="empty"><div class="empty-title">Nenhum cliente neste filtro</div></div>';
+    return;
+  }
+
+  el.innerHTML = lista.map(r => {
+    const nome = r.clientes?.nome || '—';
+    const tel = (r.clientes?.telefone||'').replace(/\D/g,'');
+    const dataFmt = new Date(r.data_retorno+'T12:00').toLocaleDateString('pt-BR');
+    let statusColor, statusLabel;
+    if(r.diffDias < 0){ statusColor = '#EF4444'; statusLabel = `Vencido há ${Math.abs(r.diffDias)} dias`; }
+    else if(r.diffDias === 0){ statusColor = '#F59E0B'; statusLabel = 'Vence hoje!'; }
+    else if(r.diffDias <= 7){ statusColor = '#F59E0B'; statusLabel = `Vence em ${r.diffDias} dias`; }
+    else { statusColor = '#16A34A'; statusLabel = `Em ${r.diffDias} dias`; }
+
+    const msg = encodeURIComponent(`Olá ${nome.split(' ')[0]}! 💈 Está na hora de fazer a manutenção da sua prótese capilar. Agende seu horário pelo link ou chame a gente aqui no WhatsApp!`);
+    return `<div class="card" style="padding:14px 16px;display:flex;align-items:center;gap:14px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${statusColor};flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">${nome}</div>
+        <div style="font-size:12px;color:var(--gray-500)">Retorno: ${dataFmt}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:12px;font-weight:600;color:${statusColor}">${statusLabel}</div>
+        ${tel?`<button class="btn btn-sm btn-outline" style="margin-top:6px" onclick="window.open('https://wa.me/55${tel}?text=${msg}','_blank')">💬 Lembrar</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function carregarRetorno(){
+  const cid = window._perfilCid;
+  if(!cid) return;
+  
+  // Busca último agendamento finalizado para sugerir data
+  const{data:ags} = await sb.from('agendamentos').select('data_hora').eq('cliente_id',cid).eq('status','finalizado').order('data_hora',{ascending:false}).limit(1);
+  if(ags?.length && id('ret-ultimo')){
+    id('ret-ultimo').value = ags[0].data_hora.split('T')[0];
+    atualizarPrevisaoRetorno();
+  }
+
+  // Busca retorno existente
+  const{data:ret} = await sb.from('retornos').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(1);
+  if(ret?.length){
+    const r = ret[0];
+    if(id('ret-ultimo')) id('ret-ultimo').value = r.data_ultimo || '';
+    atualizarPrevisaoRetorno();
+  }
+
+  // Histórico
+  const{data:hist} = await sb.from('retornos').select('*').eq('cliente_id',cid).order('created_at',{ascending:false}).limit(5);
+  const hEl = id('ret-historico');
+  if(hEl && hist?.length){
+    hEl.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px">HISTÓRICO</div>`+
+      hist.map(h=>`<div style="font-size:12px;color:var(--gray-500);padding:4px 0;border-bottom:1px solid var(--gray-100)">
+        Retorno: ${new Date(h.data_retorno+'T12:00').toLocaleDateString('pt-BR')} · ${h.prazo_dias} dias
+      </div>`).join('');
+  }
+}
+
+function atualizarPrevisaoRetorno(){
+  const ultimo = id('ret-ultimo')?.value;
+  const prazo = v('ret-prazo');
+  const preview = id('ret-previsao');
+  if(!ultimo || !preview) return;
+  
+  if(prazo === 'custom'){
+    id('ret-custom-group').style.display='block';
+    preview.style.display='none';
+    return;
+  }
+  id('ret-custom-group').style.display='none';
+  
+  const data = new Date(ultimo+'T12:00');
+  data.setDate(data.getDate() + parseInt(prazo));
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const diff = Math.ceil((data - hoje)/(1000*60*60*24));
+  
+  preview.style.display='block';
+  if(diff < 0) preview.textContent = `⚠️ Retorno previsto: ${data.toLocaleDateString('pt-BR')} (vencido há ${Math.abs(diff)} dias)`;
+  else preview.textContent = `📅 Retorno previsto: ${data.toLocaleDateString('pt-BR')} (em ${diff} dias)`;
+}
+
+async function salvarRetorno(){
+  const cid = window._perfilCid;
+  if(!cid){toast('Abra o perfil de um cliente','err');return;}
+  const ultimo = id('ret-ultimo')?.value;
+  if(!ultimo){toast('Informe a data do último serviço','err');return;}
+  
+  const prazo = v('ret-prazo');
+  let dataRetorno;
+  if(prazo === 'custom'){
+    dataRetorno = id('ret-data-custom')?.value;
+    if(!dataRetorno){toast('Informe a data personalizada','err');return;}
+  } else {
+    const d = new Date(ultimo+'T12:00');
+    d.setDate(d.getDate() + parseInt(prazo));
+    dataRetorno = d.toISOString().split('T')[0];
+  }
+
+  const{error} = await sb.from('retornos').upsert({
+    user_id:getOwn(), cliente_id:cid,
+    data_ultimo:ultimo, prazo_dias:prazo==='custom'?0:parseInt(prazo),
+    data_retorno:dataRetorno
+  },{onConflict:'cliente_id'});
+
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Retorno salvo!','ok');
+  carregarRetorno();
+  // Atualiza badge
+  loadManutencao();
+}
+
+// ── LEMBRETES DE AGENDAMENTO ──────────────────────────────────
+async function verificarLembretes(){
+  if(!CU || CE) return; // Só admin vê lembretes
+  const ownId = getOwn();
+  const amanha = new Date();
+  amanha.setDate(amanha.getDate() + 1);
+  const dAmanha = amanha.toISOString().split('T')[0];
+  
+  const{data:ags} = await sb.from('agendamentos')
+    .select('*,clientes(nome,telefone)')
+    .eq('user_id',ownId)
+    .gte('data_hora',dAmanha+'T00:00')
+    .lte('data_hora',dAmanha+'T23:59')
+    .neq('status','cancelado');
+  
+  if(!ags?.length) return;
+  
+  // Mostra alerta no dashboard
+  const container = id('dash-lembretes');
+  if(!container) return;
+  
+  container.style.display='block';
+  container.innerHTML = `
+    <div class="card" style="border-left:3px solid #F59E0B;margin-bottom:16px">
+      <div class="sh" style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="font-weight:600;font-size:13px">Lembretes de amanhã (${ags.length} agendamento${ags.length>1?'s':''})</span>
+        </div>
+      </div>
+      ${ags.map(a=>{
+        const hr = new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+        const tel = (a.clientes?.telefone||'').replace(/\D/g,'');
+        const nome = a.clientes?.nome?.split(' ')[0]||'Cliente';
+        const serv = a.profissional||'serviço';
+        const msg = encodeURIComponent(`Olá ${nome}! ✂️ Lembrando do seu agendamento amanhã:
+
+⏰ ${hr}
+💈 ${serv}
+
+Até amanhã!`);
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100)">
+          <div>
+            <span style="font-weight:500;font-size:13px">${a.clientes?.nome||'—'}</span>
+            <span style="font-size:12px;color:var(--gray-400);margin-left:8px">${hr} · ${serv}</span>
+          </div>
+          ${tel?`<button class="btn btn-sm btn-outline" onclick="window.open('https://wa.me/55${tel}?text=${msg}','_blank')">💬 Lembrar</button>`:'<span style="font-size:11px;color:var(--gray-400)">Sem tel.</span>'}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
 
 // ============================================================
 // IMPORTAR CLIENTES
@@ -5068,6 +5309,7 @@ async function sv(name,el){
   if(name==='comandas')await loadComandas();
   if(name==='caixa')await loadCaixa();
   if(name==='aniversarios')await loadAniversarios();
+  if(name==='manutencao')await loadManutencao();
 }
 function getOwn(){return CE?CE.user_id:CU?.id;}
 
