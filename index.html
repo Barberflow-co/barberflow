@@ -2065,9 +2065,10 @@ function renderEvCell(a){
   const cor=a.equipe?.cor;
   const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   
-  // Calcula altura baseada na duração do serviço (56px = 30min)
+  // Calcula altura baseada na duração do serviço
+  // Prioridade: 1) duracao_min salvo no agendamento, 2) busca no cadastro de serviços, 3) padrão 30min
   const sv2=allServs.find(s=>s.nome===serv);
-  const durMin=sv2?.duracao_min||30;
+  const durMin=a.duracao_min||sv2?.duracao_min||30;
   const altura=Math.max(Math.round((durMin/30)*36)-2, 20);
   
   // Calcula hora de término
@@ -3098,7 +3099,8 @@ async function salvarAg(){
   const sv2=allServs.find(s=>s.id===servId);
   const servNome=sv2?sv2.nome:(servId||'');
   const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
-  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,servico_id:servId||null,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
+  const durMin=sv2?.duracao_min||30;
+  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,servico_id:servId||null,duracao_min:durMin,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
 
   // Fecha o modal IMEDIATAMENTE sem esperar o banco
   agEditId=null;
