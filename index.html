@@ -4450,6 +4450,9 @@ async function salvarLinkPage(){
 
   if(error){toast('Erro ao salvar: '+error.message,'err');return;}
   
+  // Atualiza CP com dados frescos para não perder links na próxima edição
+  if(CP)CP.link_page=JSON.stringify(dados);
+  
   toast('Página salva!','ok');
   const link=`${window.location.origin}?p=${dados.slug}`;
   const box=id('lp-link-box');
@@ -4472,9 +4475,13 @@ function copiarLinkPage(){
 }
 
 async function carregarLinkPageCfg(){
-  if(!CU||!CP)return;
+  if(!CU)return;
   try{
-    const dados=CP.link_page?JSON.parse(CP.link_page):null;
+    // Busca sempre do banco para ter dados frescos
+    const{data:perfil}=await sb.from('profiles').select('link_page').eq('id',CU.id).single();
+    const dados=perfil?.link_page?JSON.parse(perfil.link_page):null;
+    // Atualiza CP com dados frescos
+    if(CP&&perfil)CP.link_page=perfil.link_page;
     if(dados){
       if(id('lp-cfg-nome'))id('lp-cfg-nome').value=dados.nome||'';
       if(id('lp-cfg-bio'))id('lp-cfg-bio').value=dados.bio||'';
@@ -4489,9 +4496,13 @@ async function carregarLinkPageCfg(){
           t.classList.toggle('active',dados.dias.includes(t.textContent.trim()));
         });
       }
+      // Carrega links personalizados
+      carregarLinksCustom(dados.links_custom||[]);
       const link=`${window.location.origin}?p=${dados.slug}`;
       const box=id('lp-link-box');
       if(box&&dados.slug){box.style.display='block';box.textContent=link;}
+    } else {
+      carregarLinksCustom([]);
     }
   }catch(e){}
 }
