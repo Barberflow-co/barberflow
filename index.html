@@ -1782,7 +1782,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 
 <script>
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
+const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
 let CU=null,CP=null,CE=null,allCli=[],allProf=[],allServs=[],allEstoque=[],corSel='#0D6EFD',cmdItens=[],cmdTotal=0,agDiasComAg=new Set();
 let agDataAtual=new Date(),agProfsSel=[],agView='diario',agProfSemanal=null;
@@ -4528,7 +4528,7 @@ async function renderizarLinkPage(slug){
   let dados=null;
   try{
     // Usa fetch direto com a anon key para funcionar sem login
-    const ANON_KEY=window._sb_key||document.querySelector('script[data-sb]')?.dataset?.key||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NTY2NTksImV4cCI6MjA1ODQzMjY1OX0.hOWFtqBPMCHVBpHHvERECUOtNRiVVBPiGNUkFLAbXms';
+    const ANON_KEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
     const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=not.is.null`,{
       headers:{
         'apikey':ANON_KEY,
