@@ -4468,6 +4468,14 @@ async function salvarLinkPage(){
   // Garante que o profile existe antes de atualizar
   const{data:existing}=await sb.from('profiles').select('id').eq('id',CU.id).single();
   
+  // Verifica se o slug já está em uso por outro usuário
+  const{data:slugCheck}=await sb.from('profiles').select('id').filter('link_page','like','%"slug":"'+slug+'"%').neq('id',CU.id).limit(1);
+  if(slugCheck&&slugCheck.length){
+    toast('Este link já está em uso. Escolha outro!','err');
+    id('lp-cfg-slug').focus();
+    return;
+  }
+  
   let error;
   if(existing){
     ({error}=await sb.from('profiles').update({link_page:JSON.stringify(dados)}).eq('id',CU.id));
@@ -4479,8 +4487,6 @@ async function salvarLinkPage(){
   
   // Atualiza CP com dados frescos para não perder links na próxima edição
   if(CP)CP.link_page=JSON.stringify(dados);
-  // Remove slug duplicado de outros profiles (segurança)
-  await sb.from('profiles').update({link_page:null}).neq('id',CU.id).filter('link_page','like','%"slug":"'+dados.slug+'"%');
   
   toast('Página salva!','ok');
   const link=`${window.location.origin}?p=${dados.slug}`;
@@ -4542,18 +4548,15 @@ async function renderizarLinkPage(slug){
   try{
     // Usa fetch direto com a anon key para funcionar sem login
     const ANON_KEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
-    const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=not.is.null&order=created_at.asc`,{
+    const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=like.*"slug":"${slug}"*&limit=1`,{
       headers:{
         'apikey':ANON_KEY,
         'Authorization':'Bearer '+ANON_KEY
       }
     });
     const profiles=await res.json();
-    for(const p of profiles||[]){
-      try{
-        const d=JSON.parse(p.link_page||'{}');
-        if(d.slug===slug){dados=d;break;}
-      }catch(e){}
+    if(profiles&&profiles.length){
+      try{dados=JSON.parse(profiles[0].link_page||'{}');}catch(e){}
     }
   }catch(e){
     console.error('Erro ao buscar página:',e);
@@ -5304,6 +5307,7 @@ async function init(){
 
 async function loadCtx(){
   if(!CU)return;
+  CE=null;CP=null;
   
   // Verifica PRIMEIRO se é membro de equipe (profissional convidado)
   const{data:eqMembro}=await sb.from('equipe').select('*').eq('email',CU.email).limit(1);
@@ -5321,6 +5325,9 @@ async function loadCtx(){
     if(!membro.auth_user_id){
       await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
     }
+    // Carrega dados e ativa realtime para o profissional também
+    await loadServsBD();await loadProfsBD();await loadCliSels();
+    ativarRealtime();
     return;
   }
 
