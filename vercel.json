@@ -1,14 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.klipflow.com.br" }],
-      "destination": "/klipflow.html"
-    },
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "app.klipflow.com.br" }],
-      "destination": "/index.html"
-    }
-  ]
+    "rewrites": [
+          {
+                  "source": "/(.*)",
+                  "has": [{ "type": "host", "value": "www.klipflow.com.br" }],
+                  "destination": "/klipflow.html"
+          }
+    ]
 }
