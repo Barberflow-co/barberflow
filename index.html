@@ -1106,11 +1106,11 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
             </div>
           </div>
 
-          <div class="fg"><label class="fl">Nome da barbearia</label><input class="fi" id="lp-cfg-nome" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Barbearia do João"></div>
-          <div class="fg"><label class="fl">Descrição / Slogan</label><input class="fi" id="lp-cfg-bio" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Especialistas em prótese capilar"></div>
-          <div class="fg"><label class="fl">WhatsApp (com DDD)</label><input class="fi" id="lp-cfg-wpp" oninput="atualizarPreviewLinkPage()" placeholder="Ex: 11999999999" type="tel"></div>
-          <div class="fg"><label class="fl">Instagram (só o @)</label><input class="fi" id="lp-cfg-ig" oninput="atualizarPreviewLinkPage()" placeholder="Ex: @barbearia"></div>
-          <div class="fg"><label class="fl">Endereço completo</label><input class="fi" id="lp-cfg-end" oninput="atualizarPreviewLinkPage()" placeholder="Ex: Rua das Flores, 123 - São Paulo"></div>
+          <div class="fg"><label class="fl">Nome da barbearia</label><input class="fi" id="lp-cfg-nome" placeholder="Ex: Barbearia do João"></div>
+          <div class="fg"><label class="fl">Descrição / Slogan</label><input class="fi" id="lp-cfg-bio" placeholder="Ex: Especialistas em prótese capilar"></div>
+          <div class="fg"><label class="fl">WhatsApp (com DDD)</label><input class="fi" id="lp-cfg-wpp" placeholder="Ex: 11999999999" type="tel"></div>
+          <div class="fg"><label class="fl">Instagram (só o @)</label><input class="fi" id="lp-cfg-ig" placeholder="Ex: @barbearia"></div>
+          <div class="fg"><label class="fl">Endereço completo</label><input class="fi" id="lp-cfg-end" placeholder="Ex: Rua das Flores, 123 - São Paulo"></div>
           <div class="fg"><label class="fl">Link personalizado</label>
             <div style="display:flex;align-items:center;gap:8px">
               <div style="padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;color:var(--gray-400);white-space:nowrap;flex-shrink:0">barberflow-blush.vercel.app?p=</div>
@@ -1152,41 +1152,6 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
             <button class="btn btn-outline btn-md" onclick="copiarLinkPage()">Copiar link</button>
           </div>
           <div id="lp-link-box" style="display:none;margin-top:12px;background:var(--brand-light);border:1px solid rgba(13,110,253,.2);border-radius:var(--radius);padding:12px;font-size:13px;color:var(--brand);font-weight:500;word-break:break-all"></div>
-        </div>
-        <!-- Preview -->
-        <div class="card">
-          <div class="st" style="margin-bottom:14px">Preview da página</div>
-          <div style="background:#0A0A0B;border-radius:16px;overflow:hidden;position:relative">
-            <!-- Gradiente de fundo -->
-            <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(37,99,235,.2),transparent 60%);pointer-events:none"></div>
-            <div style="padding:24px;position:relative;text-align:center">
-              <!-- Avatar -->
-              <div style="width:72px;height:72px;border-radius:50%;background:#131316;border:3px solid #0A0A0B;margin:0 auto 12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4);position:relative" id="lp-prev-avatar">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" style="margin:22px auto;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-              <!-- Badge verificado -->
-              <div style="width:20px;height:20px;background:#2563EB;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:-16px auto 8px;position:relative">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <!-- Nome -->
-              <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:.5px;margin-bottom:4px" id="lp-prev-nome">Sua barbearia</div>
-              <!-- Bio -->
-              <div style="color:#A1A1AA;font-size:12px;margin-bottom:12px" id="lp-prev-bio">Seu slogan aqui</div>
-              <!-- Status -->
-              <div style="display:flex;justify-content:center;margin-bottom:16px">
-                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#22C55E">
-                  <span style="width:6px;height:6px;background:#22C55E;border-radius:50%;box-shadow:0 0 6px #22C55E;display:inline-block"></span>
-                  Aberto agora
-                </div>
-              </div>
-              <!-- Links preview -->
-              <div id="lp-prev-btns" style="display:flex;flex-direction:column;gap:8px">
-                <div style="padding:12px 14px;border-radius:12px;background:#131316;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:12px;text-align:left">Preencha os dados acima...</div>
-              </div>
-              <!-- Footer -->
-              <div style="margin-top:16px;font-size:10px;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.06);padding-top:12px">Powered by <strong style="color:rgba(255,255,255,.4)">BarberFlow</strong></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -5374,7 +5339,7 @@ async function sv(name,el){
   if(name==='sumidos')await loadSumidos();
   if(name==='cursos')loadCursos();
   if(name==='config')carregarLinkPageCfg();
-  if(name==='linkpage'){carregarLinkPageCfg();carregarFotoLP();atualizarPreviewLinkPage();}
+  if(name==='linkpage'){carregarLinkPageCfg();carregarFotoLP();}
   if(name==='agenda')await loadAgenda();
   if(name==='relatorios')await loadRel();
   if(name==='equipe')await loadEquipe();
