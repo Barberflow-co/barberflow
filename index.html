@@ -4858,32 +4858,37 @@ function mascaraCPF(el){
 // ── LINKS PERSONALIZADOS NA PÁGINA ──────────────────────────
 let lpLinksCustom = [];
 
-function adicionarLinkCustom(titulo='', url=''){
+function renderLinksCustom(){
   const container = id('lp-links-custom');
   if(!container) return;
-  const idx = lpLinksCustom.length;
+  container.innerHTML = '';
+  lpLinksCustom.forEach((link, idx) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:8px 10px';
+    div.innerHTML = `
+      <div style="flex:1;display:flex;gap:6px">
+        <input class="fi" placeholder="Nome do link (ex: Meu curso)" value="${link.titulo||''}" style="flex:1;min-width:0;padding:6px 10px;font-size:13px" oninput="lpLinksCustom[${idx}].titulo=this.value">
+        <input class="fi" placeholder="https://..." value="${link.url||''}" style="flex:1.5;min-width:0;padding:6px 10px;font-size:13px" oninput="lpLinksCustom[${idx}].url=this.value">
+      </div>
+      <button onclick="removerLinkCustom(${idx})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px;flex-shrink:0" title="Remover">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>`;
+    container.appendChild(div);
+  });
+}
+
+function adicionarLinkCustom(titulo='', url=''){
   lpLinksCustom.push({titulo, url});
-  const div = document.createElement('div');
-  div.className = 'lp-link-custom-item';
-  div.style.cssText = 'display:flex;gap:8px;align-items:center;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:8px 10px';
-  div.innerHTML = `
-    <div style="flex:1;display:flex;gap:6px">
-      <input class="fi" placeholder="Nome do link (ex: Meu curso)" value="${titulo}" style="flex:1;min-width:0;padding:6px 10px;font-size:13px" oninput="atualizarLinkCustom(${idx},'titulo',this.value)">
-      <input class="fi" placeholder="https://..." value="${url}" style="flex:1.5;min-width:0;padding:6px 10px;font-size:13px" oninput="atualizarLinkCustom(${idx},'url',this.value)">
-    </div>
-    <button onclick="removerLinkCustom(${idx},this.parentElement)" style="background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px;flex-shrink:0" title="Remover">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>`;
-  container.appendChild(div);
+  renderLinksCustom();
 }
 
 function atualizarLinkCustom(idx, campo, valor){
   if(lpLinksCustom[idx]) lpLinksCustom[idx][campo] = valor;
 }
 
-function removerLinkCustom(idx, el){
-  lpLinksCustom[idx] = null;
-  el?.remove();
+function removerLinkCustom(idx){
+  lpLinksCustom.splice(idx, 1);
+  renderLinksCustom();
 }
 
 function getLpLinksCustom(){
@@ -4891,10 +4896,8 @@ function getLpLinksCustom(){
 }
 
 function carregarLinksCustom(links){
-  lpLinksCustom = [];
-  const container = id('lp-links-custom');
-  if(container) container.innerHTML = '';
-  (links||[]).forEach(l => adicionarLinkCustom(l.titulo||'', l.url||''));
+  lpLinksCustom = (links||[]).map(l => ({titulo:l.titulo||'', url:l.url||''}));
+  renderLinksCustom();
 }
 
 function togDia(el){el.classList.toggle('active');}
