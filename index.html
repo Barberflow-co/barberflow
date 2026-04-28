@@ -2767,10 +2767,15 @@ async function loadDashAdmin(dates,ownId){
 async function loadDashProf(dates,ownId){
   const hoje=new Date().toISOString().split('T')[0];
   const{ini,fim,label}=dates;
+  
+  // Garante que temos o CE.id correto
+  if(!CE||!CE.id){toast('Erro: perfil do profissional não carregado','err');return;}
+  const profId=CE.id;
+  
   const[{data:agsHoje},{count:cMes},{data:fat}]=await Promise.all([
-    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',CE.id).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
-    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59'),
-    sb.from('agendamentos').select('valor,profissional,servico_id').eq('user_id',ownId).eq('profissional_id',CE.id).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59')
+    sb.from('agendamentos').select('*,clientes(nome)').eq('user_id',ownId).eq('profissional_id',profId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59').order('data_hora'),
+    sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).eq('profissional_id',profId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59'),
+    sb.from('agendamentos').select('valor,profissional,servico_id').eq('user_id',ownId).eq('profissional_id',profId).eq('status','finalizado').gte('data_hora',ini+'T00:00').lte('data_hora',fim+'T23:59')
   ]);
 
   // Busca comissões de todos os serviços do owner para poder cruzar por nome também
@@ -5344,14 +5349,41 @@ async function loadCtx(){
 
 function ativarRealtime(){
   try{
-    sb.channel('agendamentos-changes')
-      .on('postgres_changes',{event:'*',schema:'public',table:'agendamentos'},()=>{
-        // Recarrega agenda e dashboard automaticamente
-        const agView=document.getElementById('view-agenda');
-        if(agView&&agView.classList.contains('active'))loadAgenda();
-        loadDash();
-      })
-      .subscribe();
+    // Função central que recarrega a view ativa + dash sempre
+    const recarregarAtivo = async () => {
+      // Dashboard sempre atualiza (admin ou prof)
+      loadDash();
+      // Recarrega a view que estiver aberta no momento
+      const views = ['agenda','relatorios','comandas','caixa','pagamentos','clientes','equipe','servicos','estoque','manutencao','aniversarios','sumidos'];
+      for(const v of views){
+        const el = document.getElementById('view-'+v);
+        if(el && el.classList.contains('active')){
+          if(v==='agenda') await loadAgenda();
+          else if(v==='relatorios') await loadRel();
+          else if(v==='comandas') await loadComandas();
+          else if(v==='caixa') await loadCaixa();
+          else if(v==='pagamentos') await loadPag();
+          else if(v==='clientes') await loadCli();
+          else if(v==='equipe') await loadEquipe();
+          else if(v==='servicos') await loadServicos();
+          else if(v==='estoque') await loadEstoque();
+          else if(v==='manutencao') await loadManutencao();
+          else if(v==='aniversarios') await loadAniversarios();
+          else if(v==='sumidos') await loadSumidos();
+          break;
+        }
+      }
+    };
+
+    // Escuta mudanças em todas as tabelas relevantes
+    const tabelas = ['agendamentos','comandas','caixa','servicos','estoque','clientes','equipe','retornos'];
+    tabelas.forEach(tabela => {
+      sb.channel('realtime-'+tabela)
+        .on('postgres_changes',{event:'*',schema:'public',table:tabela},()=>{
+          recarregarAtivo();
+        })
+        .subscribe();
+    });
   }catch(e){console.log('Realtime não disponível');}
 }
 
