@@ -2585,67 +2585,73 @@ async function loadAniversarios(){
   const mes=now.getMonth()+1;
   const diaHoje=now.getDate();
   const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).not('data_nascimento','is',null);
-  const hoje=(data||[]).filter(c=>{const d=new Date(c.data_nascimento+'T12:00');return d.getDate()===diaHoje&&d.getMonth()+1===mes;});
-  const restante=(data||[]).filter(c=>{const d=new Date(c.data_nascimento+'T12:00');return d.getMonth()+1===mes&&d.getDate()!==diaHoje;}).sort((a,b)=>new Date(a.data_nascimento+'T12:00').getDate()-new Date(b.data_nascimento+'T12:00').getDate());
   const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  
+  // Só aniversariantes de HOJE
+  const hoje=(data||[]).filter(c=>{
+    const d=new Date(c.data_nascimento+'T12:00');
+    return d.getDate()===diaHoje && d.getMonth()+1===mes;
+  });
+  
+  // Restante do mês = apenas dias FUTUROS (maior que hoje)
+  const restante=(data||[]).filter(c=>{
+    const d=new Date(c.data_nascimento+'T12:00');
+    return d.getMonth()+1===mes && d.getDate()>diaHoje;
+  }).sort((a,b)=>new Date(a.data_nascimento+'T12:00').getDate()-new Date(b.data_nascimento+'T12:00').getDate());
+
   const el=id('aniv-lista');
   let html='';
+
+  // Seção de HOJE
   if(hoje.length){
-    html+=`<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;border:1px solid #FCD34D"><div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#92400E;margin-bottom:14px">🎂 Aniversariantes de HOJE — ${diaHoje.toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</div>${hoje.map(c=>{const tel=(c.telefone||'').replace(/\D/g,'');const nome1=encodeURIComponent(c.nome.split(' ')[0]);return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(146,64,14,.15)"><div style="width:40px;height:40px;border-radius:50%;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div><div style="flex:1"><div style="font-weight:600;font-size:14px;color:#92400E">${c.nome}</div><div style="font-size:12px;color:#B45309">${c.telefone||'Sem telefone'}</div></div><button class="btn btn-sm" style="background:#25D366;color:#fff;font-weight:600" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+🎂+Feliz+aniversário!+Que+seu+dia+seja+incrível!','_blank')">Parabenizar</button></div>`;}).join('')}</div>`;
+    html+=`<div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;border:1px solid #FCD34D">
+      <div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#92400E;margin-bottom:14px">🎂 Aniversariantes de HOJE — ${diaHoje.toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</div>
+      ${hoje.map(c=>{
+        const tel=(c.telefone||'').replace(/\D/g,'');
+        const nome1=encodeURIComponent(c.nome.split(' ')[0]);
+        return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(146,64,14,.15)">
+          <div style="width:40px;height:40px;border-radius:50%;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">${c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:14px;color:#92400E">${c.nome}</div>
+            <div style="font-size:12px;color:#B45309">${c.telefone||'Sem telefone'}</div>
+          </div>
+          ${tel?`<button class="btn btn-sm" style="background:#25D366;color:#fff;font-weight:600" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+🎂+Feliz+aniversário!+Que+seu+dia+seja+incrível!','_blank')">🎉 Parabenizar</button>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  } else {
+    html+=`<div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px;margin-bottom:20px;text-align:center;color:var(--gray-400);font-size:13px">Nenhum aniversariante hoje 🎂</div>`;
   }
+
+  // Seção do RESTANTE DO MÊS (só dias futuros)
   if(restante.length){
-    const diasFaltam=c=>new Date(c.data_nascimento+'T12:00').getDate()-diaHoje;
-    html+=`<div class="card"><div style="font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:14px">📅 Próximos aniversários em ${meses[mes-1]}</div><div class="tw"><table><thead><tr><th>Cliente</th><th>Data</th><th>Dias restantes</th><th>Telefone</th><th></th></tr></thead><tbody>${restante.map(c=>{const d=new Date(c.data_nascimento+'T12:00');const df=d.getDate()-diaHoje;const tel=(c.telefone||'').replace(/\D/g,'');const nome1=encodeURIComponent(c.nome.split(' ')[0]);return`<tr><td style="font-weight:500">${c.nome}</td><td>${d.getDate().toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</td><td><span class="badge b-yellow">${df>0?'Em '+df+' dia'+(df>1?'s':''):'Hoje!'}</span></td><td>${c.telefone||'—'}</td><td><button class="btn btn-sm btn-success" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+Seu+aniversário+está+chegando!+🎂','_blank')">WhatsApp</button></td></tr>`;}).join('')}</tbody></table></div></div>`;
+    html+=`<div class="card">
+      <div style="font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:14px">📅 Próximos aniversários em ${meses[mes-1]}</div>
+      <div class="tw"><table><thead><tr><th>Cliente</th><th>Data</th><th>Em quantos dias</th><th>Telefone</th><th></th></tr></thead><tbody>
+      ${restante.map(c=>{
+        const d=new Date(c.data_nascimento+'T12:00');
+        const dia=d.getDate();
+        const faltam=dia-diaHoje;
+        const tel=(c.telefone||'').replace(/\D/g,'');
+        const nome1=encodeURIComponent(c.nome.split(' ')[0]);
+        return`<tr>
+          <td>${c.nome}</td>
+          <td>${dia.toString().padStart(2,'0')}/${mes.toString().padStart(2,'0')}</td>
+          <td><span class="badge ${faltam<=3?'b-yellow':'b-blue'}">${faltam===1?'Amanhã':faltam+' dias'}</span></td>
+          <td>${c.telefone||'—'}</td>
+          <td>${tel?`<button class="btn btn-sm btn-outline" onclick="window.open('https://wa.me/55${tel}?text=Olá+${nome1}!+Seu+aniversário+está+chegando!+🎂','_blank')">Lembrar</button>`:''}
+          </td>
+        </tr>`;
+      }).join('')}
+      </tbody></table></div>
+    </div>`;
+  } else if(!hoje.length) {
+    html+=`<div class="empty"><div class="empty-title">Nenhum aniversariante este mês</div><div class="empty-sub">Os aniversários dos clientes aparecem aqui quando cadastrados</div></div>`;
   }
-  if(!hoje.length&&!restante.length){html='<div class="empty"><div class="empty-title">Nenhum aniversário este mês</div><div style="font-size:13px;color:var(--gray-400);margin-top:6px">Cadastre as datas de nascimento nos perfis dos clientes</div></div>';}
+
   el.innerHTML=html;
 }
 
-// ============================================================
-// AGENDAMENTOS - AÇÕES
-// ============================================================
-// ============================================================
-// DASHBOARD
-// ============================================================
-let dashPeriod='semana';
-
-function setDashPeriod(period, el){
-  dashPeriod=period;
-  document.querySelectorAll('.dash-period').forEach(b=>b.classList.remove('active'));
-  if(el)el.classList.add('active');
-  const customEl=id('dash-custom-dates');
-  if(customEl)customEl.style.display=period==='custom'?'flex':'none';
-  if(period!=='custom')loadDash();
-}
-
-function getDashDates(){
-  const hoje=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  if(dashPeriod==='hoje'){
-    const h=fmt(hoje);return{ini:h,fim:h,label:'hoje'};
-  }
-  if(dashPeriod==='semana'){
-    const dow=hoje.getDay();
-    const seg=new Date(hoje);seg.setDate(hoje.getDate()-(dow===0?6:dow-1));
-    const sab=new Date(seg);sab.setDate(seg.getDate()+6);
-    return{ini:fmt(seg),fim:fmt(sab),label:'esta semana'};
-  }
-  if(dashPeriod==='mes'){
-    const ini=`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`;
-    return{ini,fim:fmt(hoje),label:'este mês'};
-  }
-  if(dashPeriod==='ano'){
-    return{ini:`${hoje.getFullYear()}-01-01`,fim:fmt(hoje),label:'este ano'};
-  }
-  if(dashPeriod==='custom'){
-    const ini=id('dash-dt-ini')?.value;
-    const fim=id('dash-dt-fim')?.value;
-    if(!ini||!fim){toast('Selecione as datas','err');return null;}
-    return{ini,fim,label:`${ini} a ${fim}`};
-  }
-  return{ini:fmt(hoje),fim:fmt(hoje),label:'hoje'};
-}
 
 async function loadDash(){
   if(!CU)return;
