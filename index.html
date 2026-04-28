@@ -4452,6 +4452,8 @@ async function salvarLinkPage(){
   
   // Atualiza CP com dados frescos para não perder links na próxima edição
   if(CP)CP.link_page=JSON.stringify(dados);
+  // Remove slug duplicado de outros profiles (segurança)
+  await sb.from('profiles').update({link_page:null}).neq('id',CU.id).filter('link_page','like','%"slug":"'+dados.slug+'"%');
   
   toast('Página salva!','ok');
   const link=`${window.location.origin}?p=${dados.slug}`;
@@ -4513,7 +4515,7 @@ async function renderizarLinkPage(slug){
   try{
     // Usa fetch direto com a anon key para funcionar sem login
     const ANON_KEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
-    const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=not.is.null`,{
+    const res=await fetch(`https://owanynpsbutuhcaclkif.supabase.co/rest/v1/profiles?select=link_page&link_page=not.is.null&order=created_at.asc`,{
       headers:{
         'apikey':ANON_KEY,
         'Authorization':'Bearer '+ANON_KEY
