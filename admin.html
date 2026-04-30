@@ -264,11 +264,21 @@ async function carregarUsuarios(){
   const agMap = {};
   (agCounts||[]).forEach(a => { agMap[a.user_id] = (agMap[a.user_id]||0) + 1; });
 
-  todosUsuarios = (profiles||[]).map(p => ({
+  // Busca TODOS os usuários auth (inclusive sem profile)
+  const {data: authUsers} = await sb.rpc('get_all_auth_users');
+  const profileIds = new Set((profiles||[]).map(p => p.id));
+  const semProfile = (authUsers||[]).filter(u => !profileIds.has(u.id)).map(u => ({
+    id: u.id, email: u.email, nome: '(cadastro incompleto)', nome_barbearia: '—',
+    plano: 'incompleto', created_at: u.created_at, incompleto: true,
+    clientes_count: 0, ag_count: 0
+  }));
+
+  const profilesCompletos = (profiles||[]).map(p => ({
     ...p,
     clientes_count: countMap[p.id] || 0,
     ag_count: agMap[p.id] || 0
   }));
+  todosUsuarios = [...profilesCompletos, ...semProfile];
 
   // Stats
   const total = todosUsuarios.length;
@@ -377,7 +387,7 @@ async function toggleBloquear(id, nome, bloquear){
   if(!confirm(`Deseja ${acao} ${nome}?`)) return;
 
   const novoPlano = bloquear ? 'bloqueado' : 'trial';
-  const {error} = await sb.from('profiles').update({plano: novoPlano}).eq('id', id);
+  const {error} = await sb.rpc('admin_update_plano', {user_id: id, novo_plano: novoPlano});
   if(error){ alert('Erro: ' + error.message); return; }
 
   // Atualiza local
@@ -392,7 +402,7 @@ async function excluirUsuario(id, nome){
   if(!confirm(`⚠️ Excluir permanentemente a conta de ${nome}?\n\nIsso vai remover todos os dados: clientes, agendamentos, serviços, etc.\n\nEssa ação NÃO pode ser desfeita!`)) return;
   if(!confirm(`Confirme novamente: excluir ${nome}?`)) return;
 
-  const {error} = await sb.from('profiles').delete().eq('id', id);
+  const {error} = await sb.rpc('admin_delete_profile', {user_id: id});
   if(error){ alert('Erro: ' + error.message); return; }
 
   todosUsuarios = todosUsuarios.filter(u => u.id !== id);
@@ -452,7 +462,7 @@ async function mudarPlano(id, plano){
   if(!plano) return;
   const u = todosUsuarios.find(x => x.id === id);
   if(!confirm(`Mudar plano de ${u?.nome} para "${plano}"?`)) return;
-  const {error} = await sb.from('profiles').update({plano}).eq('id', id);
+  const {error} = await sb.rpc('admin_update_plano', {user_id: id, novo_plano: plano});
   if(error){ alert('Erro: '+error.message); return; }
   if(u) u.plano = plano;
   fecharModal();
