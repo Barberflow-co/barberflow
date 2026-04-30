@@ -254,12 +254,16 @@ async function carregarUsuarios(){
     return;
   }
 
-  // Busca IDs de profissionais de equipe para EXCLUIR da lista principal
-  const {data: todaEquipe} = await sb.from('equipe').select('auth_user_id').not('auth_user_id', 'is', null);
+  // Busca emails e IDs de todos os profissionais de equipe para EXCLUIR da lista
+  // (profissionais são funcionários do dono, não são clientes do Klipflow)
+  const {data: todaEquipe} = await sb.from('equipe').select('email,auth_user_id');
+  const profEmails = new Set((todaEquipe||[]).map(e => e.email?.toLowerCase()).filter(Boolean));
   const profUserIds = new Set((todaEquipe||[]).map(e => e.auth_user_id).filter(Boolean));
 
-  // Filtra: só donos (quem NAO é profissional de equipe de outro)
-  const profilesDonos = (profiles||[]).filter(p => !profUserIds.has(p.id));
+  // Filtra profiles: só donos (quem NÃO é profissional de equipe por email ou ID)
+  const profilesDonos = (profiles||[]).filter(p =>
+    !profUserIds.has(p.id) && !profEmails.has(p.email?.toLowerCase())
+  );
 
   // Busca contagem de clientes por usuário
   const {data: clientesCounts} = await sb.from('clientes').select('user_id');
@@ -274,7 +278,11 @@ async function carregarUsuarios(){
   // Busca TODOS os usuários auth (inclusive sem profile) — filtra profissionais
   const {data: authUsers} = await sb.rpc('get_all_auth_users');
   const profileIds = new Set(profilesDonos.map(p => p.id));
-  const semProfile = (authUsers||[]).filter(u => !profileIds.has(u.id) && !profUserIds.has(u.id)).map(u => ({
+  const semProfile = (authUsers||[]).filter(u =>
+    !profileIds.has(u.id) &&
+    !profUserIds.has(u.id) &&
+    !profEmails.has(u.email?.toLowerCase())
+  ).map(u => ({
     id: u.id, email: u.email, nome: '(cadastro incompleto)', nome_barbearia: '—',
     plano: 'incompleto', created_at: u.created_at, incompleto: true,
     clientes_count: 0, ag_count: 0
