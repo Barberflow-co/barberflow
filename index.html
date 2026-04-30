@@ -1340,8 +1340,12 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         <select class="fs" id="ag-prof"><option value="">Selecionar...</option></select>
       </div>
       <div class="fg">
-        <label class="fl">Serviço *</label>
-        <select class="fs" id="ag-serv" onchange="autoPrecoServ()"><option value="">Selecionar serviço...</option></select>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label class="fl" style="margin-bottom:0">Serviços *</label>
+          <button type="button" onclick="agAddServ()" style="font-size:12px;font-weight:600;color:var(--brand);background:var(--brand-light);border:none;border-radius:6px;padding:3px 10px;cursor:pointer">+ Adicionar serviço</button>
+        </div>
+        <div id="ag-servs-lista" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div id="ag-duracao-total" style="display:none;font-size:12px;color:var(--brand);margin-top:6px;background:var(--brand-light);padding:5px 10px;border-radius:6px"></div>
       </div>
       <div class="fg2">
         <div class="fg"><label class="fl">Data *</label><input class="fi" id="ag-data" type="date"></div>
@@ -2186,33 +2190,94 @@ async function cadastrarEAgendar(nome){
   await loadCliSels();
 }
 
-// Auto-preenche valor e calcula hora fim ao selecionar serviço
-function autoPrecoServ(){
-  const servId=v('ag-serv');
-  const sv2=allServs.find(s=>s.id===servId);
-  if(sv2){
-    if(sv2.preco)id('ag-valor').value=sv2.preco;
-    // Calcula hora de fim baseado na duração
-    if(sv2.duracao_min){
-      const hora=v('ag-hora');
+// ============================================================
+// MÚLTIPLOS SERVIÇOS NO AGENDAMENTO
+// ============================================================
+let agServsList = []; // lista de serviços selecionados
+
+function agAddServ(){
+  const idx = agServsList.length;
+  agServsList.push({id:'',nome:'',preco:0,duracao:0});
+  renderAgServsList();
+  // Foca no novo select
+  setTimeout(()=>{
+    const sel = document.querySelector(`#ag-serv-item-${idx} select`);
+    if(sel) sel.focus();
+  }, 50);
+}
+
+function agRemoveServ(idx){
+  agServsList.splice(idx,1);
+  renderAgServsList();
+  calcAgTotal();
+}
+
+function agServChange(idx, selectEl){
+  const servId = selectEl.value;
+  const sv = allServs.find(s=>s.id===servId);
+  if(sv){
+    agServsList[idx] = {id:sv.id, nome:sv.nome, preco:sv.preco||0, duracao:sv.duracao_min||0};
+  } else {
+    agServsList[idx] = {id:'',nome:'',preco:0,duracao:0};
+  }
+  renderAgServsList();
+  calcAgTotal();
+}
+
+function renderAgServsList(){
+  const el = id('ag-servs-lista');
+  if(!el) return;
+  if(!agServsList.length){
+    agServsList.push({id:'',nome:'',preco:0,duracao:0});
+  }
+  el.innerHTML = agServsList.map((s,i)=>`
+    <div id="ag-serv-item-${i}" style="display:flex;align-items:center;gap:6px">
+      <select class="fs" style="flex:1" onchange="agServChange(${i},this)">
+        <option value="">Selecionar serviço...</option>
+        ${allServs.map(sv=>`<option value="${sv.id}" ${sv.id===s.id?'selected':''}>${sv.nome}${sv.preco?` — R$ ${Number(sv.preco).toFixed(2)}`:''}${sv.duracao_min?' ('+sv.duracao_min+'min)':''}</option>`).join('')}
+      </select>
+      ${agServsList.length > 1 ? `<button type="button" onclick="agRemoveServ(${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;line-height:1;padding:4px;flex-shrink:0">×</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function calcAgTotal(){
+  const totalPreco = agServsList.reduce((s,sv)=>s+(sv.preco||0),0);
+  const totalDur = agServsList.reduce((s,sv)=>s+(sv.duracao||0),0);
+  // Atualiza campo de valor
+  const vEl = id('ag-valor');
+  if(vEl && totalPreco > 0) vEl.value = totalPreco.toFixed(2);
+  // Atualiza info de duração
+  const durEl = id('ag-duracao-total');
+  if(durEl){
+    if(totalDur > 0){
+      const hora = id('ag-hora')?.value;
+      let fimStr = '';
       if(hora){
-        const [hh,mm]=hora.split(':').map(Number);
-        const inicio=hh*60+mm;
-        const fim=inicio+sv2.duracao_min;
-        const fimH=Math.floor(fim/60);
-        const fimM=fim%60;
-        const fimStr=(fimH<10?'0':'')+fimH+':'+(fimM<10?'0':'')+fimM;
-        // Mostra aviso de duração
-        const old=document.querySelector('#ag-duracao-info');
-        if(old)old.remove();
-        const info=document.createElement('div');
-        info.id='ag-duracao-info';
-        info.style.cssText='font-size:12px;color:var(--brand);margin-top:4px;background:var(--brand-light);padding:5px 10px;border-radius:6px';
-        info.textContent=`⏱ Duração: ${sv2.duracao_min}min — termina às ${fimStr}`;
-        id('ag-serv').parentNode.appendChild(info);
+        const [hh,mm] = hora.split(':').map(Number);
+        const fim = hh*60+mm+totalDur;
+        fimStr = ` — termina às ${String(Math.floor(fim/60)).padStart(2,'0')}:${String(fim%60).padStart(2,'0')}`;
       }
+      const servNames = agServsList.filter(s=>s.nome).map(s=>s.nome).join(' + ');
+      durEl.style.display='block';
+      durEl.textContent = `⏱ ${servNames} — ${totalDur}min${fimStr} — Total: ${fmtMoney(totalPreco)}`;
+    } else {
+      durEl.style.display='none';
     }
   }
+}
+
+function resetAgServsList(){
+  agServsList = [{id:'',nome:'',preco:0,duracao:0}];
+  renderAgServsList();
+  const durEl = id('ag-duracao-total');
+  if(durEl) durEl.style.display='none';
+}
+
+// Override autoPrecoServ para compatibilidade
+function autoPrecoServ(){
+  // Mantido para compatibilidade — a lógica agora está em agServChange
+  calcAgTotal();
 }
 
 // Fecha dropdown ao clicar fora
@@ -3056,6 +3121,7 @@ function abrirAgModal(hrFull, profId){
   if(id('btn-excluir-ag'))id('btn-excluir-ag').style.display='none';
   limparCliAg();
   agTab('anam');
+  resetAgServsList();
   if(hrFull){
     const d=new Date(hrFull);
     id('ag-data').value=d.toISOString().split('T')[0];
@@ -3106,9 +3172,20 @@ async function editarAg(agId){
   id('ag-valor').value=a.valor||'';
   id('ag-status').value=a.status||'aguardando';
   id('ag-obs').value=a.observacoes||'';
-  // Seleciona o serviço pelo nome
-  const sv2=allServs.find(s=>s.nome===a.profissional);
-  if(sv2)id('ag-serv').value=sv2.id;
+
+  // Reconstrói a lista de serviços a partir do nome salvo
+  // O nome pode ser "Serviço A + Serviço B + Serviço C"
+  const nomesServs = (a.profissional||'').split(' + ').map(n=>n.trim()).filter(Boolean);
+  if(nomesServs.length){
+    agServsList = nomesServs.map(nome=>{
+      const sv = allServs.find(s=>s.nome===nome);
+      return sv ? {id:sv.id,nome:sv.nome,preco:sv.preco||0,duracao:sv.duracao_min||0} : {id:'',nome,preco:0,duracao:0};
+    });
+  } else {
+    agServsList = [{id:'',nome:'',preco:0,duracao:0}];
+  }
+  renderAgServsList();
+
   // Atualiza botão
   id('m-ag').querySelector('.mf .btn-primary').textContent='Salvar alterações';
   if(id('btn-excluir-ag'))id('btn-excluir-ag').style.display='inline-flex';
@@ -3120,12 +3197,22 @@ async function editarAg(agId){
 async function salvarAg(){
   const ownId=getOwn();const cliId=v('ag-cli'),data=v('ag-data'),hora=v('ag-hora');
   if(!cliId||!data||!hora){toast('Preencha os campos obrigatórios!','err');return;}
-  const profId=v('ag-prof');const servId=v('ag-serv');
-  const sv2=allServs.find(s=>s.id===servId);
-  const servNome=sv2?sv2.nome:(servId||'');
-  const valor=parseFloat(v('ag-valor'))||(sv2?.preco||0);
-  const durMin=sv2?.duracao_min||30;
-  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,servico_id:servId||null,duracao_min:durMin,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
+
+  // Pega serviços selecionados (filtra os vazios)
+  const servsValidos = (agServsList||[]).filter(s=>s.id);
+  if(!servsValidos.length){toast('Selecione pelo menos um serviço!','err');return;}
+
+  const profId=v('ag-prof');
+  // Nome concatenado de todos os serviços
+  const servNome = servsValidos.map(s=>s.nome).join(' + ');
+  // Valor total
+  const valor = parseFloat(v('ag-valor')) || servsValidos.reduce((s,sv)=>s+(sv.preco||0),0);
+  // Duração total
+  const durMin = servsValidos.reduce((s,sv)=>s+(sv.duracao||0),0) || 30;
+  // ID do primeiro serviço (para compatibilidade)
+  const servId = servsValidos[0]?.id || null;
+
+  const dados={cliente_id:cliId,profissional_id:profId||null,profissional:servNome,servico_id:servId,duracao_min:durMin,data_hora:`${data}T${hora}:00`,status:v('ag-status')||'aguardando',valor,observacoes:v('ag-obs')};
 
   // Fecha o modal IMEDIATAMENTE sem esperar o banco
   agEditId=null;
