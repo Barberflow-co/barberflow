@@ -2669,6 +2669,39 @@ async function loadAniversarios(){
 }
 
 
+function setDashPeriod(periodo,btn){
+  document.querySelectorAll('.dash-period').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  loadDash();
+}
+
+function getDashDates(){
+  const hoje=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const periodo=document.querySelector('.dash-period.active')?.getAttribute('onclick')?.match(/'(\w+)'/)?.[1]||'semana';
+  let ini,fim,label;
+  if(periodo==='hoje'){
+    ini=fim=fmt(hoje);label='hoje';
+  } else if(periodo==='semana'){
+    const seg=new Date(hoje);seg.setDate(hoje.getDate()-hoje.getDay()+1);
+    const dom=new Date(seg);dom.setDate(seg.getDate()+6);
+    ini=fmt(seg);fim=fmt(dom);label='esta semana';
+  } else if(periodo==='mes'){
+    ini=`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`;
+    fim=fmt(new Date(hoje.getFullYear(),hoje.getMonth()+1,0));
+    label=`${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][hoje.getMonth()]} ${hoje.getFullYear()}`;
+  } else if(periodo==='ano'){
+    ini=`${hoje.getFullYear()}-01-01`;fim=`${hoje.getFullYear()}-12-31`;label=`${hoje.getFullYear()}`;
+  } else {
+    // fallback — mês atual
+    ini=`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`;
+    fim=fmt(new Date(hoje.getFullYear(),hoje.getMonth()+1,0));
+    label=`${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][hoje.getMonth()]} ${hoje.getFullYear()}`;
+  }
+  return {ini,fim,label};
+}
+
 async function loadDash(){
   if(!CU)return;
   const dates=getDashDates();if(!dates)return;
@@ -3140,7 +3173,7 @@ async function salvarAg(){
 async function loadServicos(){
   await loadServsBD();const tb=id('tb-servicos');
   if(!allServs.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-title">Nenhum serviço cadastrado</div></div></td></tr>';return;}
-  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>R$${fmtMoney(s.preco)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarServ('${s.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">Excluir</button></td></tr>`).join('');
+  tb.innerHTML=allServs.map(s=>`<tr><td style="font-weight:500">${s.nome}</td><td>${s.categoria||'—'}</td><td>${s.duracao_min?s.duracao_min+'min':'—'}</td><td>${fmtMoney(s.preco)}</td><td>${s.comissao_pct?s.comissao_pct+'%':'—'}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarServ('${s.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirServ('${s.id}')">Excluir</button></td></tr>`).join('');
 }
 let servEditId=null;
 async function editarServ(sid){
@@ -3183,7 +3216,7 @@ async function loadEstoque(){
   id('est-val').textContent='R$'+lista.reduce((s,p)=>s+(p.qtd_atual||0)*(p.preco_custo||0),0).toFixed(0);
   const tb=id('tb-estoque');
   if(!lista.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-title">Nenhum produto</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>R$${fmtMoney(p.preco_custo)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button>Excluir</button></td></tr>`;}).join('');
+  tb.innerHTML=lista.map(p=>{const pct=p.qtd_minima?Math.min((p.qtd_atual/(p.qtd_minima||1))*100,100):100;const cor=p.qtd_atual<=(p.qtd_minima||0)?'#EF4444':p.qtd_atual<=(p.qtd_minima||0)*2?'#F59E0B':'#00C48C';return`<tr><td style="font-weight:500">${p.nome}</td><td>${p.categoria||'—'}</td><td>${p.qtd_atual} ${p.unidade||''}</td><td>${p.qtd_minima||'—'}</td><td>${fmtMoney(p.preco_custo)}</td><td><div class="estoque-bar-wrap" style="width:70px"><div class="estoque-bar" style="width:${pct}%;background:${cor}"></div></div></td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarProd('${p.id}')">Editar</button><button class="btn btn-sm btn-danger" onclick="excluirProd('${p.id}')">Excluir</button>Excluir</button></td></tr>`;}).join('');
 }
 let prodEditId=null;
 async function editarProd(pid){
@@ -5406,7 +5439,7 @@ async function sv(name,el){
   const view=id('view-'+name);if(view)view.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');
   try{localStorage.setItem('bf_page',name);}catch(e){}
-  const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações'};
+  const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações',manutencao:'Manutenção',sumidos:'Clientes Sumidos',linkpage:'Minha Página',cursos:'Cursos'};
   id('tt').textContent=tmap[name]||name;
   if(name==='dashboard')await loadDash();
   if(name==='clientes')await loadCli();
