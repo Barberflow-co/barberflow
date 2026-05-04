@@ -8,60 +8,167 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--brand:#0D6EFD;--brand-light:#EBF3FF;--brand-dark:#0A56C9;--accent:#00C48C;--warn:#F59E0B;--danger:#EF4444;--gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;--gray-400:#94A3B8;--gray-500:#64748B;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;}
+:root{
+  --brand:#0D6EFD;--brand-light:#EBF3FF;--brand-dark:#0A56C9;
+  --accent:#00C48C;--warn:#F59E0B;--danger:#EF4444;--purple:#7C3AED;
+  --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;
+  --gray-400:#94A3B8;--gray-500:#64748B;--gray-700:#334155;
+  --gray-800:#1E293B;--gray-900:#0F172A;
+}
 body{font-family:'Inter',sans-serif;font-size:14px;background:var(--gray-50);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+
+/* ── LOGIN ── */
 #login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--gray-900)}
 .login-box{background:#fff;border-radius:16px;padding:40px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;text-align:center;margin-bottom:8px}
+.login-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;text-align:center;margin-bottom:6px}
 .login-sub{text-align:center;font-size:13px;color:var(--gray-500);margin-bottom:28px}
 .fi{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;transition:border .15s}
-.fi:focus{border-color:var(--brand)}.fg{margin-bottom:14px}.fl{display:block;font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
-.btn-login{width:100%;background:var(--brand);color:#fff;padding:11px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
-.btn-login:hover{background:var(--brand-dark)}.err-msg{background:#FEE2E2;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.fi:focus{border-color:var(--brand)}.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+.btn-login{width:100%;background:var(--brand);color:#fff;padding:12px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
+.btn-login:hover{background:var(--brand-dark)}
+.err-msg{background:#FEE2E2;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+
+/* ── LAYOUT ── */
 #main{display:none;min-height:100vh}
-header{background:var(--gray-900);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
-.h-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;display:flex;align-items:center;gap:8px}
-.h-mark{width:28px;height:28px;background:var(--brand);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800}
-.h-badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.h-logout{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;border:none;background:none}.h-logout:hover{color:#fff}
-.container{max-width:1300px;margin:0 auto;padding:32px 24px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:20px}
-.stat-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--gray-900)}
-.stat-val.blue{color:var(--brand)}.stat-val.green{color:var(--accent)}.stat-val.orange{color:var(--warn)}.stat-val.red{color:var(--danger)}
-.stat-label{font-size:12px;color:var(--gray-500);margin-top:4px}
-.filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.search-input{padding:8px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;width:260px}
+header{background:var(--gray-900);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.h-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;display:flex;align-items:center;gap:10px}
+.h-mark{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:800}
+.h-badge{background:rgba(13,110,253,.3);color:#93C5FD;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.h-right{display:flex;align-items:center;gap:16px}
+.h-user{color:rgba(255,255,255,.6);font-size:12px}
+.h-logout{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:none;border-radius:6px;padding:5px 12px;transition:all .15s}
+.h-logout:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* ── TABS ── */
+.tabs-nav{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 32px;display:flex;gap:0}
+.tab-btn{padding:16px 20px;font-size:13px;font-weight:600;color:var(--gray-500);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px}
+.tab-btn:hover{color:var(--gray-800)}
+.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-icon{font-size:15px}
+
+.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.kpi-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:22px;position:relative;overflow:hidden;transition:box-shadow .15s}
+.kpi-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.kpi-card.blue::before{background:var(--brand)}
+.kpi-card.green::before{background:var(--accent)}
+.kpi-card.orange::before{background:var(--warn)}
+.kpi-card.red::before{background:var(--danger)}
+.kpi-card.purple::before{background:var(--purple)}
+.kpi-card.teal::before{background:#0891B2}
+.kpi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+.kpi-card.blue .kpi-icon{background:#DBEAFE}
+.kpi-card.green .kpi-icon{background:#D1FAE5}
+.kpi-card.orange .kpi-icon{background:#FEF3C7}
+.kpi-card.red .kpi-icon{background:#FEE2E2}
+.kpi-card.purple .kpi-icon{background:#EDE9FE}
+.kpi-card.teal .kpi-icon{background:#CFFAFE}
+.kpi-val{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:var(--gray-900);line-height:1}
+.kpi-val.money{font-size:22px}
+.kpi-label{font-size:12px;color:var(--gray-500);margin-top:6px;font-weight:500}
+.kpi-sub{font-size:11px;color:var(--gray-400);margin-top:3px}
+
+/* ── SECTION ── */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-title{font-size:15px;font-weight:700;color:var(--gray-900)}
+.section-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+
+/* ── CARDS ROW ── */
+.cards-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+.chart-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:22px}
+.chart-title{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.search-input{padding:9px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;width:280px;font-family:'Inter',sans-serif}
 .search-input:focus{border-color:var(--brand)}
-.filter-btn{padding:7px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--gray-600)}
+.filter-btn{padding:7px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--gray-600);transition:all .15s}
 .filter-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-.card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden}
-.card-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
-.card-title{font-weight:700;font-size:14px}
+.btn-refresh{margin-left:auto;background:var(--gray-900);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-refresh:hover{background:var(--gray-700)}
+
+/* ── TABLE ── */
+.table-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;overflow:hidden}
+.table-header{padding:18px 22px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
+.table-title{font-weight:700;font-size:14px}
+.table-count{font-size:12px;color:var(--gray-400);background:var(--gray-100);padding:3px 10px;border-radius:20px;font-weight:600}
 table{width:100%;border-collapse:collapse}
-th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
-td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
-tr:last-child td{border:none}tr:hover td{background:var(--gray-50)}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.b-trial{background:#FEF3C7;color:#92400E}.b-starter{background:#DBEAFE;color:#1E40AF}.b-pro{background:#D1FAE5;color:#065F46}
-.b-studio{background:#EDE9FE;color:#5B21B6}.b-blocked{background:#FEE2E2;color:#991B1B}.b-incompleto{background:#F1F5F9;color:#94A3B8}
-.user-name{font-weight:600;color:var(--gray-900)}.user-email{font-size:12px;color:var(--gray-400)}
-.action-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;margin-right:4px}
-.btn-detail{background:var(--brand-light);color:var(--brand)}.btn-detail:hover{background:var(--brand);color:#fff}
-.btn-block{background:#FEE2E2;color:#B91C1C}.btn-block:hover{background:#EF4444;color:#fff}
-.btn-unblock{background:#D1FAE5;color:#065F46}.btn-unblock:hover{background:#00C48C;color:#fff}
-.btn-delete{background:#F1F5F9;color:#64748B}.btn-delete:hover{background:#EF4444;color:#fff}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}.modal{background:#fff;border-radius:16px;width:560px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-header{padding:20px 24px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-weight:700;font-size:15px}.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400)}
-.modal-body{padding:24px}.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100)}
-.info-row:last-child{border:none}.info-label{font-size:12px;color:var(--gray-500);font-weight:600}.info-val{font-size:13px;color:var(--gray-800);font-weight:500}
-.empty{text-align:center;padding:48px;color:var(--gray-400)}.empty-icon{font-size:36px;margin-bottom:12px}
-.loading{text-align:center;padding:40px;color:var(--gray-400);font-size:13px}
+th{padding:11px 18px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap}
+td{padding:14px 18px;font-size:13px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+tr:last-child td{border:none}
+tr:hover td{background:var(--gray-50)}
+.user-name{font-weight:600;color:var(--gray-900)}
+.user-email{font-size:12px;color:var(--gray-400);margin-top:1px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-trial{background:#FEF3C7;color:#92400E}
+.b-starter{background:#DBEAFE;color:#1E40AF}
+.b-pro{background:#D1FAE5;color:#065F46}
+.b-studio{background:#EDE9FE;color:#5B21B6}
+.b-blocked{background:#FEE2E2;color:#991B1B}
+.b-inc{background:#F1F5F9;color:#94A3B8}
+
+/* ── ACTION BUTTONS ── */
+.action-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;margin-right:3px;white-space:nowrap}
+.btn-ver{background:var(--brand-light);color:var(--brand)}.btn-ver:hover{background:var(--brand);color:#fff}
+.btn-blk{background:#FEE2E2;color:#B91C1C}.btn-blk:hover{background:#EF4444;color:#fff}
+.btn-ublk{background:#D1FAE5;color:#065F46}.btn-ublk:hover{background:#00C48C;color:#fff}
+.btn-del{background:#F1F5F9;color:#64748B}.btn-del:hover{background:#EF4444;color:#fff}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:580px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.25)}
+.modal-header{padding:22px 26px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.modal-title{font-weight:700;font-size:16px}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-400);line-height:1;padding:2px 6px}
+.modal-body{padding:26px}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--gray-100)}
+.info-row:last-child{border:none}
+.info-label{font-size:12px;color:var(--gray-500);font-weight:600;flex-shrink:0;width:150px}
+.info-val{font-size:13px;color:var(--gray-800);font-weight:500;text-align:right;flex:1}
+.modal-actions{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--gray-200)}
+
+/* ── EMPTY / LOADING ── */
+.empty{text-align:center;padding:56px;color:var(--gray-400)}
+.empty-icon{font-size:40px;margin-bottom:14px}
+.loading{text-align:center;padding:48px;color:var(--gray-400);font-size:13px}
+
+/* ── PLAN BAR ── */
+.plan-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.plan-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--gray-600)}
+.plan-dot{width:8px;height:8px;border-radius:50%}
+
+/* ── ACTIVITY LIST ── */
+.act-list{display:flex;flex-direction:column;gap:0}
+.act-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)}
+.act-item:last-child{border:none}
+.act-avatar{width:36px;height:36px;border-radius:10px;background:var(--brand-light);color:var(--brand);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.act-info{flex:1;min-width:0}
+.act-name{font-weight:600;font-size:13px;color:var(--gray-900)}
+.act-sub{font-size:12px;color:var(--gray-400)}
+.act-right{text-align:right;flex-shrink:0}
+.act-val{font-size:13px;font-weight:700;color:var(--accent)}
+.act-date{font-size:11px;color:var(--gray-400)}
+
+@media(max-width:768px){
+  .container{padding:16px}
+  .tabs-nav{padding:0 16px;overflow-x:auto}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .cards-row{grid-template-columns:1fr}
+  header{padding:0 16px}
+}
 </style>
 </head>
 <body>
+
+<!-- LOGIN -->
 <div id="login">
   <div class="login-box">
     <div class="login-logo"><span style="color:var(--brand)">Klip</span>flow</div>
@@ -72,40 +179,193 @@ tr:last-child td{border:none}tr:hover td{background:var(--gray-50)}
     <button class="btn-login" onclick="doLogin()">Entrar no painel →</button>
   </div>
 </div>
+
+<!-- MAIN -->
 <div id="main">
   <header>
-    <div class="h-logo"><div class="h-mark">K</div>Klipflow<span class="h-badge">Admin</span></div>
-    <button class="h-logout" onclick="doLogout()">Sair →</button>
+    <div class="h-logo">
+      <div class="h-mark">K</div>
+      Klipflow
+      <span class="h-badge">ADMIN</span>
+    </div>
+    <div class="h-right">
+      <span class="h-user" id="h-user-email"></span>
+      <button class="h-logout" onclick="doLogout()">Sair →</button>
+    </div>
   </header>
+
+  <!-- TABS NAV -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="setTab('overview',this)"><span class="tab-icon">📊</span>Visão Geral</button>
+    <button class="tab-btn" onclick="setTab('usuarios',this)"><span class="tab-icon">👥</span>Usuários</button>
+    <button class="tab-btn" onclick="setTab('faturamento',this)"><span class="tab-icon">💰</span>Faturamento</button>
+  </div>
+
+  <!-- ═══════════════════════════ TAB: VISÃO GERAL ═══════════════════════════ -->
   <div class="container">
-    <div class="stats">
-      <div class="stat-card"><div class="stat-val blue" id="st-total">—</div><div class="stat-label">Total de contas</div></div>
-      <div class="stat-card"><div class="stat-val green" id="st-ativos">—</div><div class="stat-label">Ativos</div></div>
-      <div class="stat-card"><div class="stat-val orange" id="st-trial">—</div><div class="stat-label">Em trial</div></div>
-      <div class="stat-card"><div class="stat-val" id="st-pagos">—</div><div class="stat-label">Pagos</div></div>
-      <div class="stat-card"><div class="stat-val red" id="st-bloq">—</div><div class="stat-label">Bloqueados</div></div>
-      <div class="stat-card"><div class="stat-val green" id="st-faturamento" style="font-size:20px">—</div><div class="stat-label">Faturamento total</div></div>
+    <div id="tab-overview" class="tab-pane active">
+
+      <!-- KPIs PRINCIPAIS -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-val" id="kpi-total">—</div>
+          <div class="kpi-label">Total de clientes</div>
+          <div class="kpi-sub">contas ativas na plataforma</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-val" id="kpi-ativos">—</div>
+          <div class="kpi-label">Clientes ativos</div>
+          <div class="kpi-sub">em trial ou plano pago</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-icon">⏳</div>
+          <div class="kpi-val" id="kpi-trial">—</div>
+          <div class="kpi-label">Em trial</div>
+          <div class="kpi-sub">potenciais conversões</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-icon">💎</div>
+          <div class="kpi-val" id="kpi-pagos">—</div>
+          <div class="kpi-label">Clientes pagos</div>
+          <div class="kpi-sub">gerando receita mensal</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-icon">🚫</div>
+          <div class="kpi-val" id="kpi-bloq">—</div>
+          <div class="kpi-label">Bloqueados</div>
+          <div class="kpi-sub">acesso suspenso</div>
+        </div>
+        <div class="kpi-card teal">
+          <div class="kpi-icon">📈</div>
+          <div class="kpi-val" id="kpi-taxa" style="font-size:26px">—</div>
+          <div class="kpi-label">Taxa de conversão</div>
+          <div class="kpi-sub">trial → pago</div>
+        </div>
+      </div>
+
+      <!-- ROW: PLANOS + ATIVIDADE RECENTE -->
+      <div class="cards-row">
+        <div class="chart-card">
+          <div class="chart-title">📋 Distribuição por plano</div>
+          <div id="planos-dist"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🆕 Cadastros recentes</div>
+          <div class="act-list" id="cadastros-recentes"></div>
+        </div>
+      </div>
+
+      <!-- TOP USUÁRIOS -->
+      <div class="table-card">
+        <div class="table-header">
+          <div>
+            <div class="table-title">🏆 Top usuários por atividade</div>
+            <div class="section-sub">Ordenados por número de clientes cadastrados</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>#</th>
+            <th>Usuário</th>
+            <th>Barbearia</th>
+            <th style="text-align:center">Clientes</th>
+            <th style="text-align:center">Agendamentos</th>
+            <th style="text-align:right">Faturamento gerado</th>
+            <th>Plano</th>
+          </tr></thead>
+          <tbody id="top-usuarios"></tbody>
+        </table>
+      </div>
     </div>
-    <div class="filters">
-      <input class="search-input" type="text" id="search" placeholder="🔍 Buscar nome, email ou barbearia..." oninput="filtrar()">
-      <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
-      <button class="filter-btn" onclick="setFiltro('trial',this)">Trial</button>
-      <button class="filter-btn" onclick="setFiltro('pago',this)">Pagos</button>
-      <button class="filter-btn" onclick="setFiltro('bloqueado',this)">Bloqueados</button>
-      <button class="filter-btn" style="margin-left:auto;background:var(--brand);color:#fff;border-color:var(--brand)" onclick="carregarUsuarios()">↻ Atualizar</button>
+
+    <!-- ═══════════════════════════ TAB: USUÁRIOS ═══════════════════════════ -->
+    <div id="tab-usuarios" class="tab-pane">
+      <div class="filters">
+        <input class="search-input" type="text" id="search" placeholder="🔍 Buscar por nome, email ou barbearia..." oninput="filtrar()">
+        <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFiltro('trial',this)">Trial</button>
+        <button class="filter-btn" onclick="setFiltro('pago',this)">Pagos</button>
+        <button class="filter-btn" onclick="setFiltro('bloqueado',this)">Bloqueados</button>
+        <button class="btn-refresh" onclick="carregarDados()">↻ Atualizar</button>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Todos os usuários</div>
+          <span class="table-count" id="count-label">—</span>
+        </div>
+        <div id="tabela-wrap"><div class="loading">Carregando...</div></div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">Usuários cadastrados</div><div style="font-size:12px;color:var(--gray-400)" id="count-label"></div></div>
-      <div id="tabela-wrap"><div class="loading">Carregando...</div></div>
+
+    <!-- ═══════════════════════════ TAB: FATURAMENTO ═══════════════════════════ -->
+    <div id="tab-faturamento" class="tab-pane">
+
+      <!-- KPIs FATURAMENTO DOS CLIENTES -->
+      <div class="kpi-grid">
+        <div class="kpi-card green">
+          <div class="kpi-icon">💵</div>
+          <div class="kpi-val money" id="fat-total-clientes">—</div>
+          <div class="kpi-label">Faturamento total dos clientes</div>
+          <div class="kpi-sub">soma de todos os atendimentos</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon">📊</div>
+          <div class="kpi-val money" id="fat-medio">—</div>
+          <div class="kpi-label">Faturamento médio por cliente</div>
+          <div class="kpi-sub">entre clientes com movimentação</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-val" id="fat-ags-total">—</div>
+          <div class="kpi-label">Total de agendamentos</div>
+          <div class="kpi-sub">finalizados na plataforma</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-icon">🏆</div>
+          <div class="kpi-val" id="fat-top-nome" style="font-size:16px;line-height:1.3">—</div>
+          <div class="kpi-label">Maior faturamento</div>
+          <div class="kpi-sub" id="fat-top-val">cliente mais ativo</div>
+        </div>
+      </div>
+
+      <!-- TABELA FATURAMENTO POR CLIENTE -->
+      <div class="table-card">
+        <div class="table-header">
+          <div>
+            <div class="table-title">💰 Faturamento por cliente do Klipflow</div>
+            <div class="section-sub">Receita gerada por cada usuário na plataforma deles</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>#</th>
+            <th>Cliente Klipflow</th>
+            <th>Barbearia</th>
+            <th style="text-align:center">Agendamentos</th>
+            <th style="text-align:right">Faturamento</th>
+            <th style="text-align:right">Ticket médio</th>
+            <th>Plano</th>
+          </tr></thead>
+          <tbody id="tabela-faturamento"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- MODAL DETALHES -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)fecharModal()">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title" id="modal-titulo">Detalhes</div><button class="modal-close" onclick="fecharModal()">×</button></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-titulo">Detalhes do usuário</div>
+      <button class="modal-close" onclick="fecharModal()">×</button>
+    </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
+
 <script>
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
@@ -114,6 +374,11 @@ const sb=supabase.createClient(SURL,SKEY);
 let todosUsuarios=[];
 let filtroAtivo='todos';
 
+// ─── UTIL ───────────────────────────────────────
+function fmtMoney(v){return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function initials(nome){if(!nome||nome==='(cadastro incompleto)')return'?';const p=nome.trim().split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+
+// ─── AUTH ────────────────────────────────────────
 async function doLogin(){
   const email=document.getElementById('adm-email').value.trim();
   const pass=document.getElementById('adm-pass').value;
@@ -124,45 +389,49 @@ async function doLogin(){
   if(error){err.textContent='Email ou senha incorretos.';err.style.display='block';return;}
   mostrarPainel();
 }
-
 async function doLogout(){
   await sb.auth.signOut();
   document.getElementById('main').style.display='none';
   document.getElementById('login').style.display='flex';
 }
-
 function mostrarPainel(){
   document.getElementById('login').style.display='none';
   document.getElementById('main').style.display='block';
-  carregarUsuarios();
+  document.getElementById('h-user-email').textContent=ADMIN_EMAIL;
+  carregarDados();
 }
 
-function fmtMoney(v){return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+// ─── TABS ────────────────────────────────────────
+function setTab(nome,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+nome).classList.add('active');
+  btn.classList.add('active');
+}
 
-async function carregarUsuarios(){
-  document.getElementById('tabela-wrap').innerHTML='<div class="loading">Carregando usuários...</div>';
+// ─── CARREGAR DADOS ──────────────────────────────
+async function carregarDados(){
+  document.getElementById('tabela-wrap').innerHTML='<div class="loading">Carregando...</div>';
 
-  const{data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
-  if(error){document.getElementById('tabela-wrap').innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>Erro: '+error.message+'</div>';return;}
+  // Perfis
+  const{data:profiles}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
 
-  // Busca emails e IDs dos profissionais de equipe para EXCLUIR da lista
+  // Filtra profissionais de equipe
   const{data:todaEquipe}=await sb.from('equipe').select('email,auth_user_id');
   const profEmails=new Set((todaEquipe||[]).map(e=>e.email?.toLowerCase()).filter(Boolean));
   const profUserIds=new Set((todaEquipe||[]).map(e=>e.auth_user_id).filter(Boolean));
+  const profilesDonos=(profiles||[]).filter(p=>!profUserIds.has(p.id)&&!profEmails.has(p.email?.toLowerCase()));
 
-  // Só mostra donos — filtra profissionais de equipe por email E por ID
-  const profilesDonos=(profiles||[]).filter(p=>
-    !profUserIds.has(p.id)&&!profEmails.has(p.email?.toLowerCase())
-  );
-
+  // Contagens
   const{data:clientesCounts}=await sb.from('clientes').select('user_id');
   const countMap={};
   (clientesCounts||[]).forEach(c=>{countMap[c.user_id]=(countMap[c.user_id]||0)+1;});
 
-  const{data:agCounts}=await sb.from('agendamentos').select('user_id,valor').eq('status','finalizado');
+  const{data:agData}=await sb.from('agendamentos').select('user_id,valor').eq('status','finalizado');
   const agMap={};const fatMap={};
-  (agCounts||[]).forEach(a=>{agMap[a.user_id]=(agMap[a.user_id]||0)+1;fatMap[a.user_id]=(fatMap[a.user_id]||0)+(a.valor||0);});
+  (agData||[]).forEach(a=>{agMap[a.user_id]=(agMap[a.user_id]||0)+1;fatMap[a.user_id]=(fatMap[a.user_id]||0)+(a.valor||0);});
 
+  // Auth users sem profile
   const{data:authUsers}=await sb.rpc('get_all_auth_users');
   const profileIds=new Set(profilesDonos.map(p=>p.id));
   const semProfile=(authUsers||[]).filter(u=>
@@ -172,30 +441,103 @@ async function carregarUsuarios(){
   const profilesCompletos=profilesDonos.map(p=>({...p,clientes_count:countMap[p.id]||0,ag_count:agMap[p.id]||0,faturamento:fatMap[p.id]||0}));
   todosUsuarios=[...profilesCompletos,...semProfile];
 
-  const total=todosUsuarios.length;
-  const bloqueados=todosUsuarios.filter(u=>u.plano==='bloqueado').length;
-  const trial=todosUsuarios.filter(u=>u.plano==='trial').length;
-  const pagos=todosUsuarios.filter(u=>['starter','pro','studio'].includes(u.plano)).length;
-  const fatTotal=profilesCompletos.reduce((s,u)=>s+(u.faturamento||0),0);
-
-  document.getElementById('st-total').textContent=total;
-  document.getElementById('st-ativos').textContent=total-bloqueados;
-  document.getElementById('st-trial').textContent=trial;
-  document.getElementById('st-pagos').textContent=pagos;
-  document.getElementById('st-bloq').textContent=bloqueados;
-  document.getElementById('st-faturamento').textContent=fmtMoney(fatTotal);
-
+  renderOverview();
   renderTabela();
+  renderFaturamento();
 }
 
-function setFiltro(f,btn){filtroAtivo=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTabela();}
+// ─── OVERVIEW ────────────────────────────────────
+function renderOverview(){
+  const donos=todosUsuarios.filter(u=>!u.incompleto);
+  const total=todosUsuarios.length;
+  const bloq=donos.filter(u=>u.plano==='bloqueado').length;
+  const trial=donos.filter(u=>u.plano==='trial').length;
+  const pagos=donos.filter(u=>['starter','pro','studio'].includes(u.plano)).length;
+  const ativos=donos.length-bloq;
+  const taxa=donos.length>0?Math.round((pagos/donos.length)*100):0;
+
+  document.getElementById('kpi-total').textContent=total;
+  document.getElementById('kpi-ativos').textContent=ativos;
+  document.getElementById('kpi-trial').textContent=trial;
+  document.getElementById('kpi-pagos').textContent=pagos;
+  document.getElementById('kpi-bloq').textContent=bloq;
+  document.getElementById('kpi-taxa').textContent=taxa+'%';
+
+  // Distribuição de planos
+  const planoColors={trial:'#F59E0B',starter:'#3B82F6',pro:'#10B981',studio:'#7C3AED',bloqueado:'#EF4444',incompleto:'#CBD5E1'};
+  const planoCount={};
+  todosUsuarios.forEach(u=>{planoCount[u.plano]=(planoCount[u.plano]||0)+1;});
+  const totalAll=todosUsuarios.length||1;
+  document.getElementById('planos-dist').innerHTML=Object.entries(planoCount).map(([plano,count])=>{
+    const pct=Math.round((count/totalAll)*100);
+    const color=planoColors[plano]||'#94A3B8';
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:600;color:var(--gray-700);text-transform:capitalize">${plano}</span>
+        <span style="font-size:12px;color:var(--gray-500)">${count} (${pct}%)</span>
+      </div>
+      <div style="background:var(--gray-100);border-radius:4px;height:8px;overflow:hidden">
+        <div style="background:${color};height:100%;width:${pct}%;border-radius:4px;transition:width .5s"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cadastros recentes (top 5)
+  const recentes=[...todosUsuarios].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+  document.getElementById('cadastros-recentes').innerHTML=recentes.map(u=>`
+    <div class="act-item">
+      <div class="act-avatar">${initials(u.nome)}</div>
+      <div class="act-info">
+        <div class="act-name">${u.nome||'Sem nome'}</div>
+        <div class="act-sub">${u.email||'—'}</div>
+      </div>
+      <div class="act-right">
+        <div class="act-date">${u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR'):''}</div>
+        <div style="margin-top:2px">${badgeHtml(u.plano)}</div>
+      </div>
+    </div>`).join('');
+
+  // Top usuários por atividade
+  const topUsers=[...todosUsuarios].filter(u=>!u.incompleto).sort((a,b)=>b.clientes_count-a.clientes_count).slice(0,10);
+  document.getElementById('top-usuarios').innerHTML=topUsers.map((u,i)=>`
+    <tr>
+      <td style="color:var(--gray-400);font-weight:700">#${i+1}</td>
+      <td><div class="user-name">${u.nome||'Sem nome'}</div><div class="user-email">${u.email||'—'}</div></td>
+      <td>${u.nome_barbearia||'—'}</td>
+      <td style="text-align:center;font-weight:600">${u.clientes_count}</td>
+      <td style="text-align:center;font-weight:600">${u.ag_count}</td>
+      <td style="text-align:right;color:var(--accent);font-weight:700">${fmtMoney(u.faturamento)}</td>
+      <td>${badgeHtml(u.plano)}</td>
+    </tr>`).join('');
+}
+
+// ─── TABELA USUÁRIOS ─────────────────────────────
+function badgeHtml(plano){
+  const m={trial:'b-trial Trial',starter:'b-starter Starter',pro:'b-pro Pro',studio:'b-studio Studio',bloqueado:'b-blocked Bloqueado',incompleto:'b-inc Incompleto'};
+  const v=m[plano]||'b-trial '+plano;
+  const[cls,txt]=v.split(' ');
+  return`<span class="badge ${cls}">${txt}</span>`;
+}
+
+function setFiltro(f,btn){
+  filtroAtivo=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabela();
+}
 function filtrar(){renderTabela();}
 
 function getUsuariosFiltrados(){
   const busca=document.getElementById('search').value.toLowerCase();
   return todosUsuarios.filter(u=>{
-    const mf=filtroAtivo==='todos'||(filtroAtivo==='trial'&&u.plano==='trial')||(filtroAtivo==='pago'&&['starter','pro','studio'].includes(u.plano))||(filtroAtivo==='bloqueado'&&u.plano==='bloqueado');
-    const mb=!busca||(u.nome||'').toLowerCase().includes(busca)||(u.email||'').toLowerCase().includes(busca)||(u.nome_barbearia||'').toLowerCase().includes(busca);
+    const mf=filtroAtivo==='todos'
+      ||(filtroAtivo==='trial'&&u.plano==='trial')
+      ||(filtroAtivo==='pago'&&['starter','pro','studio'].includes(u.plano))
+      ||(filtroAtivo==='bloqueado'&&u.plano==='bloqueado');
+    const mb=!busca
+      ||(u.nome||'').toLowerCase().includes(busca)
+      ||(u.email||'').toLowerCase().includes(busca)
+      ||(u.nome_barbearia||'').toLowerCase().includes(busca);
     return mf&&mb;
   });
 }
@@ -203,43 +545,93 @@ function getUsuariosFiltrados(){
 function renderTabela(){
   const usuarios=getUsuariosFiltrados();
   document.getElementById('count-label').textContent=usuarios.length+' usuário'+(usuarios.length!==1?'s':'');
-  if(!usuarios.length){document.getElementById('tabela-wrap').innerHTML='<div class="empty"><div class="empty-icon">👤</div>Nenhum usuário encontrado</div>';return;}
-  const bmap={trial:'<span class="badge b-trial">Trial</span>',starter:'<span class="badge b-starter">Starter</span>',pro:'<span class="badge b-pro">Pro</span>',studio:'<span class="badge b-studio">Studio</span>',bloqueado:'<span class="badge b-blocked">Bloqueado</span>',incompleto:'<span class="badge b-incompleto">Incompleto</span>'};
+  if(!usuarios.length){
+    document.getElementById('tabela-wrap').innerHTML='<div class="empty"><div class="empty-icon">👤</div>Nenhum usuário encontrado</div>';
+    return;
+  }
   const rows=usuarios.map(u=>{
     const p=u.plano||'trial';
     const dr=u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR'):'—';
-    const badge=bmap[p]||'<span class="badge b-trial">'+p+'</span>';
     const bb=p==='bloqueado'
-      ?'<button class="action-btn btn-unblock" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',false)">✓ Desbloquear</button>'
-      :'<button class="action-btn btn-block" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',true)">⊘ Bloquear</button>';
-    return '<tr>'
-      +'<td><div class="user-name">'+(u.nome||'Sem nome')+'</div><div class="user-email">'+(u.email||'—')+'</div></td>'
-      +'<td>'+(u.nome_barbearia||'—')+'</td>'
-      +'<td>'+badge+'</td>'
-      +'<td style="text-align:center">'+u.clientes_count+'</td>'
-      +'<td style="text-align:center">'+u.ag_count+'</td>'
-      +'<td style="text-align:right;color:var(--accent);font-weight:600">'+fmtMoney(u.faturamento)+'</td>'
-      +'<td>'+dr+'</td>'
-      +'<td><button class="action-btn btn-detail" onclick="verDetalhes(\''+u.id+'\')">👁 Ver</button>'+bb+'<button class="action-btn btn-delete" onclick="excluirUsuario(\''+u.id+'\',\''+u.nome+'\')">🗑</button></td>'
-      +'</tr>';
+      ?`<button class="action-btn btn-ublk" onclick="toggleBloquear('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}',false)">✓ Desbloquear</button>`
+      :`<button class="action-btn btn-blk" onclick="toggleBloquear('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}',true)">⊘ Bloquear</button>`;
+    return`<tr>
+      <td><div class="user-name">${u.nome||'Sem nome'}</div><div class="user-email">${u.email||'—'}</div></td>
+      <td>${u.nome_barbearia||'—'}</td>
+      <td>${badgeHtml(p)}</td>
+      <td style="text-align:center">${u.clientes_count}</td>
+      <td style="text-align:center">${u.ag_count}</td>
+      <td style="text-align:right;color:var(--accent);font-weight:600">${fmtMoney(u.faturamento)}</td>
+      <td>${dr}</td>
+      <td>
+        <button class="action-btn btn-ver" onclick="verDetalhes('${u.id}')">👁 Ver</button>
+        ${bb}
+        <button class="action-btn btn-del" onclick="confirmarExcluir('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}')">🗑</button>
+      </td>
+    </tr>`;
   }).join('');
-  document.getElementById('tabela-wrap').innerHTML='<table><thead><tr><th>Usuário</th><th>Barbearia</th><th>Plano</th><th style="text-align:center">Clientes</th><th style="text-align:center">Agendamentos</th><th style="text-align:right">Faturamento</th><th>Cadastro</th><th>Ações</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  document.getElementById('tabela-wrap').innerHTML=
+    `<table><thead><tr>
+      <th>Usuário</th><th>Barbearia</th><th>Plano</th>
+      <th style="text-align:center">Clientes</th>
+      <th style="text-align:center">Agendamentos</th>
+      <th style="text-align:right">Faturamento</th>
+      <th>Cadastro</th><th>Ações</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+// ─── FATURAMENTO ─────────────────────────────────
+function renderFaturamento(){
+  const comFat=todosUsuarios.filter(u=>!u.incompleto&&u.ag_count>0);
+  const fatTotal=comFat.reduce((s,u)=>s+(u.faturamento||0),0);
+  const agTotal=todosUsuarios.reduce((s,u)=>s+(u.ag_count||0),0);
+  const fatMedio=comFat.length>0?fatTotal/comFat.length:0;
+  const top=[...comFat].sort((a,b)=>b.faturamento-a.faturamento)[0];
+
+  document.getElementById('fat-total-clientes').textContent=fmtMoney(fatTotal);
+  document.getElementById('fat-medio').textContent=fmtMoney(fatMedio);
+  document.getElementById('fat-ags-total').textContent=agTotal;
+  document.getElementById('fat-top-nome').textContent=top?top.nome||top.email:'—';
+  document.getElementById('fat-top-val').textContent=top?fmtMoney(top.faturamento):'—';
+
+  const sorted=[...todosUsuarios].filter(u=>!u.incompleto).sort((a,b)=>b.faturamento-a.faturamento);
+  const rows=sorted.map((u,i)=>{
+    const ticket=u.ag_count>0?u.faturamento/u.ag_count:0;
+    return`<tr>
+      <td style="color:var(--gray-400);font-weight:700">#${i+1}</td>
+      <td><div class="user-name">${u.nome||'Sem nome'}</div><div class="user-email">${u.email||'—'}</div></td>
+      <td>${u.nome_barbearia||'—'}</td>
+      <td style="text-align:center">${u.ag_count}</td>
+      <td style="text-align:right;font-weight:700;color:var(--accent)">${fmtMoney(u.faturamento)}</td>
+      <td style="text-align:right;color:var(--gray-500)">${fmtMoney(ticket)}</td>
+      <td>${badgeHtml(u.plano)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tabela-faturamento').innerHTML=rows||'<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400)">Nenhum dado ainda</td></tr>';
+}
+
+// ─── AÇÕES ───────────────────────────────────────
 async function toggleBloquear(id,nome,bloquear){
   if(!confirm((bloquear?'Bloquear ':'Desbloquear ')+nome+'?'))return;
   const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:bloquear?'bloqueado':'trial'});
   if(error){alert('Erro: '+error.message);return;}
-  const u=todosUsuarios.find(x=>x.id===id);if(u)u.plano=bloquear?'bloqueado':'trial';
-  renderTabela();carregarUsuarios();
+  const u=todosUsuarios.find(x=>x.id===id);
+  if(u)u.plano=bloquear?'bloqueado':'trial';
+  renderTabela();renderOverview();
+}
+
+function confirmarExcluir(id,nome){
+  if(!confirm('⚠️ Excluir a conta de '+nome+'?\n\nTodos os dados serão removidos permanentemente.\n\nEssa ação NÃO pode ser desfeita!'))return;
+  if(!confirm('Confirme: excluir '+nome+'?'))return;
+  excluirUsuario(id,nome);
 }
 
 async function excluirUsuario(id,nome){
-  if(!confirm('⚠️ Excluir permanentemente a conta de '+nome+'?\n\nTodos os dados serão removidos.\n\nNão pode ser desfeito!'))return;
-  if(!confirm('Confirme: excluir '+nome+'?'))return;
   const{error}=await sb.rpc('admin_delete_profile',{user_id:id});
-  if(error){alert('Erro: '+error.message);return;}
-  todosUsuarios=todosUsuarios.filter(u=>u.id!==id);renderTabela();carregarUsuarios();
+  if(error){alert('Erro ao excluir: '+error.message);return;}
+  todosUsuarios=todosUsuarios.filter(u=>u.id!==id);
+  renderTabela();renderOverview();renderFaturamento();
+  fecharModal();
 }
 
 async function verDetalhes(id){
@@ -248,37 +640,41 @@ async function verDetalhes(id){
   const{data:equipe}=await sb.from('equipe').select('nome,permissao,email').eq('user_id',id);
   const{data:servicos}=await sb.from('servicos').select('nome').eq('user_id',id).eq('ativo',true);
   const dr=u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  const ticket=u.ag_count>0?u.faturamento/u.ag_count:0;
+
   let equipeHtml='<span style="color:var(--gray-400);font-size:12px">Nenhum profissional cadastrado</span>';
   if(equipe&&equipe.length){
     equipeHtml='<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">'
-      +equipe.map(e=>'<div style="background:var(--gray-50);border-radius:6px;padding:6px 10px;font-size:12px;display:flex;align-items:center;justify-content:space-between">'
-        +'<span style="font-weight:600;color:var(--gray-800)">'+(e.nome||'Sem nome')+'</span>'
-        +'<span style="color:var(--gray-500)">'+(e.email||'—')+' · <span style="color:var(--brand);font-weight:600">'+(e.permissao||'—')+'</span></span>'
-        +'</div>').join('')+'</div>';
+      +equipe.map(e=>`<div style="background:var(--gray-50);border-radius:8px;padding:8px 12px;font-size:12px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600">${e.nome||'Sem nome'}</span>
+        <span style="color:var(--gray-500)">${e.email||'—'} · <b style="color:var(--brand)">${e.permissao||'—'}</b></span>
+      </div>`).join('')+'</div>';
   }
-  const servicosLista=(servicos||[]).map(s=>s.nome).join(', ')||'Nenhum';
   const slug=u.link_page?JSON.parse(u.link_page).slug||'—':'—';
+
   document.getElementById('modal-body').innerHTML=
-    '<div class="info-row"><span class="info-label">Nome</span><span class="info-val">'+(u.nome||'—')+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Email</span><span class="info-val">'+(u.email||'—')+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Telefone</span><span class="info-val">'+(u.telefone||'—')+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Barbearia</span><span class="info-val">'+(u.nome_barbearia||'—')+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Plano</span><span class="info-val">'+(u.plano||'trial')+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Clientes cadastrados</span><span class="info-val">'+u.clientes_count+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Agendamentos finalizados</span><span class="info-val">'+u.ag_count+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Faturamento total</span><span class="info-val" style="color:var(--accent);font-weight:700">'+fmtMoney(u.faturamento)+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Cadastrado em</span><span class="info-val">'+dr+'</span></div>'
-    +'<div class="info-row"><span class="info-label">ID</span><span class="info-val" style="font-size:11px;font-family:monospace">'+u.id+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Equipe ('+(equipe?.length||0)+')</span><span class="info-val">'+equipeHtml+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Serviços</span><span class="info-val">'+servicosLista+'</span></div>'
-    +'<div class="info-row"><span class="info-label">Slug da página</span><span class="info-val">'+slug+'</span></div>'
-    +'<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">'
+    `<div class="info-row"><span class="info-label">Nome</span><span class="info-val">${u.nome||'—'}</span></div>`
+    +`<div class="info-row"><span class="info-label">Email</span><span class="info-val">${u.email||'—'}</span></div>`
+    +`<div class="info-row"><span class="info-label">Telefone</span><span class="info-val">${u.telefone||'—'}</span></div>`
+    +`<div class="info-row"><span class="info-label">Barbearia</span><span class="info-val">${u.nome_barbearia||'—'}</span></div>`
+    +`<div class="info-row"><span class="info-label">Plano</span><span class="info-val">${badgeHtml(u.plano)}</span></div>`
+    +`<div class="info-row"><span class="info-label">Clientes cadastrados</span><span class="info-val">${u.clientes_count}</span></div>`
+    +`<div class="info-row"><span class="info-label">Agendamentos finalizados</span><span class="info-val">${u.ag_count}</span></div>`
+    +`<div class="info-row"><span class="info-label">Faturamento total</span><span class="info-val" style="color:var(--accent);font-weight:700">${fmtMoney(u.faturamento)}</span></div>`
+    +`<div class="info-row"><span class="info-label">Ticket médio</span><span class="info-val">${fmtMoney(ticket)}</span></div>`
+    +`<div class="info-row"><span class="info-label">Cadastrado em</span><span class="info-val">${dr}</span></div>`
+    +`<div class="info-row"><span class="info-label">ID</span><span class="info-val" style="font-size:11px;font-family:monospace">${u.id}</span></div>`
+    +`<div class="info-row"><span class="info-label">Equipe (${equipe?.length||0})</span><span class="info-val">${equipeHtml}</span></div>`
+    +`<div class="info-row"><span class="info-label">Serviços ativos</span><span class="info-val">${(servicos||[]).map(s=>s.nome).join(', ')||'Nenhum'}</span></div>`
+    +`<div class="info-row"><span class="info-label">Slug da página</span><span class="info-val">${slug}</span></div>`
+    +`<div class="modal-actions">`
     +(u.plano==='bloqueado'
-      ?'<button class="action-btn btn-unblock" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',false);fecharModal()">✓ Desbloquear</button>'
-      :'<button class="action-btn btn-block" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',true);fecharModal()">⊘ Bloquear</button>')
-    +'<select onchange="mudarPlano(\''+u.id+'\',this.value)" style="padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">'
-    +'<option value="">Mudar plano...</option><option value="trial">Trial</option><option value="starter">Starter</option><option value="pro">Pro</option><option value="studio">Studio</option></select>'
-    +'<button class="action-btn btn-delete" style="padding:8px 16px;font-size:13px" onclick="excluirUsuario(\''+u.id+'\',\''+u.nome+'\');fecharModal()">🗑 Excluir</button></div>';
+      ?`<button class="action-btn btn-ublk" style="padding:9px 16px;font-size:12px" onclick="toggleBloquear('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}',false);fecharModal()">✓ Desbloquear</button>`
+      :`<button class="action-btn btn-blk" style="padding:9px 16px;font-size:12px" onclick="toggleBloquear('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}',true);fecharModal()">⊘ Bloquear</button>`)
+    +`<select onchange="mudarPlano('${u.id}',this.value)" style="padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">`
+    +`<option value="">Mudar plano...</option><option value="trial">Trial</option><option value="starter">Starter</option><option value="pro">Pro</option><option value="studio">Studio</option></select>`
+    +`<button class="action-btn btn-del" style="padding:9px 16px;font-size:12px;margin-left:auto" onclick="confirmarExcluir('${u.id}','${(u.nome||'').replace(/'/g,"\\'")}')">🗑 Excluir conta</button>`
+    +`</div>`;
   document.getElementById('modal-bg').classList.add('open');
 }
 
@@ -288,13 +684,21 @@ async function mudarPlano(id,plano){
   if(!confirm('Mudar plano de '+(u?.nome)+' para "'+plano+'"?'))return;
   const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:plano});
   if(error){alert('Erro: '+error.message);return;}
-  if(u)u.plano=plano;fecharModal();carregarUsuarios();
+  if(u)u.plano=plano;
+  fecharModal();carregarDados();
 }
 
 function fecharModal(){document.getElementById('modal-bg').classList.remove('open');}
 
-(async()=>{const{data:{session}}=await sb.auth.getSession();if(session&&session.user.email===ADMIN_EMAIL)mostrarPainel();})();
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display!=='none')doLogin();});
+// ─── INIT ────────────────────────────────────────
+(async()=>{
+  const{data:{session}}=await sb.auth.getSession();
+  if(session&&session.user.email===ADMIN_EMAIL)mostrarPainel();
+})();
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('login').style.display!=='none')doLogin();
+  if(e.key==='Escape')fecharModal();
+});
 </script>
 </body>
 </html>
