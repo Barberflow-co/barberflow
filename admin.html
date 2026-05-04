@@ -8,118 +8,63 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --brand:#0D6EFD;--brand-light:#EBF3FF;--brand-dark:#0A56C9;
-  --accent:#00C48C;--warn:#F59E0B;--danger:#EF4444;
-  --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;
-  --gray-400:#94A3B8;--gray-500:#64748B;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;
-}
+:root{--brand:#0D6EFD;--brand-light:#EBF3FF;--brand-dark:#0A56C9;--accent:#00C48C;--warn:#F59E0B;--danger:#EF4444;--gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;--gray-400:#94A3B8;--gray-500:#64748B;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;}
 body{font-family:'Inter',sans-serif;font-size:14px;background:var(--gray-50);color:var(--gray-800);-webkit-font-smoothing:antialiased}
-
-/* LOGIN */
 #login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--gray-900)}
 .login-box{background:#fff;border-radius:16px;padding:40px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .login-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;text-align:center;margin-bottom:8px}
 .login-sub{text-align:center;font-size:13px;color:var(--gray-500);margin-bottom:28px}
 .fi{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;outline:none;transition:border .15s}
-.fi:focus{border-color:var(--brand)}
-.fg{margin-bottom:14px}
-.fl{display:block;font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
-.btn-login{width:100%;background:var(--brand);color:#fff;padding:11px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px;transition:background .15s}
-.btn-login:hover{background:var(--brand-dark)}
-.err-msg{background:#FEE2E2;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
-
-/* MAIN */
+.fi:focus{border-color:var(--brand)}.fg{margin-bottom:14px}.fl{display:block;font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+.btn-login{width:100%;background:var(--brand);color:#fff;padding:11px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
+.btn-login:hover{background:var(--brand-dark)}.err-msg{background:#FEE2E2;color:#B91C1C;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
 #main{display:none;min-height:100vh}
 header{background:var(--gray-900);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
 .h-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;display:flex;align-items:center;gap:8px}
 .h-mark{width:28px;height:28px;background:var(--brand);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800}
 .h-badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.h-logout{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;border:none;background:none;transition:color .15s}
-.h-logout:hover{color:#fff}
-
-.container{max-width:1200px;margin:0 auto;padding:32px 24px}
-
-/* STATS */
+.h-logout{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;border:none;background:none}.h-logout:hover{color:#fff}
+.container{max-width:1300px;margin:0 auto;padding:32px 24px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
 .stat-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:20px}
 .stat-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--gray-900)}
 .stat-val.blue{color:var(--brand)}.stat-val.green{color:var(--accent)}.stat-val.orange{color:var(--warn)}.stat-val.red{color:var(--danger)}
 .stat-label{font-size:12px;color:var(--gray-500);margin-top:4px}
-
-/* FILTROS */
 .filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.search-input{padding:8px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;width:240px}
+.search-input{padding:8px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;outline:none;width:260px}
 .search-input:focus{border-color:var(--brand)}
-.filter-btn{padding:7px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--gray-600);transition:all .15s}
+.filter-btn{padding:7px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--gray-600)}
 .filter-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-
-/* TABLE */
 .card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden}
 .card-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
-.card-title{font-weight:700;font-size:14px;color:var(--gray-900)}
+.card-title{font-weight:700;font-size:14px}
 table{width:100%;border-collapse:collapse}
 th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
 td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
-tr:last-child td{border:none}
-tr:hover td{background:var(--gray-50)}
-
+tr:last-child td{border:none}tr:hover td{background:var(--gray-50)}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.b-trial{background:#FEF3C7;color:#92400E}
-.b-starter{background:#DBEAFE;color:#1E40AF}
-.b-pro{background:#D1FAE5;color:#065F46}
-.b-studio{background:#EDE9FE;color:#5B21B6}
-.b-blocked{background:#FEE2E2;color:#991B1B}
-.b-active{background:#D1FAE5;color:#065F46}
-
-.user-name{font-weight:600;color:var(--gray-900)}
-.user-email{font-size:12px;color:var(--gray-400)}
-
-/* AÇÕES */
-.action-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;margin-right:4px}
+.b-trial{background:#FEF3C7;color:#92400E}.b-starter{background:#DBEAFE;color:#1E40AF}.b-pro{background:#D1FAE5;color:#065F46}
+.b-studio{background:#EDE9FE;color:#5B21B6}.b-blocked{background:#FEE2E2;color:#991B1B}.b-incompleto{background:#F1F5F9;color:#94A3B8}
+.user-name{font-weight:600;color:var(--gray-900)}.user-email{font-size:12px;color:var(--gray-400)}
+.action-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;margin-right:4px}
 .btn-detail{background:var(--brand-light);color:var(--brand)}.btn-detail:hover{background:var(--brand);color:#fff}
 .btn-block{background:#FEE2E2;color:#B91C1C}.btn-block:hover{background:#EF4444;color:#fff}
 .btn-unblock{background:#D1FAE5;color:#065F46}.btn-unblock:hover{background:#00C48C;color:#fff}
 .btn-delete{background:#F1F5F9;color:#64748B}.btn-delete:hover{background:#EF4444;color:#fff}
-
-/* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:16px;width:540px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-bg.open{display:flex}.modal{background:#fff;border-radius:16px;width:560px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal-header{padding:20px 24px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-weight:700;font-size:15px}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);line-height:1}
-.modal-body{padding:24px}
-.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100)}
-.info-row:last-child{border:none}
-.info-label{font-size:12px;color:var(--gray-500);font-weight:600}
-.info-val{font-size:13px;color:var(--gray-800);font-weight:500}
-
-/* EMPTY */
-.empty{text-align:center;padding:48px;color:var(--gray-400)}
-.empty-icon{font-size:36px;margin-bottom:12px}
-
-/* LOADING */
+.modal-title{font-weight:700;font-size:15px}.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400)}
+.modal-body{padding:24px}.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.info-row:last-child{border:none}.info-label{font-size:12px;color:var(--gray-500);font-weight:600}.info-val{font-size:13px;color:var(--gray-800);font-weight:500}
+.empty{text-align:center;padding:48px;color:var(--gray-400)}.empty-icon{font-size:36px;margin-bottom:12px}
 .loading{text-align:center;padding:40px;color:var(--gray-400);font-size:13px}
-
-@media(max-width:768px){
-  .container{padding:16px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  table{font-size:12px}
-  th,td{padding:10px 12px}
-  .filters{gap:8px}
-  .search-input{width:100%}
-}
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
 <div id="login">
   <div class="login-box">
-    <div class="login-logo">
-      <span style="color:var(--brand)">Klip</span>flow
-    </div>
+    <div class="login-logo"><span style="color:var(--brand)">Klip</span>flow</div>
     <div class="login-sub">Painel Administrativo</div>
     <div class="err-msg" id="err-msg"></div>
     <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="adm-email" placeholder="seu@email.com"></div>
@@ -127,383 +72,229 @@ tr:hover td{background:var(--gray-50)}
     <button class="btn-login" onclick="doLogin()">Entrar no painel →</button>
   </div>
 </div>
-
-<!-- MAIN -->
 <div id="main">
   <header>
-    <div class="h-logo">
-      <div class="h-mark">K</div>
-      Klipflow
-      <span class="h-badge">Admin</span>
-    </div>
+    <div class="h-logo"><div class="h-mark">K</div>Klipflow<span class="h-badge">Admin</span></div>
     <button class="h-logout" onclick="doLogout()">Sair →</button>
   </header>
-
   <div class="container">
-    <!-- STATS -->
     <div class="stats">
-      <div class="stat-card">
-        <div class="stat-val blue" id="st-total">—</div>
-        <div class="stat-label">Total de contas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val green" id="st-ativos">—</div>
-        <div class="stat-label">Ativos (trial/pago)</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val orange" id="st-trial">—</div>
-        <div class="stat-label">Em trial</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="st-pagos">—</div>
-        <div class="stat-label">Pagos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val red" id="st-bloq">—</div>
-        <div class="stat-label">Bloqueados</div>
-      </div>
+      <div class="stat-card"><div class="stat-val blue" id="st-total">—</div><div class="stat-label">Total de contas</div></div>
+      <div class="stat-card"><div class="stat-val green" id="st-ativos">—</div><div class="stat-label">Ativos</div></div>
+      <div class="stat-card"><div class="stat-val orange" id="st-trial">—</div><div class="stat-label">Em trial</div></div>
+      <div class="stat-card"><div class="stat-val" id="st-pagos">—</div><div class="stat-label">Pagos</div></div>
+      <div class="stat-card"><div class="stat-val red" id="st-bloq">—</div><div class="stat-label">Bloqueados</div></div>
+      <div class="stat-card"><div class="stat-val green" id="st-faturamento" style="font-size:20px">—</div><div class="stat-label">Faturamento total</div></div>
     </div>
-
-    <!-- FILTROS -->
     <div class="filters">
-      <input class="search-input" type="text" id="search" placeholder="🔍 Buscar por nome, email ou barbearia..." oninput="filtrar()">
+      <input class="search-input" type="text" id="search" placeholder="🔍 Buscar nome, email ou barbearia..." oninput="filtrar()">
       <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
       <button class="filter-btn" onclick="setFiltro('trial',this)">Trial</button>
       <button class="filter-btn" onclick="setFiltro('pago',this)">Pagos</button>
       <button class="filter-btn" onclick="setFiltro('bloqueado',this)">Bloqueados</button>
       <button class="filter-btn" style="margin-left:auto;background:var(--brand);color:#fff;border-color:var(--brand)" onclick="carregarUsuarios()">↻ Atualizar</button>
     </div>
-
-    <!-- TABELA -->
     <div class="card">
-      <div class="card-header">
-        <div class="card-title">Usuários cadastrados</div>
-        <div style="font-size:12px;color:var(--gray-400)" id="count-label"></div>
-      </div>
-      <div id="tabela-wrap">
-        <div class="loading">Carregando...</div>
-      </div>
+      <div class="card-header"><div class="card-title">Usuários cadastrados</div><div style="font-size:12px;color:var(--gray-400)" id="count-label"></div></div>
+      <div id="tabela-wrap"><div class="loading">Carregando...</div></div>
     </div>
   </div>
 </div>
-
-<!-- MODAL DETALHES -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)fecharModal()">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-titulo">Detalhes do usuário</div>
-      <button class="modal-close" onclick="fecharModal()">×</button>
-    </div>
+    <div class="modal-header"><div class="modal-title" id="modal-titulo">Detalhes</div><button class="modal-close" onclick="fecharModal()">×</button></div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
-
 <script>
-const SURL = 'https://owanynpsbutuhcaclkif.supabase.co';
-const SKEY = 'sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
+const SURL='https://owanynpsbutuhcaclkif.supabase.co';
+const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
+const ADMIN_EMAIL='calderarimkt@gmail.com';
+const sb=supabase.createClient(SURL,SKEY);
+let todosUsuarios=[];
+let filtroAtivo='todos';
 
-// Email do super admin — só esse pode entrar
-const ADMIN_EMAIL = 'calderarimkt@gmail.com';
-
-const sb = supabase.createClient(SURL, SKEY);
-let todosUsuarios = [];
-let filtroAtivo = 'todos';
-
-// ── LOGIN ──────────────────────────────────────────
 async function doLogin(){
-  const email = document.getElementById('adm-email').value.trim();
-  const pass = document.getElementById('adm-pass').value;
-  const err = document.getElementById('err-msg');
-  err.style.display = 'none';
-
-  if(email !== ADMIN_EMAIL){
-    err.textContent = 'Acesso restrito ao administrador.';
-    err.style.display = 'block';
-    return;
-  }
-
-  const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
-  if(error){
-    err.textContent = 'Email ou senha incorretos.';
-    err.style.display = 'block';
-    return;
-  }
-
+  const email=document.getElementById('adm-email').value.trim();
+  const pass=document.getElementById('adm-pass').value;
+  const err=document.getElementById('err-msg');
+  err.style.display='none';
+  if(email!==ADMIN_EMAIL){err.textContent='Acesso restrito ao administrador.';err.style.display='block';return;}
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){err.textContent='Email ou senha incorretos.';err.style.display='block';return;}
   mostrarPainel();
 }
 
 async function doLogout(){
   await sb.auth.signOut();
-  document.getElementById('main').style.display = 'none';
-  document.getElementById('login').style.display = 'flex';
+  document.getElementById('main').style.display='none';
+  document.getElementById('login').style.display='flex';
 }
 
 function mostrarPainel(){
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
+  document.getElementById('login').style.display='none';
+  document.getElementById('main').style.display='block';
   carregarUsuarios();
 }
 
-// ── CARREGAR USUÁRIOS ──────────────────────────────
+function fmtMoney(v){return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
 async function carregarUsuarios(){
-  document.getElementById('tabela-wrap').innerHTML = '<div class="loading">Carregando usuários...</div>';
+  document.getElementById('tabela-wrap').innerHTML='<div class="loading">Carregando usuários...</div>';
 
-  const {data: profiles, error} = await sb.from('profiles').select('*').order('created_at', {ascending: false});
-  if(error){
-    document.getElementById('tabela-wrap').innerHTML = `<div class="empty"><div class="empty-icon">\u26a0\ufe0f</div>Erro ao carregar: ${error.message}</div>`;
-    return;
-  }
+  const{data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  if(error){document.getElementById('tabela-wrap').innerHTML='<div class="empty"><div class="empty-icon">⚠️</div>Erro: '+error.message+'</div>';return;}
 
-  // Busca emails e IDs de todos os profissionais de equipe para EXCLUIR da lista
-  // (profissionais são funcionários do dono, não são clientes do Klipflow)
-  const {data: todaEquipe} = await sb.from('equipe').select('email,auth_user_id');
-  const profEmails = new Set((todaEquipe||[]).map(e => e.email?.toLowerCase()).filter(Boolean));
-  const profUserIds = new Set((todaEquipe||[]).map(e => e.auth_user_id).filter(Boolean));
+  // Busca emails e IDs dos profissionais de equipe para EXCLUIR da lista
+  const{data:todaEquipe}=await sb.from('equipe').select('email,auth_user_id');
+  const profEmails=new Set((todaEquipe||[]).map(e=>e.email?.toLowerCase()).filter(Boolean));
+  const profUserIds=new Set((todaEquipe||[]).map(e=>e.auth_user_id).filter(Boolean));
 
-  // Filtra profiles: só donos (quem NÃO é profissional de equipe por email ou ID)
-  const profilesDonos = (profiles||[]).filter(p =>
-    !profUserIds.has(p.id) && !profEmails.has(p.email?.toLowerCase())
+  // Só mostra donos — filtra profissionais de equipe por email E por ID
+  const profilesDonos=(profiles||[]).filter(p=>
+    !profUserIds.has(p.id)&&!profEmails.has(p.email?.toLowerCase())
   );
 
-  // Busca contagem de clientes por usuário
-  const {data: clientesCounts} = await sb.from('clientes').select('user_id');
-  const countMap = {};
-  (clientesCounts||[]).forEach(c => { countMap[c.user_id] = (countMap[c.user_id]||0) + 1; });
+  const{data:clientesCounts}=await sb.from('clientes').select('user_id');
+  const countMap={};
+  (clientesCounts||[]).forEach(c=>{countMap[c.user_id]=(countMap[c.user_id]||0)+1;});
 
-  // Busca contagem de agendamentos
-  const {data: agCounts} = await sb.from('agendamentos').select('user_id').eq('status','finalizado');
-  const agMap = {};
-  (agCounts||[]).forEach(a => { agMap[a.user_id] = (agMap[a.user_id]||0) + 1; });
+  const{data:agCounts}=await sb.from('agendamentos').select('user_id,valor').eq('status','finalizado');
+  const agMap={};const fatMap={};
+  (agCounts||[]).forEach(a=>{agMap[a.user_id]=(agMap[a.user_id]||0)+1;fatMap[a.user_id]=(fatMap[a.user_id]||0)+(a.valor||0);});
 
-  // Busca TODOS os usuários auth (inclusive sem profile) — filtra profissionais
-  const {data: authUsers} = await sb.rpc('get_all_auth_users');
-  const profileIds = new Set(profilesDonos.map(p => p.id));
-  const semProfile = (authUsers||[]).filter(u =>
-    !profileIds.has(u.id) &&
-    !profUserIds.has(u.id) &&
-    !profEmails.has(u.email?.toLowerCase())
-  ).map(u => ({
-    id: u.id, email: u.email, nome: '(cadastro incompleto)', nome_barbearia: '—',
-    plano: 'incompleto', created_at: u.created_at, incompleto: true,
-    clientes_count: 0, ag_count: 0
-  }));
+  const{data:authUsers}=await sb.rpc('get_all_auth_users');
+  const profileIds=new Set(profilesDonos.map(p=>p.id));
+  const semProfile=(authUsers||[]).filter(u=>
+    !profileIds.has(u.id)&&!profUserIds.has(u.id)&&!profEmails.has(u.email?.toLowerCase())
+  ).map(u=>({id:u.id,email:u.email,nome:'(cadastro incompleto)',nome_barbearia:'—',plano:'incompleto',created_at:u.created_at,incompleto:true,clientes_count:0,ag_count:0,faturamento:0}));
 
-  const profilesCompletos = profilesDonos.map(p => ({
-    ...p,
-    clientes_count: countMap[p.id] || 0,
-    ag_count: agMap[p.id] || 0
-  }));
-  todosUsuarios = [...profilesCompletos, ...semProfile];
+  const profilesCompletos=profilesDonos.map(p=>({...p,clientes_count:countMap[p.id]||0,ag_count:agMap[p.id]||0,faturamento:fatMap[p.id]||0}));
+  todosUsuarios=[...profilesCompletos,...semProfile];
 
-  // Stats
-  const total = todosUsuarios.length;
-  const bloqueados = todosUsuarios.filter(u => u.plano === 'bloqueado').length;
-  const trial = todosUsuarios.filter(u => u.plano === 'trial').length;
-  const pagos = todosUsuarios.filter(u => ['starter','pro','studio'].includes(u.plano)).length;
-  const ativos = total - bloqueados;
+  const total=todosUsuarios.length;
+  const bloqueados=todosUsuarios.filter(u=>u.plano==='bloqueado').length;
+  const trial=todosUsuarios.filter(u=>u.plano==='trial').length;
+  const pagos=todosUsuarios.filter(u=>['starter','pro','studio'].includes(u.plano)).length;
+  const fatTotal=profilesCompletos.reduce((s,u)=>s+(u.faturamento||0),0);
 
-  document.getElementById('st-total').textContent = total;
-  document.getElementById('st-ativos').textContent = ativos;
-  document.getElementById('st-trial').textContent = trial;
-  document.getElementById('st-pagos').textContent = pagos;
-  document.getElementById('st-bloq').textContent = bloqueados;
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-ativos').textContent=total-bloqueados;
+  document.getElementById('st-trial').textContent=trial;
+  document.getElementById('st-pagos').textContent=pagos;
+  document.getElementById('st-bloq').textContent=bloqueados;
+  document.getElementById('st-faturamento').textContent=fmtMoney(fatTotal);
 
   renderTabela();
 }
 
-// ── FILTRO ──────────────────────────────────────────
-function setFiltro(filtro, btn){
-  filtroAtivo = filtro;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTabela();
-}
-
-function filtrar(){ renderTabela(); }
+function setFiltro(f,btn){filtroAtivo=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTabela();}
+function filtrar(){renderTabela();}
 
 function getUsuariosFiltrados(){
-  const busca = document.getElementById('search').value.toLowerCase();
-  return todosUsuarios.filter(u => {
-    const matchFiltro =
-      filtroAtivo === 'todos' ||
-      (filtroAtivo === 'trial' && u.plano === 'trial') ||
-      (filtroAtivo === 'pago' && ['starter','pro','studio'].includes(u.plano)) ||
-      (filtroAtivo === 'bloqueado' && u.plano === 'bloqueado');
-    const matchBusca = !busca ||
-      (u.nome||'').toLowerCase().includes(busca) ||
-      (u.email||'').toLowerCase().includes(busca) ||
-      (u.nome_barbearia||'').toLowerCase().includes(busca);
-    return matchFiltro && matchBusca;
+  const busca=document.getElementById('search').value.toLowerCase();
+  return todosUsuarios.filter(u=>{
+    const mf=filtroAtivo==='todos'||(filtroAtivo==='trial'&&u.plano==='trial')||(filtroAtivo==='pago'&&['starter','pro','studio'].includes(u.plano))||(filtroAtivo==='bloqueado'&&u.plano==='bloqueado');
+    const mb=!busca||(u.nome||'').toLowerCase().includes(busca)||(u.email||'').toLowerCase().includes(busca)||(u.nome_barbearia||'').toLowerCase().includes(busca);
+    return mf&&mb;
   });
 }
 
-// ── RENDER TABELA ────────────────────────────────────
 function renderTabela(){
-  const usuarios = getUsuariosFiltrados();
-  document.getElementById('count-label').textContent = `${usuarios.length} usuário${usuarios.length !== 1 ? 's' : ''}`;
-
-  if(!usuarios.length){
-    document.getElementById('tabela-wrap').innerHTML = `<div class="empty"><div class="empty-icon">👤</div>Nenhum usuário encontrado</div>`;
-    return;
-  }
-
-  const rows = usuarios.map(u => {
-    const plano = u.plano || 'trial';
-    const bloqueado = plano === 'bloqueado';
-    const dataReg = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—';
-    const planoBadge = {
-      trial: '<span class="badge b-trial">Trial</span>',
-      starter: '<span class="badge b-starter">Starter</span>',
-      pro: '<span class="badge b-pro">Pro</span>',
-      studio: '<span class="badge b-studio">Studio</span>',
-      bloqueado: '<span class="badge b-blocked">Bloqueado</span>',
-    }[plano] || `<span class="badge b-trial">${plano}</span>`;
-
-    const btnBloquear = bloqueado
-      ? `<button class="action-btn btn-unblock" onclick="toggleBloquear('${u.id}','${u.nome}',false)">✓ Desbloquear</button>`
-      : `<button class="action-btn btn-block" onclick="toggleBloquear('${u.id}','${u.nome}',true)">⊘ Bloquear</button>`;
-
-    return `<tr>
-      <td>
-        <div class="user-name">${u.nome || 'Sem nome'}</div>
-        <div class="user-email">${u.email || '—'}</div>
-      </td>
-      <td>${u.nome_barbearia || '—'}</td>
-      <td>${planoBadge}</td>
-      <td style="text-align:center">${u.clientes_count}</td>
-      <td style="text-align:center">${u.ag_count}</td>
-      <td>${dataReg}</td>
-      <td>
-        <button class="action-btn btn-detail" onclick="verDetalhes('${u.id}')">👁 Ver</button>
-        ${btnBloquear}
-        <button class="action-btn btn-delete" onclick="excluirUsuario('${u.id}','${u.nome}')">🗑</button>
-      </td>
-    </tr>`;
+  const usuarios=getUsuariosFiltrados();
+  document.getElementById('count-label').textContent=usuarios.length+' usuário'+(usuarios.length!==1?'s':'');
+  if(!usuarios.length){document.getElementById('tabela-wrap').innerHTML='<div class="empty"><div class="empty-icon">👤</div>Nenhum usuário encontrado</div>';return;}
+  const bmap={trial:'<span class="badge b-trial">Trial</span>',starter:'<span class="badge b-starter">Starter</span>',pro:'<span class="badge b-pro">Pro</span>',studio:'<span class="badge b-studio">Studio</span>',bloqueado:'<span class="badge b-blocked">Bloqueado</span>',incompleto:'<span class="badge b-incompleto">Incompleto</span>'};
+  const rows=usuarios.map(u=>{
+    const p=u.plano||'trial';
+    const dr=u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR'):'—';
+    const badge=bmap[p]||'<span class="badge b-trial">'+p+'</span>';
+    const bb=p==='bloqueado'
+      ?'<button class="action-btn btn-unblock" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',false)">✓ Desbloquear</button>'
+      :'<button class="action-btn btn-block" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',true)">⊘ Bloquear</button>';
+    return '<tr>'
+      +'<td><div class="user-name">'+(u.nome||'Sem nome')+'</div><div class="user-email">'+(u.email||'—')+'</div></td>'
+      +'<td>'+(u.nome_barbearia||'—')+'</td>'
+      +'<td>'+badge+'</td>'
+      +'<td style="text-align:center">'+u.clientes_count+'</td>'
+      +'<td style="text-align:center">'+u.ag_count+'</td>'
+      +'<td style="text-align:right;color:var(--accent);font-weight:600">'+fmtMoney(u.faturamento)+'</td>'
+      +'<td>'+dr+'</td>'
+      +'<td><button class="action-btn btn-detail" onclick="verDetalhes(\''+u.id+'\')">👁 Ver</button>'+bb+'<button class="action-btn btn-delete" onclick="excluirUsuario(\''+u.id+'\',\''+u.nome+'\')">🗑</button></td>'
+      +'</tr>';
   }).join('');
-
-  document.getElementById('tabela-wrap').innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Usuário</th>
-        <th>Barbearia</th>
-        <th>Plano</th>
-        <th style="text-align:center">Clientes</th>
-        <th style="text-align:center">Atendimentos</th>
-        <th>Cadastro</th>
-        <th>Ações</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  document.getElementById('tabela-wrap').innerHTML='<table><thead><tr><th>Usuário</th><th>Barbearia</th><th>Plano</th><th style="text-align:center">Clientes</th><th style="text-align:center">Agendamentos</th><th style="text-align:right">Faturamento</th><th>Cadastro</th><th>Ações</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
-// ── BLOQUEAR / DESBLOQUEAR ───────────────────────────
-async function toggleBloquear(id, nome, bloquear){
-  const acao = bloquear ? 'bloquear' : 'desbloquear';
-  if(!confirm(`Deseja ${acao} ${nome}?`)) return;
-
-  const novoPlano = bloquear ? 'bloqueado' : 'trial';
-  const {error} = await sb.rpc('admin_update_plano', {user_id: id, novo_plano: novoPlano});
-  if(error){ alert('Erro: ' + error.message); return; }
-
-  // Atualiza local
-  const u = todosUsuarios.find(x => x.id === id);
-  if(u) u.plano = novoPlano;
-  renderTabela();
-  carregarUsuarios();
+async function toggleBloquear(id,nome,bloquear){
+  if(!confirm((bloquear?'Bloquear ':'Desbloquear ')+nome+'?'))return;
+  const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:bloquear?'bloqueado':'trial'});
+  if(error){alert('Erro: '+error.message);return;}
+  const u=todosUsuarios.find(x=>x.id===id);if(u)u.plano=bloquear?'bloqueado':'trial';
+  renderTabela();carregarUsuarios();
 }
 
-// ── EXCLUIR ──────────────────────────────────────────
-async function excluirUsuario(id, nome){
-  if(!confirm(`⚠️ Excluir permanentemente a conta de ${nome}?\n\nIsso vai remover todos os dados: clientes, agendamentos, serviços, etc.\n\nEssa ação NÃO pode ser desfeita!`)) return;
-  if(!confirm(`Confirme novamente: excluir ${nome}?`)) return;
-
-  const {error} = await sb.rpc('admin_delete_profile', {user_id: id});
-  if(error){ alert('Erro: ' + error.message); return; }
-
-  todosUsuarios = todosUsuarios.filter(u => u.id !== id);
-  renderTabela();
-  carregarUsuarios();
+async function excluirUsuario(id,nome){
+  if(!confirm('⚠️ Excluir permanentemente a conta de '+nome+'?\n\nTodos os dados serão removidos.\n\nNão pode ser desfeito!'))return;
+  if(!confirm('Confirme: excluir '+nome+'?'))return;
+  const{error}=await sb.rpc('admin_delete_profile',{user_id:id});
+  if(error){alert('Erro: '+error.message);return;}
+  todosUsuarios=todosUsuarios.filter(u=>u.id!==id);renderTabela();carregarUsuarios();
 }
 
-// ── VER DETALHES ─────────────────────────────────────
 async function verDetalhes(id){
-  const u = todosUsuarios.find(x => x.id === id);
-  if(!u) return;
-
-  document.getElementById('modal-titulo').textContent = u.nome || 'Usuário';
-
-  // Busca equipe
-  const {data: equipe} = await sb.from('equipe').select('nome,permissao,email').eq('user_id', id);
-  // Busca serviços
-  const {data: servicos} = await sb.from('servicos').select('nome').eq('user_id', id).eq('ativo', true);
-
-  const plano = u.plano || 'trial';
-  const dataReg = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-
-  // Monta HTML da equipe com cards visuais
-  let equipeHtml = '<span style="color:var(--gray-400);font-size:12px">Nenhum profissional cadastrado</span>';
-  if(equipe && equipe.length){
-    equipeHtml = '<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">' +
-      equipe.map(e => `<div style="background:var(--gray-50);border-radius:6px;padding:6px 10px;font-size:12px;display:flex;align-items:center;justify-content:space-between">
-        <span style="font-weight:600;color:var(--gray-800)">${e.nome||'Sem nome'}</span>
-        <span style="color:var(--gray-500)">${e.email||'—'} &nbsp;·&nbsp; <span style="color:var(--brand);font-weight:600">${e.permissao||'—'}</span></span>
-      </div>`).join('') + '</div>';
+  const u=todosUsuarios.find(x=>x.id===id);if(!u)return;
+  document.getElementById('modal-titulo').textContent=u.nome||'Usuário';
+  const{data:equipe}=await sb.from('equipe').select('nome,permissao,email').eq('user_id',id);
+  const{data:servicos}=await sb.from('servicos').select('nome').eq('user_id',id).eq('ativo',true);
+  const dr=u.created_at?new Date(u.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  let equipeHtml='<span style="color:var(--gray-400);font-size:12px">Nenhum profissional cadastrado</span>';
+  if(equipe&&equipe.length){
+    equipeHtml='<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">'
+      +equipe.map(e=>'<div style="background:var(--gray-50);border-radius:6px;padding:6px 10px;font-size:12px;display:flex;align-items:center;justify-content:space-between">'
+        +'<span style="font-weight:600;color:var(--gray-800)">'+(e.nome||'Sem nome')+'</span>'
+        +'<span style="color:var(--gray-500)">'+(e.email||'—')+' · <span style="color:var(--brand);font-weight:600">'+(e.permissao||'—')+'</span></span>'
+        +'</div>').join('')+'</div>';
   }
-  const servicosLista = (servicos||[]).map(s => s.nome).join(', ') || 'Nenhum';
-
-  document.getElementById('modal-body').innerHTML = `
-    <div class="info-row"><span class="info-label">Nome</span><span class="info-val">${u.nome||'—'}</span></div>
-    <div class="info-row"><span class="info-label">Email</span><span class="info-val">${u.email||'—'}</span></div>
-    <div class="info-row"><span class="info-label">Telefone</span><span class="info-val">${u.telefone||'—'}</span></div>
-    <div class="info-row"><span class="info-label">Barbearia</span><span class="info-val">${u.nome_barbearia||'—'}</span></div>
-    <div class="info-row"><span class="info-label">Plano</span><span class="info-val">${plano}</span></div>
-    <div class="info-row"><span class="info-label">Clientes cadastrados</span><span class="info-val">${u.clientes_count}</span></div>
-    <div class="info-row"><span class="info-label">Atendimentos finalizados</span><span class="info-val">${u.ag_count}</span></div>
-    <div class="info-row"><span class="info-label">Cadastrado em</span><span class="info-val">${dataReg}</span></div>
-    <div class="info-row"><span class="info-label">ID</span><span class="info-val" style="font-size:11px;font-family:monospace">${u.id}</span></div>
-    <div class="info-row"><span class="info-label">Equipe (${equipe?.length||0})</span><span class="info-val">${equipeHtml}</span></div>
-    <div class="info-row"><span class="info-label">Serviços</span><span class="info-val">${servicosLista}</span></div>
-    <div class="info-row"><span class="info-label">Slug da página</span><span class="info-val">${u.link_page ? JSON.parse(u.link_page).slug || '—' : '—'}</span></div>
-    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-      ${u.plano === 'bloqueado'
-        ? `<button class="action-btn btn-unblock" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear('${u.id}','${u.nome}',false);fecharModal()">✓ Desbloquear</button>`
-        : `<button class="action-btn btn-block" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear('${u.id}','${u.nome}',true);fecharModal()">⊘ Bloquear</button>`}
-      <select onchange="mudarPlano('${u.id}',this.value)" style="padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
-        <option value="">Mudar plano...</option>
-        <option value="trial">Trial</option>
-        <option value="starter">Starter</option>
-        <option value="pro">Pro</option>
-        <option value="studio">Studio</option>
-      </select>
-      <button class="action-btn btn-delete" style="padding:8px 16px;font-size:13px" onclick="excluirUsuario('${u.id}','${u.nome}');fecharModal()">🗑 Excluir conta</button>
-    </div>`;
-
+  const servicosLista=(servicos||[]).map(s=>s.nome).join(', ')||'Nenhum';
+  const slug=u.link_page?JSON.parse(u.link_page).slug||'—':'—';
+  document.getElementById('modal-body').innerHTML=
+    '<div class="info-row"><span class="info-label">Nome</span><span class="info-val">'+(u.nome||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Email</span><span class="info-val">'+(u.email||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Telefone</span><span class="info-val">'+(u.telefone||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Barbearia</span><span class="info-val">'+(u.nome_barbearia||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Plano</span><span class="info-val">'+(u.plano||'trial')+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Clientes cadastrados</span><span class="info-val">'+u.clientes_count+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Agendamentos finalizados</span><span class="info-val">'+u.ag_count+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Faturamento total</span><span class="info-val" style="color:var(--accent);font-weight:700">'+fmtMoney(u.faturamento)+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Cadastrado em</span><span class="info-val">'+dr+'</span></div>'
+    +'<div class="info-row"><span class="info-label">ID</span><span class="info-val" style="font-size:11px;font-family:monospace">'+u.id+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Equipe ('+(equipe?.length||0)+')</span><span class="info-val">'+equipeHtml+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Serviços</span><span class="info-val">'+servicosLista+'</span></div>'
+    +'<div class="info-row"><span class="info-label">Slug da página</span><span class="info-val">'+slug+'</span></div>'
+    +'<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">'
+    +(u.plano==='bloqueado'
+      ?'<button class="action-btn btn-unblock" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',false);fecharModal()">✓ Desbloquear</button>'
+      :'<button class="action-btn btn-block" style="padding:8px 16px;font-size:13px" onclick="toggleBloquear(\''+u.id+'\',\''+u.nome+'\',true);fecharModal()">⊘ Bloquear</button>')
+    +'<select onchange="mudarPlano(\''+u.id+'\',this.value)" style="padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">'
+    +'<option value="">Mudar plano...</option><option value="trial">Trial</option><option value="starter">Starter</option><option value="pro">Pro</option><option value="studio">Studio</option></select>'
+    +'<button class="action-btn btn-delete" style="padding:8px 16px;font-size:13px" onclick="excluirUsuario(\''+u.id+'\',\''+u.nome+'\');fecharModal()">🗑 Excluir</button></div>';
   document.getElementById('modal-bg').classList.add('open');
 }
 
-async function mudarPlano(id, plano){
-  if(!plano) return;
-  const u = todosUsuarios.find(x => x.id === id);
-  if(!confirm(`Mudar plano de ${u?.nome} para "${plano}"?`)) return;
-  const {error} = await sb.rpc('admin_update_plano', {user_id: id, novo_plano: plano});
-  if(error){ alert('Erro: '+error.message); return; }
-  if(u) u.plano = plano;
-  fecharModal();
-  carregarUsuarios();
+async function mudarPlano(id,plano){
+  if(!plano)return;
+  const u=todosUsuarios.find(x=>x.id===id);
+  if(!confirm('Mudar plano de '+(u?.nome)+' para "'+plano+'"?'))return;
+  const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:plano});
+  if(error){alert('Erro: '+error.message);return;}
+  if(u)u.plano=plano;fecharModal();carregarUsuarios();
 }
 
-function fecharModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+function fecharModal(){document.getElementById('modal-bg').classList.remove('open');}
 
-// Verifica sessão ao carregar
-(async()=>{
-  const {data:{session}} = await sb.auth.getSession();
-  if(session && session.user.email === ADMIN_EMAIL) mostrarPainel();
-})();
-
-// Enter no login
-document.addEventListener('keydown', e => {
-  if(e.key === 'Enter' && document.getElementById('login').style.display !== 'none') doLogin();
-});
+(async()=>{const{data:{session}}=await sb.auth.getSession();if(session&&session.user.email===ADMIN_EMAIL)mostrarPainel();})();
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('login').style.display!=='none')doLogin();});
 </script>
 </body>
 </html>
