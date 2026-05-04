@@ -5,7 +5,446 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Klipflow — Sistema para Prótese Capilar</title>
   <!-- v2 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ╔══════════════════════════════════════════════════════════╗
+// ║           MÓDULOS AVANÇADOS — KLIPFLOW v3               ║
+// ╚══════════════════════════════════════════════════════════╝
+
+// ── 1. SCORE DO CLIENTE ────────────────────────────────────
+// Calcula score baseado em frequência, ticket médio, faltas e recência
+async function calcScoreCliente(cliId, ownId){
+  try {
+    const agora = new Date();
+    const [
+      {data: ags, count: totalAgs},
+      {data: cancelados, count: totalCancel},
+      {data: ultimoAg}
+    ] = await Promise.all([
+      sb.from('agendamentos').select('valor,data_hora', {count:'exact'}).eq('user_id', ownId).eq('cliente_id', cliId).eq('status','finalizado'),
+      sb.from('agendamentos').select('id', {count:'exact'}).eq('user_id', ownId).eq('cliente_id', cliId).in('status',['cancelado','faltou']),
+      sb.from('agendamentos').select('data_hora').eq('user_id', ownId).eq('cliente_id', cliId).eq('status','finalizado').order('data_hora',{ascending:false}).limit(1)
+    ]);
+
+    const nAgs = totalAgs || 0;
+    const nCancel = totalCancel || 0;
+    const ticketMedio = nAgs > 0 ? (ags||[]).reduce((s,a)=>s+(a.valor||0),0)/nAgs : 0;
+    const diasSemVisita = ultimoAg?.[0] ? Math.floor((agora - new Date(ultimoAg[0].data_hora))/86400000) : 999;
+    const taxaFalta = nAgs > 0 ? nCancel / (nAgs + nCancel) : 0;
+
+    // Algoritmo de score
+    let pts = 0;
+    // Frequência (até 40 pts)
+    if(nAgs >= 12) pts += 40;
+    else if(nAgs >= 6) pts += 30;
+    else if(nAgs >= 3) pts += 20;
+    else if(nAgs >= 1) pts += 10;
+    // Ticket médio (até 30 pts)
+    if(ticketMedio >= 1500) pts += 30;
+    else if(ticketMedio >= 800) pts += 20;
+    else if(ticketMedio >= 300) pts += 15;
+    else if(ticketMedio > 0) pts += 8;
+    // Recência (até 20 pts)
+    if(diasSemVisita <= 30) pts += 20;
+    else if(diasSemVisita <= 60) pts += 12;
+    else if(diasSemVisita <= 90) pts += 6;
+    // Confiabilidade (até 10 pts — penaliza faltas)
+    if(taxaFalta === 0 && nAgs > 0) pts += 10;
+    else if(taxaFalta < 0.1) pts += 7;
+    else if(taxaFalta < 0.25) pts += 3;
+
+    // Classificação
+    let classe, label, cor;
+    if(nAgs === 0) { classe='score-novo'; label='Novo'; cor='#7C3AED'; }
+    else if(diasSemVisita > 90) { classe='score-perdido'; label='Perdido'; cor='#64748B'; }
+    else if(diasSemVisita > 45 || taxaFalta > 0.3) { classe='score-risco'; label='Em risco'; cor='#EF4444'; }
+    else if(pts >= 70) { classe='score-vip'; label='VIP'; cor='#F59E0B'; }
+    else { classe='score-ativo'; label='Ativo'; cor='#00C48C'; }
+
+    return { pts, classe, label, cor, nAgs, ticketMedio, diasSemVisita, taxaFalta, nCancel };
+  } catch(e) {
+    return { pts:0, classe:'score-novo', label:'Novo', cor:'#7C3AED', nAgs:0, ticketMedio:0, diasSemVisita:999, taxaFalta:0, nCancel:0 };
+  }
+}
+
+function scoreBadge(score){
+  if(!score) return '<span class="score-badge score-novo">Novo</span>';
+  const icons = { 'VIP':'★', 'Ativo':'●', 'Em risco':'!', 'Perdido':'○', 'Novo':'◆' };
+  return `<span class="score-badge ${score.classe}">${icons[score.label]||''} ${score.label}</span>`;
+}
+
+// Carrega scores para a listagem de clientes
+async function loadCliComScore(){
+  if(!CU) return;
+  const ownId = getOwn();
+  const tb = id('tb-cli');
+  if(tb) tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</td></tr>';
+  const{data} = await sb.from('clientes').select('*').eq('user_id', ownId).order('nome');
+  allCli = data || [];
+  id('cli-count').textContent = allCli.length + ' clientes';
+
+  // Carrega scores em paralelo (máx 5 por vez para não sobrecarregar)
+  const scores = {};
+  const chunks = [];
+  for(let i=0; i<allCli.length; i+=5) chunks.push(allCli.slice(i,i+5));
+  for(const chunk of chunks){
+    await Promise.all(chunk.map(async c => {
+      scores[c.id] = await calcScoreCliente(c.id, ownId);
+    }));
+  }
+  renderCliComScore(allCli, scores);
+}
+
+function renderCliComScore(lista, scores){
+  const tb = id('tb-cli');
+  if(!lista.length){
+    tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';
+    return;
+  }
+  // Ordena por score desc
+  const sorted = [...lista].sort((a,b)=>(scores[b.id]?.pts||0)-(scores[a.id]?.pts||0));
+  tb.innerHTML = sorted.map(c => {
+    const ini = c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    const nasc = c.data_nascimento ? new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR') : '—';
+    const sc = scores[c.id];
+    const conf = sc ? (sc.taxaFalta === 0 && sc.nAgs > 0 ? '<span class="confianca-ok">✓ Confiável</span>' : sc.taxaFalta > 0.25 ? '<span class="confianca-bad">⚠ Faltas</span>' : '<span class="confianca-warn">~ Regular</span>') : '';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div><div style="font-weight:500">${c.nome}</div>${conf}</div></div></td>
+      <td>${scoreBadge(sc)}</td>
+      <td>${c.telefone||'—'}</td>
+      <td>${c.email||'—'}</td>
+      <td>${nasc}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button>
+        <button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver</button>
+        <button class="btn btn-sm" style="background:#fee2e2;color:#b91c1c;border:none" onclick="excluirCli('${c.id}')">Excluir</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 2. RECORRÊNCIA AUTOMÁTICA ──────────────────────────────
+let _recDados = {}; // dados do atendimento finalizado
+
+function abrirModalRecorrencia(cliId, cliNome, profId, servNome, valor, dataHora){
+  _recDados = { cliId, profId, servNome, valor, dataHora };
+  id('rec-cli-nome').textContent = cliNome;
+  // Seta data sugerida (30 dias por padrão)
+  const d = new Date(dataHora);
+  d.setDate(d.getDate() + 30);
+  const iso = d.toISOString().split('T')[0];
+  id('rec-data').value = iso;
+  id('rec-data-info').textContent = 'Sugestão: ' + d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  // Reseta botões de ciclo
+  document.querySelectorAll('.rec-ciclo-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.dias === '30');
+    b.classList.toggle('btn-primary', b.dataset.dias === '30');
+    b.classList.toggle('btn-outline', b.dataset.dias !== '30');
+  });
+  id('m-rec').classList.add('open');
+}
+
+function selCiclo(btn){
+  document.querySelectorAll('.rec-ciclo-btn').forEach(b=>{
+    b.classList.remove('active','btn-primary');
+    b.classList.add('btn-outline');
+  });
+  btn.classList.add('active','btn-primary');
+  btn.classList.remove('btn-outline');
+  // Calcula nova data
+  const dias = parseInt(btn.dataset.dias);
+  const base = _recDados.dataHora ? new Date(_recDados.dataHora) : new Date();
+  base.setDate(base.getDate() + dias);
+  const iso = base.toISOString().split('T')[0];
+  id('rec-data').value = iso;
+  id('rec-data-info').textContent = 'Sugestão: ' + base.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+}
+
+async function confirmarRecorrencia(){
+  const data = id('rec-data').value;
+  const hora = id('rec-hora').value;
+  if(!data||!hora){ toast('Escolha data e horário!','err'); return; }
+  const ownId = getOwn();
+  const {error} = await sb.from('agendamentos').insert({
+    user_id: ownId,
+    cliente_id: _recDados.cliId,
+    profissional_id: _recDados.profId || null,
+    profissional: _recDados.servNome,
+    data_hora: `${data}T${hora}:00`,
+    status: 'aguardando',
+    valor: _recDados.valor || 0,
+    duracao_min: 90,
+    observacoes: 'Agendamento recorrente automático'
+  });
+  if(error){ toast('Erro: '+error.message,'err'); return; }
+  cm('m-rec');
+  toast('Próxima manutenção agendada!','ok');
+  loadAgenda();
+}
+
+// Hook: ao finalizar agendamento, oferece recorrência
+async function finalizarAgComRecorrencia(agId){
+  const {data:ag} = await sb.from('agendamentos').select('*,clientes(nome)').eq('id',agId).single();
+  if(!ag) return;
+  // Atualiza status
+  await sb.from('agendamentos').update({status:'finalizado'}).eq('id',agId);
+  toast('Atendimento finalizado!','ok');
+  loadAgenda(); loadDash();
+  // Abre modal de recorrência após 500ms
+  setTimeout(()=>{
+    abrirModalRecorrencia(
+      ag.cliente_id, ag.clientes?.nome||'Cliente',
+      ag.profissional_id, ag.profissional,
+      ag.valor, ag.data_hora
+    );
+  }, 500);
+}
+
+// ── 3. PREVISÃO DE FATURAMENTO ─────────────────────────────
+async function loadPrevisaoFaturamento(){
+  if(!CU) return;
+  const ownId = getOwn();
+  const agora = new Date();
+  const mes = agora.getMonth();
+  const ano = agora.getFullYear();
+  const ini = `${ano}-${String(mes+1).padStart(2,'0')}-01`;
+  const fim = new Date(ano, mes+1, 0);
+  const fimStr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(fim.getDate()).padStart(2,'0')}`;
+
+  const mesNome = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][mes];
+
+  // Agendamentos já confirmados/aguardando no mês
+  const {data:ags} = await sb.from('agendamentos')
+    .select('valor,profissional,status')
+    .eq('user_id', ownId)
+    .gte('data_hora', ini+'T00:00')
+    .lte('data_hora', fimStr+'T23:59')
+    .in('status',['aguardando','confirmado','finalizado']);
+
+  if(!ags?.length){
+    id('prev-fat') && (id('prev-fat').textContent = 'R$ 0,00');
+    id('prev-manut') && (id('prev-manut').textContent = '0');
+    id('prev-novas') && (id('prev-novas').textContent = '0');
+    id('dash-prev-mes') && (id('dash-prev-mes').textContent = mesNome);
+    return;
+  }
+
+  const fatPrev = ags.reduce((s,a)=>s+(a.valor||0),0);
+  const manut = ags.filter(a=>(a.profissional||'').toLowerCase().includes('manut')||
+    (a.profissional||'').toLowerCase().includes('higien')||
+    (a.profissional||'').toLowerCase().includes('tonal')).length;
+  const novas = ags.filter(a=>(a.profissional||'').toLowerCase().includes('coloc')||
+    (a.profissional||'').toLowerCase().includes('instal')).length;
+
+  id('prev-fat') && (id('prev-fat').textContent = 'R$ '+fatPrev.toLocaleString('pt-BR',{minimumFractionDigits:2}));
+  id('prev-manut') && (id('prev-manut').textContent = manut);
+  id('prev-novas') && (id('prev-novas').textContent = novas || (ags.length - manut));
+  id('dash-prev-mes') && (id('dash-prev-mes').textContent = mesNome+' '+ano);
+}
+
+// ── 4. CICLO DE VIDA DA PRÓTESE ────────────────────────────
+async function verProteseCliente(cliId, cliNome){
+  id('m-protese-titulo').textContent = 'Prótese — '+cliNome;
+  const body = id('m-protese-body');
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
+  id('m-protese').classList.add('open');
+  const ownId = getOwn();
+
+  // Busca prótese ativa do cliente
+  const {data:proteses} = await sb.from('proteses_clientes')
+    .select('*')
+    .eq('user_id', ownId)
+    .eq('cliente_id', cliId)
+    .order('data_instalacao', {ascending:false});
+
+  const hoje = new Date();
+
+  let html = '';
+
+  if(proteses && proteses.length){
+    html = proteses.map(p => {
+      const instData = new Date(p.data_instalacao);
+      const diasUso = Math.floor((hoje - instData)/86400000);
+      const vidaUtil = p.vida_util_dias || 180;
+      const pct = Math.min(100, Math.round((diasUso/vidaUtil)*100));
+      const diasRestantes = Math.max(0, vidaUtil - diasUso);
+      const cls = pct >= 90 ? 'protese-crit' : pct >= 70 ? 'protese-warn' : 'protese-ok';
+      const statusTxt = pct >= 90 ? '⚠️ Troca urgente!' : pct >= 70 ? 'Próxima da troca' : 'Em bom estado';
+
+      return `<div class="protese-card ${cls}" style="margin-bottom:14px;border-color:${pct>=90?'var(--danger)':pct>=70?'var(--warn)':'var(--gray-200)'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-weight:600;font-size:14px">${p.tipo||'Prótese'}</div>
+            <div style="font-size:12px;color:var(--gray-500)">Instalada em ${instData.toLocaleDateString('pt-BR')}</div>
+          </div>
+          <span style="font-size:12px;font-weight:600;color:${pct>=90?'var(--danger)':pct>=70?'var(--warn)':'var(--accent)'}">${statusTxt}</span>
+        </div>
+        <div class="protese-vida">
+          <div class="protese-vida-fill" style="width:${pct}%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-500)">
+          <span>${diasUso} dias de uso</span>
+          <span>${diasRestantes > 0 ? diasRestantes+' dias restantes' : 'Vida útil encerrada'}</span>
+        </div>
+        ${p.cola ? `<div style="font-size:12px;color:var(--gray-600);margin-top:6px">Cola: ${p.cola}</div>` : ''}
+        ${p.observacoes ? `<div style="font-size:12px;color:var(--gray-600);margin-top:4px">${p.observacoes}</div>` : ''}
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn btn-sm btn-outline" onclick="registrarTrocaProtese('${p.id}','${cliId}')">Registrar troca</button>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    html = '<div style="text-align:center;padding:20px;color:var(--gray-400);border:1px dashed var(--gray-300);border-radius:10px;margin-bottom:16px">Nenhuma prótese cadastrada para este cliente</div>';
+  }
+
+  // Formulário para registrar nova prótese
+  html += `<div style="padding-top:16px;border-top:1px solid var(--gray-200)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px">Registrar nova prótese</div>
+    <div class="fg"><label class="fl">Tipo de prótese</label><input class="fi" id="prot-tipo" placeholder="Ex: Micropele, Lace, Full lace..."></div>
+    <div class="fg"><label class="fl">Tipo de cola</label><input class="fi" id="prot-cola" placeholder="Ex: Cola acrílica, fita dupla face..."></div>
+    <div class="fg"><label class="fl">Data de instalação</label><input type="date" class="fi" id="prot-data" value="${hoje.toISOString().split('T')[0]}"></div>
+    <div class="fg"><label class="fl">Vida útil estimada (dias)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline prot-vida-btn active" data-dias="90" onclick="selVidaUtil(this)">90 dias</button>
+        <button class="btn btn-sm btn-outline prot-vida-btn" data-dias="120" onclick="selVidaUtil(this)">120 dias</button>
+        <button class="btn btn-sm btn-outline prot-vida-btn" data-dias="180" onclick="selVidaUtil(this)">180 dias</button>
+        <button class="btn btn-sm btn-outline prot-vida-btn" data-dias="365" onclick="selVidaUtil(this)">365 dias</button>
+      </div>
+      <input type="hidden" id="prot-vida" value="90">
+    </div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="prot-obs" rows="2" placeholder="Sensibilidade, observações especiais..."></textarea></div>
+    <button class="btn btn-primary btn-sm" onclick="salvarProtese('${cliId}')">Registrar prótese</button>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
+function selVidaUtil(btn){
+  document.querySelectorAll('.prot-vida-btn').forEach(b=>{b.classList.remove('active','btn-primary');b.classList.add('btn-outline');});
+  btn.classList.add('active','btn-primary'); btn.classList.remove('btn-outline');
+  id('prot-vida').value = btn.dataset.dias;
+}
+
+async function salvarProtese(cliId){
+  const tipo = id('prot-tipo').value.trim();
+  const data = id('prot-data').value;
+  if(!tipo||!data){ toast('Preencha tipo e data!','err'); return; }
+  const ownId = getOwn();
+  const {error} = await sb.from('proteses_clientes').insert({
+    user_id: ownId, cliente_id: cliId,
+    tipo, cola: id('prot-cola').value.trim(),
+    data_instalacao: data,
+    vida_util_dias: parseInt(id('prot-vida').value)||90,
+    observacoes: id('prot-obs').value.trim(),
+    ativa: true
+  });
+  if(error){ toast('Erro: '+error.message,'err'); return; }
+  toast('Prótese registrada!','ok');
+  // Busca nome do cliente para reabrir modal
+  const cli = allCli.find(c=>c.id===cliId);
+  verProteseCliente(cliId, cli?.nome||'Cliente');
+}
+
+async function registrarTrocaProtese(proteseId, cliId){
+  if(!confirm('Registrar troca desta prótese? A prótese atual será marcada como inativa.')) return;
+  await sb.from('proteses_clientes').update({ativa:false}).eq('id', proteseId);
+  const cli = allCli.find(c=>c.id===cliId);
+  toast('Prótese marcada como trocada!','ok');
+  verProteseCliente(cliId, cli?.nome||'Cliente');
+}
+
+// ── 5. LISTA DE ESPERA ─────────────────────────────────────
+async function abrirListaEspera(){
+  const ownId = getOwn();
+  id('m-espera').classList.add('open');
+
+  // Carrega lista
+  const {data} = await sb.from('lista_espera')
+    .select('*,clientes(nome,telefone)')
+    .eq('user_id', ownId)
+    .eq('ativo', true)
+    .order('created_at');
+
+  const el = id('lista-espera-items');
+  if(!data?.length){
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">Lista de espera vazia</div>';
+  } else {
+    el.innerHTML = data.map((item,i)=>`
+      <div class="espera-item">
+        <div class="espera-pos">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">${item.clientes?.nome||'—'}</div>
+          <div style="font-size:12px;color:var(--gray-500)">${item.servico||'Qualquer serviço'} · ${item.clientes?.telefone||'—'}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <a href="https://wa.me/55${(item.clientes?.telefone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;border:none">WhatsApp</a>
+          <button class="btn btn-sm btn-outline" onclick="removerEspera('${item.id}')">Remover</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Popula selects
+  await loadCliSels();
+  await loadServsBD();
+  const selCli = id('espera-cli-sel');
+  selCli.innerHTML = '<option value="">Selecionar cliente...</option>' + allCli.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  const selServ = id('espera-serv-sel');
+  selServ.innerHTML = '<option value="">Selecionar serviço...</option>' + allServs.map(s=>`<option value="${s.id}">${s.nome}</option>`).join('');
+}
+
+async function addListaEspera(){
+  const cliId = id('espera-cli-sel').value;
+  const servId = id('espera-serv-sel').value;
+  if(!cliId){ toast('Selecione um cliente!','err'); return; }
+  const serv = allServs.find(s=>s.id===servId);
+  const {error} = await sb.from('lista_espera').insert({
+    user_id: getOwn(), cliente_id: cliId,
+    servico: serv?.nome||'', ativo: true
+  });
+  if(error){ toast('Erro: '+error.message,'err'); return; }
+  toast('Adicionado à lista de espera!','ok');
+  abrirListaEspera();
+}
+
+async function removerEspera(id_item){
+  await sb.from('lista_espera').update({ativo:false}).eq('id', id_item);
+  toast('Removido da lista!','ok');
+  abrirListaEspera();
+}
+
+// ── 6. HOOK: Notificar lista de espera quando cancelamento ─
+async function notificarListaEsperaAoCancelar(agId){
+  const {data:ag} = await sb.from('agendamentos').select('data_hora,profissional').eq('id',agId).single();
+  if(!ag) return;
+  const ownId = getOwn();
+  const {data:espera} = await sb.from('lista_espera')
+    .select('*,clientes(nome,telefone)')
+    .eq('user_id', ownId).eq('ativo', true).limit(3);
+  if(!espera?.length) return;
+  const dt = new Date(ag.data_hora).toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  toast(`Horário liberado! ${espera.length} cliente(s) na lista de espera.`,'ok');
+}
+
+// ── INIT: Carrega tudo junto ───────────────────────────────
+const _origLoadDash = typeof loadDash === 'function' ? loadDash : null;
+if(typeof loadDash === 'function'){
+  const _loadDashOrig = loadDash;
+  window.loadDash = async function(){
+    await _loadDashOrig();
+    await loadPrevisaoFaturamento();
+  };
+}
+
+// Substitui loadCli pelo com score (só quando estiver na tela de clientes)
+const _origLoadCli = typeof loadCli === 'function' ? loadCli : null;
+window.loadCli = async function(){
+  if(document.getElementById('tb-cli')){
+    await loadCliComScore();
+  }
+};
+
+console.log('✅ Módulos avançados Klipflow v3 carregados!');
+
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -572,6 +1011,46 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   .btn-md{padding:8px 14px;font-size:13px}
   #dash-body{grid-template-columns:1fr!important}
 }
+
+/* ── SCORE DO CLIENTE ─────────────────────────────────── */
+.score-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.score-vip{background:#FEF3C7;color:#92400E}
+.score-ativo{background:#D1FAE5;color:#065F46}
+.score-risco{background:#FEE2E2;color:#991B1B}
+.score-perdido{background:#F1F5F9;color:#64748B}
+.score-novo{background:#EDE9FE;color:#5B21B6}
+.confianca-ok{color:#00C48C;font-size:11px;font-weight:600}
+.confianca-warn{color:#F59E0B;font-size:11px;font-weight:600}
+.confianca-bad{color:#EF4444;font-size:11px;font-weight:600}
+
+/* ── RECORRÊNCIA ──────────────────────────────────────── */
+.rec-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.rec-card:last-child{margin-bottom:0}
+
+/* ── MODAL RECORRÊNCIA ────────────────────────────────── */
+.rec-modal{background:linear-gradient(135deg,#EBF3FF 0%,#fff 100%);border:2px solid var(--brand);border-radius:14px;padding:20px;margin-top:16px}
+.rec-modal-title{font-size:15px;font-weight:700;color:var(--brand);margin-bottom:4px}
+.rec-modal-sub{font-size:12px;color:var(--gray-500);margin-bottom:14px}
+
+/* ── CICLO DE VIDA PRÓTESE ────────────────────────────── */
+.protese-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:14px;margin-bottom:10px}
+.protese-vida{height:8px;border-radius:4px;background:var(--gray-100);overflow:hidden;margin:8px 0}
+.protese-vida-fill{height:100%;border-radius:4px;transition:width .5s}
+.protese-ok .protese-vida-fill{background:var(--accent)}
+.protese-warn .protese-vida-fill{background:var(--warn)}
+.protese-crit .protese-vida-fill{background:var(--danger)}
+
+/* ── LISTA DE ESPERA ──────────────────────────────────── */
+.espera-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.espera-item:last-child{border:none}
+.espera-pos{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ── PREVISÃO FATURAMENTO ─────────────────────────────── */
+.prev-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:18px;text-align:center}
+.prev-val{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--accent)}
+.prev-label{font-size:12px;color:var(--gray-500);margin-top:4px}
+.prev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+
 </style>
 </head>
 <body>
@@ -852,7 +1331,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         </div>
       </div>
       <div class="sb-row"> <input type="text" placeholder="Buscar..." id="s-cli-inp" oninput="filtrarCli()"></div>
-      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
+      <div class="tw"><table><thead><tr><th>Cliente</th><th>Score</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
     </div>
 
     <!-- PERFIL CLIENTE -->
@@ -1667,6 +2146,76 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   </div>
 </div>
 
+<!-- MODAL RECORRÊNCIA -->
+<div class="modal-bg" id="m-rec" style="z-index:310">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title">Agendar próxima manutenção?</div>
+      <button class="modal-close" onclick="cm('m-rec')">×</button>
+    </div>
+    <div class="mf" style="padding:20px">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px">Atendimento finalizado! Deseja já agendar a próxima manutenção para <strong id="rec-cli-nome"></strong>?</p>
+      <div class="fg">
+        <label class="fl">Ciclo de retorno</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-outline rec-ciclo-btn active" data-dias="15" onclick="selCiclo(this)">15 dias</button>
+          <button class="btn btn-sm btn-outline rec-ciclo-btn" data-dias="20" onclick="selCiclo(this)">20 dias</button>
+          <button class="btn btn-sm btn-outline rec-ciclo-btn" data-dias="30" onclick="selCiclo(this)">30 dias</button>
+          <button class="btn btn-sm btn-outline rec-ciclo-btn" data-dias="45" onclick="selCiclo(this)">45 dias</button>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:12px">
+        <label class="fl">Data sugerida</label>
+        <input type="date" class="fi" id="rec-data">
+        <div style="font-size:12px;color:var(--brand);margin-top:4px" id="rec-data-info"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Horário</label>
+        <input type="time" class="fi" id="rec-hora" value="09:00">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-outline" style="flex:1" onclick="cm('m-rec')">Agora não</button>
+        <button class="btn btn-primary" style="flex:2" onclick="confirmarRecorrencia()">Agendar próxima manutenção</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CICLO DE VIDA PRÓTESE -->
+<div class="modal-bg" id="m-protese">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title" id="m-protese-titulo">Gestão de Prótese</div>
+      <button class="modal-close" onclick="cm('m-protese')">×</button>
+    </div>
+    <div class="mf" id="m-protese-body" style="padding:20px"></div>
+  </div>
+</div>
+
+<!-- MODAL LISTA DE ESPERA -->
+<div class="modal-bg" id="m-espera">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title">Lista de Espera</div>
+      <button class="modal-close" onclick="cm('m-espera')">×</button>
+    </div>
+    <div class="mf" style="padding:20px">
+      <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Clientes aguardando um horário disponível</div>
+      <div id="lista-espera-items"><div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-200)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Adicionar cliente à lista</div>
+        <div class="fg">
+          <select class="fi" id="espera-cli-sel"><option value="">Selecionar cliente...</option></select>
+        </div>
+        <div class="fg">
+          <select class="fi" id="espera-serv-sel"><option value="">Selecionar serviço...</option></select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addListaEspera()">+ Adicionar à lista</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL ASSINATURA -->
 <div class="mo" id="m-planos" style="z-index:9998">
   <div class="modal" style="max-width:600px">
@@ -2298,7 +2847,7 @@ async function loadCli(){
 }
 function renderCli(lista){
   const tb=id('tb-cli');
-  if(!lista.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
+  if(!lista.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
   tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const nasc=c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${nasc}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button><button class="btn btn-sm btn-danger" onclick="excluirCli('${c.id}','${c.nome}')">Excluir</button></td></tr>`;}).join('');
 }
 function filtrarCli(){const q=v('s-cli-inp').toLowerCase();renderCli(allCli.filter(c=>c.nome.toLowerCase().includes(q)||(c.telefone||'').includes(q)));}
