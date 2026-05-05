@@ -1838,6 +1838,10 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 <div class="toast" id="toast"></div>
 
 <script>
+// Helper: data local no formato YYYY-MM-DD (sem bug de fuso horário)
+function hojeLocal(){const d=new Date();const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
+function fmtLocal(d){const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
+
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
 const sb=supabase.createClient(SURL,SKEY);
@@ -2883,7 +2887,7 @@ async function loadDash(){
 }
 
 async function loadDashAdmin(dates,ownId){
-  const hoje=new Date().toISOString().split('T')[0];
+  const hoje=hojeLocal();
   const{ini,fim,label}=dates;
   const[{count:cHoje},{count:cCli},{count:cMes},{data:fat},{data:ags},{data:clientes}]=await Promise.all([
     sb.from('agendamentos').select('*',{count:'exact',head:true}).eq('user_id',ownId).gte('data_hora',hoje+'T00:00').lte('data_hora',hoje+'T23:59'),
@@ -2971,7 +2975,7 @@ async function loadDashAdmin(dates,ownId){
 }
 
 async function loadDashProf(dates,ownId){
-  const hoje=new Date().toISOString().split('T')[0];
+  const hoje=hojeLocal();
   const{ini,fim,label}=dates;
   
   // Garante que temos o CE.id correto
@@ -3237,7 +3241,7 @@ function abrirAgModal(hrFull, profId){
     const mm=String(d.getMinutes()).padStart(2,'0');
     id('ag-hora').value=hh+':'+mm;
   } else {
-    id('ag-data').value=new Date().toISOString().split('T')[0];
+    id('ag-data').value=hojeLocal();
     id('ag-hora').value='09:00';
   }
   // Carrega profissionais e pré-seleciona o correto
@@ -3557,7 +3561,7 @@ async function loadCaixa(){
 async function salvarLanc(){
   const desc=v('lc-desc'),valor=parseFloat(v('lc-valor'));
   if(!desc||!valor){toast('Preencha descrição e valor!','err');return;}
-  const{error}=await sb.from('caixa').insert({user_id:getOwn(),tipo:v('lc-tipo'),descricao:desc,valor,forma_pagamento:'Dinheiro',data:v('lc-data')||new Date().toISOString().split('T')[0]});
+  const{error}=await sb.from('caixa').insert({user_id:getOwn(),tipo:v('lc-tipo'),descricao:desc,valor,forma_pagamento:'Dinheiro',data:v('lc-data')||hojeLocal()});
   if(error){toast('Erro: '+error.message,'err');return;}
   cm('m-lanc');toast('Lançamento salvo','ok');limpar('m-lanc');loadCaixa();
 }
@@ -4940,7 +4944,7 @@ async function salvarCfg(){
 // ============================================================
 function om(mid){
   if(['m-ag','m-cli','m-comanda'].includes(mid))loadCliSels();
-  if(mid==='m-ag'){id('ag-data').value=new Date().toISOString().split('T')[0];loadProfsBD();loadServsBD();}
+  if(mid==='m-ag'){id('ag-data').value=hojeLocal();loadProfsBD();loadServsBD();}
   if(mid==='m-comanda'){loadProfsBD();loadCmdEstoque();cmdItens=[];renderCmdItens();}
   if(mid==='m-prod'){prodEditId=null;if(id('m-prod'))id('m-prod').querySelector('.mt').textContent='Novo produto';if(id('m-prod'))id('m-prod').querySelector('.mf .btn-primary').textContent='Adicionar produto';}
   if(mid==='m-serv'){servEditId=null;if(id('m-serv'))id('m-serv').querySelector('.mt').textContent='Novo serviço';if(id('m-serv'))id('m-serv').querySelector('.mf .btn-primary').textContent='Salvar serviço';}
