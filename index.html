@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Klipflow — Sistema para Prótese Capilar</title>
   <!-- v2 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -572,6 +573,21 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   .btn-md{padding:8px 14px;font-size:13px}
   #dash-body{grid-template-columns:1fr!important}
 }
+
+/* ── SCORE DO CLIENTE ─────────────────────────────── */
+.score-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.sc-vip{background:#FEF3C7;color:#92400E}.sc-ativo{background:#D1FAE5;color:#065F46}
+.sc-risco{background:#FEE2E2;color:#991B1B}.sc-perdido{background:#F1F5F9;color:#64748B}.sc-novo{background:#EDE9FE;color:#5B21B6}
+.sc-conf{font-size:11px;color:#00C48C;font-weight:600}.sc-falt{font-size:11px;color:#EF4444;font-weight:600}
+/* ── LISTA DE ESPERA ──────────────────────────────── */
+.espera-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.espera-item:last-child{border:none}
+.espera-num{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* ── CICLO BTN ────────────────────────────────────── */
+.ciclo-btn.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
+/* ── PRÓTESE BARRA ────────────────────────────────── */
+.prot-barra{height:7px;border-radius:4px;background:var(--gray-100);overflow:hidden;margin:6px 0}
+.prot-fill-ok{background:var(--accent)}.prot-fill-warn{background:var(--warn)}.prot-fill-crit{background:var(--danger)}
 </style>
 </head>
 <body>
@@ -852,7 +868,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         </div>
       </div>
       <div class="sb-row"> <input type="text" placeholder="Buscar..." id="s-cli-inp" oninput="filtrarCli()"></div>
-      <div class="tw"><table><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
+      <div class="tw"><table><thead><tr><th>Cliente</th><th>Score</th><th>Telefone</th><th>E-mail</th><th>Nascimento</th><th></th></tr></thead><tbody id="tb-cli"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)"><div style="display:inline-block;width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite"></div></td></tr></tbody></table></div>
     </div>
 
     <!-- PERFIL CLIENTE -->
@@ -1667,6 +1683,62 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   </div>
 </div>
 
+
+<!-- MODAL RECORRÊNCIA AUTOMÁTICA -->
+<div class="mo" id="m-rec">
+  <div class="modal" style="max-width:440px">
+    <div class="mh"><div class="mt">Agendar próxima manutenção?</div><button class="mc" onclick="cm('m-rec')">✕</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:14px">Atendimento de <strong id="rec-cli-nome"></strong> finalizado! Deseja já agendar o retorno?</p>
+      <div class="fg"><label class="fl">Ciclo de retorno</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-outline ciclo-btn" data-dias="15" onclick="selCicloRec(this)">15 dias</button>
+          <button class="btn btn-sm btn-outline ciclo-btn active" data-dias="30" onclick="selCicloRec(this)">30 dias</button>
+          <button class="btn btn-sm btn-outline ciclo-btn" data-dias="45" onclick="selCicloRec(this)">45 dias</button>
+          <button class="btn btn-sm btn-outline ciclo-btn" data-dias="60" onclick="selCicloRec(this)">60 dias</button>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Data sugerida</label>
+        <input type="date" class="fi" id="rec-data">
+        <div style="font-size:12px;color:var(--brand);margin-top:4px" id="rec-data-info"></div>
+      </div>
+      <div class="fg"><label class="fl">Horário</label><input type="time" class="fi" id="rec-hora" value="09:00"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-md btn-ghost" onclick="cm('m-rec')">Agora não</button>
+      <button class="btn btn-md btn-primary" onclick="confirmarRecorrencia()">Agendar retorno</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRÓTESE CAPILAR -->
+<div class="mo" id="m-prot">
+  <div class="modal" style="max-width:520px">
+    <div class="mh"><div class="mt" id="m-prot-titulo">Prótese do cliente</div><button class="mc" onclick="cm('m-prot')">✕</button></div>
+    <div class="mb" id="m-prot-body" style="padding:20px"></div>
+  </div>
+</div>
+
+<!-- MODAL LISTA DE ESPERA -->
+<div class="mo" id="m-espera">
+  <div class="modal" style="max-width:440px">
+    <div class="mh"><div class="mt">Lista de Espera</div><button class="mc" onclick="cm('m-espera')">✕</button></div>
+    <div class="mb">
+      <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Clientes aguardando um horário disponível.</div>
+      <div id="espera-lista"><div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div></div>
+    </div>
+    <div class="mf" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div style="font-size:13px;font-weight:600">Adicionar cliente</div>
+      <select class="fs" id="espera-cli-sel"><option value="">Selecionar cliente...</option></select>
+      <select class="fs" id="espera-serv-sel"><option value="">Serviço desejado...</option></select>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-md btn-ghost" onclick="cm('m-espera')">Fechar</button>
+        <button class="btn btn-md btn-primary" onclick="addEspera()">+ Adicionar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL ASSINATURA -->
 <div class="mo" id="m-planos" style="z-index:9998">
   <div class="modal" style="max-width:600px">
@@ -2292,14 +2364,27 @@ document.addEventListener('click',e=>{
 async function loadCli(){
   if(!CU)return;
   const tb=id('tb-cli');
-  if(tb&&!allCli.length)tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</td></tr>';
+  if(tb)tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</td></tr>';
   const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).order('nome');
-  allCli=data||[];id('cli-count').textContent=allCli.length+' clientes';renderCli(allCli);
+  allCli=data||[];id('cli-count').textContent=allCli.length+' clientes';
+  const scores={};const ownId=getOwn();
+  const chunks=[];for(let i=0;i<allCli.length;i+=5)chunks.push(allCli.slice(i,i+5));
+  for(const chunk of chunks){
+    await Promise.all(chunk.map(async c=>{scores[c.id]=await calcScore(c.id,ownId);}));
+  }
+  renderCli(allCli,scores);
 }
-function renderCli(lista){
+function renderCli(lista,scores){
   const tb=id('tb-cli');
-  if(!lista.length){tb.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
-  tb.innerHTML=lista.map(c=>{const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();const nasc=c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'—';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div style="font-weight:500">${c.nome}</div></div></td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${nasc}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button><button class="btn btn-sm btn-danger" onclick="excluirCli('${c.id}','${c.nome}')">Excluir</button></td></tr>`;}).join('');
+  if(!lista.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-title">Nenhum cliente ainda</div></div></td></tr>';return;}
+  tb.innerHTML=lista.map(c=>{
+    const ini=c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    const nasc=c.data_nascimento?new Date(c.data_nascimento+'T12:00').toLocaleDateString('pt-BR'):'—';
+    const sc=scores?scores[c.id]:null;
+    const badge=sc?scoreBadge(sc):'<span style="color:var(--gray-300);font-size:12px">—</span>';
+    const conf=sc&&sc.nAgs>0?(sc.taxaFalta===0?'<span class="sc-conf">✓</span>':sc.taxaFalta>0.25?'<span class="sc-falt">⚠</span>':''):'';
+    return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="av">${ini}</div><div><div style="font-weight:500">${c.nome}</div>${conf}</div></div></td><td>${badge}</td><td>${c.telefone||'—'}</td><td>${c.email||'—'}</td><td>${nasc}</td><td style="display:flex;gap:6px"><button class="btn btn-sm btn-outline" onclick="editarCli('${c.id}')">Editar</button><button class="btn btn-sm btn-outline" onclick="verPerfil('${c.id}')">Ver perfil</button><button class="btn btn-sm btn-danger" onclick="excluirCli('${c.id}','${c.nome}')">Excluir</button></td></tr>`;
+  }).join('');
 }
 function filtrarCli(){const q=v('s-cli-inp').toLowerCase();renderCli(allCli.filter(c=>c.nome.toLowerCase().includes(q)||(c.telefone||'').includes(q)));}
 
@@ -2793,6 +2878,8 @@ async function loadDash(){
   const dates=getDashDates();if(!dates)return;
   if(CE)await loadDashProf(dates,getOwn());
   else{await loadDashAdmin(dates,getOwn());verificarLembretes();}
+  // Carrega previsão de faturamento
+  setTimeout(()=>{ if(typeof loadPrevisaoFaturamento==="function") loadPrevisaoFaturamento(); }, 300);
 }
 
 async function loadDashAdmin(dates,ownId){
@@ -5677,6 +5764,228 @@ async function alterarSenha(){
   const{error}=await sb.auth.updateUser({password:s});
   if(error){toast('Erro: '+error.message,'err');return;}
   toast('Senha alterada ✓','ok');id('c-senha').value='';id('c-senha2').value='';
+}
+
+
+// ══════════════════════════════════════════════════════════
+// MÓDULOS AVANÇADOS — KLIPFLOW
+// Score, Recorrência, Prótese, Lista de Espera
+// ══════════════════════════════════════════════════════════
+
+// ── SCORE DO CLIENTE ──────────────────────────────────────
+async function calcScore(cliId, ownId){
+  try{
+    const[{data:ags},{data:canc},{data:ultimo}]=await Promise.all([
+      sb.from('agendamentos').select('valor,data_hora').eq('user_id',ownId).eq('cliente_id',cliId).eq('status','finalizado'),
+      sb.from('agendamentos').select('id').eq('user_id',ownId).eq('cliente_id',cliId).in('status',['cancelado','faltou']),
+      sb.from('agendamentos').select('data_hora').eq('user_id',ownId).eq('cliente_id',cliId).eq('status','finalizado').order('data_hora',{ascending:false}).limit(1)
+    ]);
+    const nAgs=ags?.length||0;const nCanc=canc?.length||0;
+    const ticket=nAgs>0?(ags||[]).reduce((s,a)=>s+(a.valor||0),0)/nAgs:0;
+    const dias=ultimo?.[0]?Math.floor((new Date()-new Date(ultimo[0].data_hora))/86400000):999;
+    const taxa=nAgs>0?nCanc/(nAgs+nCanc):0;
+    let pts=0;
+    if(nAgs>=12)pts+=40;else if(nAgs>=6)pts+=30;else if(nAgs>=3)pts+=20;else if(nAgs>=1)pts+=10;
+    if(ticket>=1500)pts+=30;else if(ticket>=800)pts+=20;else if(ticket>=300)pts+=15;else if(ticket>0)pts+=8;
+    if(dias<=30)pts+=20;else if(dias<=60)pts+=12;else if(dias<=90)pts+=6;
+    if(taxa===0&&nAgs>0)pts+=10;else if(taxa<0.1)pts+=7;else if(taxa<0.25)pts+=3;
+    let cls,label;
+    if(nAgs===0){cls='sc-novo';label='Novo';}
+    else if(dias>90){cls='sc-perdido';label='Perdido';}
+    else if(dias>45||taxa>0.3){cls='sc-risco';label='Em risco';}
+    else if(pts>=70){cls='sc-vip';label='VIP';}
+    else{cls='sc-ativo';label='Ativo';}
+    return{pts,cls,label,nAgs,ticket,diasSemVisita:dias,taxaFalta:taxa,nCanc};
+  }catch(e){return{pts:0,cls:'sc-novo',label:'Novo',nAgs:0,ticket:0,diasSemVisita:999,taxaFalta:0,nCanc:0};}
+}
+
+function scoreBadge(sc){
+  if(!sc)return'<span style="color:var(--gray-300)">—</span>';
+  const icones={'VIP':'★','Ativo':'●','Em risco':'!','Perdido':'○','Novo':'◆'};
+  return`<span class="score-badge ${sc.cls}">${icones[sc.label]||''} ${sc.label}</span>`;
+}
+
+// ── RECORRÊNCIA AUTOMÁTICA ─────────────────────────────────
+let _recDados={};
+
+function abrirRecorrencia(cliId,cliNome,profId,servNome,valor,dataHora){
+  _recDados={cliId,profId,servNome,valor,dataHora};
+  id('rec-cli-nome').textContent=cliNome;
+  // Data sugerida: 30 dias a partir do atendimento
+  const d=new Date(dataHora);d.setDate(d.getDate()+30);
+  const iso=d.toISOString().split('T')[0];
+  id('rec-data').value=iso;
+  id('rec-data-info').textContent='Sugestão: '+d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  // Reseta botões ciclo
+  document.querySelectorAll('.ciclo-btn').forEach(b=>{
+    const ativo=b.dataset.dias==='30';
+    b.classList.toggle('active',ativo);
+  });
+  id('m-rec').classList.add('open');
+}
+
+function selCicloRec(btn){
+  document.querySelectorAll('.ciclo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const dias=parseInt(btn.dataset.dias);
+  const base=_recDados.dataHora?new Date(_recDados.dataHora):new Date();
+  base.setDate(base.getDate()+dias);
+  const iso=base.toISOString().split('T')[0];
+  id('rec-data').value=iso;
+  id('rec-data-info').textContent='Sugestão: '+base.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+}
+
+async function confirmarRecorrencia(){
+  const data=id('rec-data').value;const hora=id('rec-hora').value;
+  if(!data||!hora){toast('Escolha data e horário!','err');return;}
+  const{error}=await sb.from('agendamentos').insert({
+    user_id:getOwn(),cliente_id:_recDados.cliId,
+    profissional_id:_recDados.profId||null,profissional:_recDados.servNome||'Manutenção',
+    data_hora:`${data}T${hora}:00`,status:'aguardando',
+    valor:_recDados.valor||0,duracao_min:90,
+    observacoes:'Agendamento de retorno automático'
+  });
+  if(error){toast('Erro: '+error.message,'err');return;}
+  cm('m-rec');toast('Retorno agendado!','ok');loadAgenda();
+}
+
+// ── HOOK: abre recorrência após finalizar atendimento ──────
+const _origAcaoFinalizar = aacaoFinalizar;
+window.aacaoFinalizar = async function(agId,cliId,servico){
+  // Executa o finalizar original
+  await _origAcaoFinalizar(agId,cliId,servico);
+  // Busca dados para sugerir recorrência
+  try{
+    const{data:ag}=await sb.from('agendamentos').select('*,clientes(nome)').eq('id',agId).single();
+    if(ag&&ag.clientes){
+      setTimeout(()=>{
+        abrirRecorrencia(ag.cliente_id,ag.clientes.nome,ag.profissional_id,ag.profissional,ag.valor,ag.data_hora);
+      },800);
+    }
+  }catch(e){}
+};
+
+// ── CICLO DE VIDA DA PRÓTESE ───────────────────────────────
+async function abrirProteseCliente(cliId,cliNome){
+  id('m-prot-titulo').textContent='Prótese — '+cliNome;
+  const body=id('m-prot-body');
+  body.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
+  id('m-prot').classList.add('open');
+  const ownId=getOwn();
+  const{data:proteses}=await sb.from('proteses_clientes').select('*').eq('user_id',ownId).eq('cliente_id',cliId).eq('ativa',true).order('data_instalacao',{ascending:false});
+  const hoje=new Date();let html='';
+  if(proteses&&proteses.length){
+    html=proteses.map(p=>{
+      const inst=new Date(p.data_instalacao);
+      const diasUso=Math.floor((hoje-inst)/86400000);
+      const vida=p.vida_util_dias||180;
+      const pct=Math.min(100,Math.round(diasUso/vida*100));
+      const restam=Math.max(0,vida-diasUso);
+      const clsFill=pct>=90?'prot-fill-crit':pct>=70?'prot-fill-warn':'prot-fill-ok';
+      const status=pct>=90?'⚠️ Trocar urgente':pct>=70?'Próx. da troca':'Em bom estado';
+      return`<div class="card" style="margin-bottom:12px;border-color:${pct>=90?'var(--danger)':pct>=70?'var(--warn)':'var(--gray-200)'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><div style="font-weight:600">${p.tipo||'Prótese'}</div><div style="font-size:12px;color:var(--gray-500)">Instalada: ${inst.toLocaleDateString('pt-BR')}</div></div>
+          <span style="font-size:11px;font-weight:700;color:${pct>=90?'var(--danger)':pct>=70?'var(--warn)':'var(--accent)'}">${status}</span>
+        </div>
+        <div class="prot-barra"><div class="${clsFill}" style="height:100%;width:${pct}%;border-radius:4px"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-500)"><span>${diasUso} dias de uso</span><span>${restam} dias restantes</span></div>
+        ${p.cola?`<div style="font-size:12px;color:var(--gray-600);margin-top:6px">Cola: ${p.cola}</div>`:''}
+        <button class="btn btn-sm btn-outline" style="margin-top:10px" onclick="trocarProtese('${p.id}','${cliId}','${cliNome}')">Registrar troca</button>
+      </div>`;
+    }).join('');
+  } else {
+    html='<div style="text-align:center;padding:20px;color:var(--gray-400);border:1px dashed var(--gray-300);border-radius:10px;margin-bottom:16px">Nenhuma prótese cadastrada</div>';
+  }
+  html+=`<div style="padding-top:16px;border-top:1px solid var(--gray-200)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px">Registrar nova prótese</div>
+    <div class="fg"><label class="fl">Tipo</label><input class="fi" id="prot-tipo" placeholder="Ex: Micropele, Lace..."></div>
+    <div class="fg"><label class="fl">Cola</label><input class="fi" id="prot-cola" placeholder="Ex: Cola acrílica..."></div>
+    <div class="fg"><label class="fl">Data de instalação</label><input type="date" class="fi" id="prot-data" value="${hoje.toISOString().split('T')[0]}"></div>
+    <div class="fg"><label class="fl">Vida útil (dias)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline ciclo-btn active" data-dias="90" onclick="selVidaUtil(this)">90d</button>
+        <button class="btn btn-sm btn-outline ciclo-btn" data-dias="120" onclick="selVidaUtil(this)">120d</button>
+        <button class="btn btn-sm btn-outline ciclo-btn" data-dias="180" onclick="selVidaUtil(this)">180d</button>
+        <button class="btn btn-sm btn-outline ciclo-btn" data-dias="365" onclick="selVidaUtil(this)">365d</button>
+      </div><input type="hidden" id="prot-vida" value="90">
+    </div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="ft" id="prot-obs" rows="2" placeholder="Observações..."></textarea></div>
+    <button class="btn btn-primary btn-sm" onclick="salvarProtese('${cliId}','${cliNome}')">Registrar prótese</button>
+  </div>`;
+  body.innerHTML=html;
+}
+
+function selVidaUtil(btn){
+  const container=btn.closest('div');
+  container.querySelectorAll('.ciclo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  id('prot-vida').value=btn.dataset.dias;
+}
+
+async function salvarProtese(cliId,cliNome){
+  const tipo=id('prot-tipo')?.value?.trim();const data=id('prot-data')?.value;
+  if(!tipo||!data){toast('Tipo e data obrigatórios!','err');return;}
+  const{error}=await sb.from('proteses_clientes').insert({
+    user_id:getOwn(),cliente_id:cliId,tipo,
+    cola:id('prot-cola')?.value?.trim()||null,
+    data_instalacao:data,vida_util_dias:parseInt(id('prot-vida')?.value)||90,
+    observacoes:id('prot-obs')?.value?.trim()||null,ativa:true
+  });
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Prótese registrada!','ok');abrirProteseCliente(cliId,cliNome);
+}
+
+async function trocarProtese(proteseId,cliId,cliNome){
+  if(!confirm('Registrar troca? A prótese atual será marcada como inativa.'))return;
+  await sb.from('proteses_clientes').update({ativa:false}).eq('id',proteseId);
+  toast('Prótese trocada!','ok');abrirProteseCliente(cliId,cliNome);
+}
+
+// ── LISTA DE ESPERA ────────────────────────────────────────
+async function abrirListaEspera(){
+  const ownId=getOwn();
+  const el=id('espera-lista');
+  if(el)el.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</div>';
+  id('m-espera').classList.add('open');
+  const{data}=await sb.from('lista_espera')
+    .select('*,clientes(nome,telefone)')
+    .eq('user_id',ownId).eq('ativo',true).order('created_at');
+  if(!data?.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">Lista vazia</div>';
+  } else {
+    el.innerHTML=data.map((item,i)=>`
+      <div class="espera-item">
+        <div class="espera-num">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">${item.clientes?.nome||'—'}</div>
+          <div style="font-size:12px;color:var(--gray-500)">${item.servico||'Qualquer serviço'} · ${item.clientes?.telefone||'—'}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <a href="https://wa.me/55${(item.clientes?.telefone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;border:none;text-decoration:none">WA</a>
+          <button class="btn btn-sm btn-outline" onclick="removerEspera('${item.id}')">Remover</button>
+        </div>
+      </div>`).join('');
+  }
+  // Popula selects
+  const selCli=id('espera-cli-sel');
+  if(selCli){selCli.innerHTML='<option value="">Selecionar cliente...</option>'+allCli.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');}
+  const selServ=id('espera-serv-sel');
+  if(selServ){selServ.innerHTML='<option value="">Serviço desejado...</option>'+allServs.map(s=>`<option value="${s.nome}">${s.nome}</option>`).join('');}
+}
+
+async function addEspera(){
+  const cliId=id('espera-cli-sel')?.value;
+  if(!cliId){toast('Selecione um cliente!','err');return;}
+  const serv=id('espera-serv-sel')?.value||'';
+  const{error}=await sb.from('lista_espera').insert({user_id:getOwn(),cliente_id:cliId,servico:serv,ativo:true});
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Adicionado à lista!','ok');abrirListaEspera();
+}
+
+async function removerEspera(itemId){
+  await sb.from('lista_espera').update({ativo:false}).eq('id',itemId);
+  toast('Removido!','ok');abrirListaEspera();
 }
 
 init();
