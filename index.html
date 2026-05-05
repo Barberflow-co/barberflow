@@ -425,24 +425,8 @@ async function notificarListaEsperaAoCancelar(agId){
 }
 
 // ── INIT: Carrega tudo junto ───────────────────────────────
-// Hook loadDash com previsão de faturamento
-document.addEventListener('DOMContentLoaded', () => {
-  if(typeof loadDash === 'function'){
-    const _loadDashOrig = loadDash;
-    window.loadDash = async function(){
-      await _loadDashOrig();
-      setTimeout(loadPrevisaoFaturamento, 500);
-    };
-  }
-  // loadCli com score
-  if(typeof loadCli === 'function'){
-    window.loadCli = async function(){
-      if(document.getElementById('tb-cli')){
-        await loadCliComScore();
-      }
-    };
-  }
-});
+// Carrega previsão de faturamento quando o dashboard for aberto
+// (chamado no final do loadDash original via setInterval check)
 
 console.log('✅ Módulos avançados Klipflow v3 carregados!');
 
@@ -2842,10 +2826,7 @@ document.addEventListener('click',e=>{
 // ============================================================
 async function loadCli(){
   if(!CU)return;
-  const tb=id('tb-cli');
-  if(tb&&!allCli.length)tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-400)">Carregando...</td></tr>';
-  const{data}=await sb.from('clientes').select('*').eq('user_id',getOwn()).order('nome');
-  allCli=data||[];id('cli-count').textContent=allCli.length+' clientes';renderCli(allCli);
+  await loadCliComScore();
 }
 function renderCli(lista){
   const tb=id('tb-cli');
@@ -3344,6 +3325,8 @@ async function loadDash(){
   const dates=getDashDates();if(!dates)return;
   if(CE)await loadDashProf(dates,getOwn());
   else{await loadDashAdmin(dates,getOwn());verificarLembretes();}
+  // Carrega previsão de faturamento
+  setTimeout(loadPrevisaoFaturamento, 300);
 }
 
 async function loadDashAdmin(dates,ownId){
