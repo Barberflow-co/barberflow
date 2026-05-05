@@ -798,8 +798,8 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
       <!-- Filtro de período -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-sm btn-outline dash-period active" onclick="setDashPeriod('semana',this)">Esta semana</button>
-          <button class="btn btn-sm btn-outline dash-period" onclick="setDashPeriod('hoje',this)">Hoje</button>
+          <button class="btn btn-sm btn-outline dash-period" onclick="setDashPeriod('semana',this)">Esta semana</button>
+          <button class="btn btn-sm btn-outline dash-period active" onclick="setDashPeriod('hoje',this)">Hoje</button>
           <button class="btn btn-sm btn-outline dash-period" onclick="setDashPeriod('mes',this)">Este mês</button>
           <button class="btn btn-sm btn-outline dash-period" onclick="setDashPeriod('ano',this)">Este ano</button>
           <button class="btn btn-sm btn-outline dash-period" onclick="setDashPeriod('custom',this)">Personalizado</button>
@@ -2854,7 +2854,7 @@ function getDashDates(){
   const hoje=new Date();
   const pad=n=>String(n).padStart(2,'0');
   const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const periodo=document.querySelector('.dash-period.active')?.getAttribute('onclick')?.match(/'(\w+)'/)?.[1]||'semana';
+  const periodo=document.querySelector('.dash-period.active')?.getAttribute('onclick')?.match(/'(\w+)'/)?.[1]||'hoje';
   let ini,fim,label;
   if(periodo==='hoje'){
     ini=fim=fmt(hoje);label='hoje';
@@ -4450,14 +4450,48 @@ function carregarLogoSalva(){
 // TERMO DE COMPROMISSO
 // ============================================================
 function getTermoHTML(cli, anam){
+  // Extrai campos extras do JSON de observações
   const obs = {};
   try{ if(anam?.observacoes) Object.assign(obs, JSON.parse(anam.observacoes)); }catch(e){}
-  const graus=['I','II','III','IV','V','VI','VII'];
-  const grau = anam?.norwood ? 'Grau '+(graus[anam.norwood-1]||anam.norwood) : '___';
-  const modelo = anam?.material_pref || '___';
-  const fixacao = anam?.fixacao_pref || '___';
+
   const hoje = new Date().toLocaleDateString('pt-BR');
   const nome = cli?.nome || '___________________';
+
+  // ── Campos da ficha: só inclui se preenchido ──────────────
+  const graus = ['I','II','III','IV','V','VI','VII'];
+  const campos = [
+    { label: 'Tipo de cabelo',      val: anam?.tipo_alopecia || null },
+    { label: '% Grisalho',          val: anam?.tempo_alopecia || null },
+    { label: 'Cor do cabelo',        val: obs.cor_cabelo || null },
+    { label: 'Grau de calvície',     val: anam?.norwood ? 'Grau '+(graus[anam.norwood-1]||anam.norwood) : null },
+    { label: 'Modelo de prótese',    val: anam?.material_pref || null },
+    { label: 'Tipo de pele',         val: anam?.tipo_pele || null },
+    { label: 'Fixação',              val: anam?.fixacao_pref || null },
+    { label: 'Testa / Nuca',         val: obs.medida_testa ? obs.medida_testa+' cm' : null },
+    { label: 'Orelha a Orelha',      val: obs.medida_orelha ? obs.medida_orelha+' cm' : null },
+    { label: 'Material',             val: obs.mat || null },
+  ].filter(c => c.val); // Remove os não preenchidos
+
+  // Bloco de ficha — só renderiza se tiver pelo menos 1 campo preenchido
+  const fichaHTML = campos.length > 0 ? `
+    <div style="background:#f0f4ff;border:1px solid #c7d7f7;border-radius:6px;padding:8px 12px;margin-bottom:10px">
+      <div style="font-weight:700;margin-bottom:6px;font-size:11px;color:#1a3a6e;text-transform:uppercase;letter-spacing:.5px">Ficha de Anamnese</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px">
+        ${campos.map(c=>`<div style="font-size:10.5px"><strong style="color:#444">${c.label}:</strong> ${c.val}</div>`).join('')}
+      </div>
+      ${obs.obs ? `<div style="margin-top:6px;font-size:10.5px;color:#333"><strong>Obs. clínicas:</strong> ${obs.obs}</div>` : ''}
+    </div>` : '';
+
+  // Dados do cliente (linha fixa)
+  const dadosHTML = `
+    <div style="background:#f8f8f8;border-radius:6px;padding:8px 12px;margin-bottom:10px">
+      <div style="font-weight:700;margin-bottom:4px;font-size:11px">DADOS DO CLIENTE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;font-size:11px">
+        <div><strong>Nome:</strong> ${nome}</div>
+        <div><strong>CPF:</strong> ${cli?.cpf||'_______________'}</div>
+        <div><strong>Data:</strong> ${hoje}</div>
+      </div>
+    </div>`;
 
   return `
   <div id="termo-content" style="font-family:'Inter',sans-serif;font-size:11px;line-height:1.55;color:#1a1a1a;max-width:700px;margin:0 auto;padding:16px 24px">
@@ -4465,17 +4499,8 @@ function getTermoHTML(cli, anam){
       <div style="font-size:17px;font-weight:800;letter-spacing:2px">TERMO DE COMPROMISSO — PRÓTESE CAPILAR</div>
     </div>
 
-    <div style="background:#f8f8f8;border-radius:6px;padding:8px 12px;margin-bottom:10px">
-      <div style="font-weight:700;margin-bottom:4px;font-size:11px">DADOS DO CLIENTE</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;font-size:11px">
-        <div><strong>Nome:</strong> ${nome}</div>
-        <div><strong>Modelo:</strong> ${modelo}</div>
-        <div><strong>Grau calvície:</strong> ${grau}</div>
-        <div><strong>CPF:</strong> ${cli?.cpf||'_______________'}</div>
-        <div><strong>Fixação:</strong> ${fixacao}</div>
-        <div><strong>Data:</strong> ${hoje}</div>
-      </div>
-    </div>
+    ${dadosHTML}
+    ${fichaHTML}
 
     <div style="font-weight:700;margin-bottom:4px;font-size:11px">TERMOS E CONDIÇÕES</div>
     <div style="font-size:10.5px;line-height:1.55;columns:2;column-gap:16px">
@@ -4501,11 +4526,9 @@ function getTermoHTML(cli, anam){
         '( ) Autorizo divulgação de fotos e vídeos pelo estabelecimento. _____ (rubrica)',
       ].map((t,i)=>`<div style="margin-bottom:3px;display:flex;gap:4px;break-inside:avoid"><span style="color:#777;flex-shrink:0;font-size:9px;margin-top:1px">${i+1}.</span><span>${t}</span></div>`).join('')}
     </div>
-
     <div style="margin-top:10px;font-size:10.5px;padding:6px 10px;background:#f8f8f8;border-radius:4px">
       Declaro que recebi a prótese capilar em perfeito estado, estou ciente de todos os cuidados e que a partir do corte e moldagem não é possível devolução de qualquer valor.
     </div>
-
     <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:32px;font-size:11px">
       <div>
         <div style="border-top:1px solid #1a1a1a;padding-top:4px;margin-top:24px;color:#555;font-size:10px">Assinatura do Cliente</div>
@@ -4516,7 +4539,6 @@ function getTermoHTML(cli, anam){
     </div>
   </div>`;
 }
-
 async function carregarTermoPerfil(){
   const cid = window._perfilCid;
   const el = id('p-termo-preview');
@@ -5648,7 +5670,13 @@ async function sv(name,el){
   try{localStorage.setItem('bf_page',name);}catch(e){}
   const tmap={dashboard:'Dashboard',agenda:'Agenda',clientes:'Clientes',perfil:'Perfil',aniversarios:'Aniversários',comandas:'Comandas',caixa:'Caixa',pagamentos:'Pagamentos',relatorios:'Relatórios',servicos:'Serviços',estoque:'Estoque',equipe:'Equipe',whatsapp:'WhatsApp',config:'Configurações',manutencao:'Manutenção',sumidos:'Clientes Sumidos',linkpage:'Minha Página',cursos:'Cursos'};
   id('tt').textContent=tmap[name]||name;
-  if(name==='dashboard')await loadDash();
+  if(name==='dashboard'){
+    // Sempre reseta para Hoje ao entrar no dashboard
+    document.querySelectorAll('.dash-period').forEach(b=>b.classList.remove('active'));
+    const btnHoje=document.querySelector('.dash-period[onclick*="hoje"]');
+    if(btnHoje)btnHoje.classList.add('active');
+    await loadDash();
+  }
   if(name==='clientes')await loadCli();
   if(name==='sumidos')await loadSumidos();
   if(name==='cursos')loadCursos();
