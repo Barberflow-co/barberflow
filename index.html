@@ -5582,7 +5582,10 @@ async function loadCtx(){
     const membro=eqMembro[0];
     CE=membro;
     CP={nome_barbearia:'Klipflow',logo:null};
-    id('u-name').textContent=membro.nome;
+    // Busca nome da barbearia do dono
+    sb.from('profiles').select('nome_barbearia').eq('id',membro.user_id).single().then(({data:ow})=>{
+      id('u-name').textContent=ow?.nome_barbearia||membro.nome;
+    });
     id('u-role').textContent=membro.permissao||'profissional';
     id('u-av').textContent=membro.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
     if(membro.permissao==='profissional'){
@@ -5720,7 +5723,9 @@ function applyPerm(perm){
 function setUI(nome,role,cor){
   const ini=(nome||'U').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
   id('u-av').textContent=ini;id('u-av').style.background=cor+'22';id('u-av').style.color=cor;
-  id('u-name').textContent=nome||'Usuário';id('u-role').textContent=role;
+  // Mostra nome da barbearia se disponível, senão nome do usuário
+  const nomeBarbearia=CP?.nome_barbearia||nome||'Usuário';
+  id('u-name').textContent=nomeBarbearia;id('u-role').textContent=role;
 }
 
 async function doLogin(){
