@@ -425,22 +425,24 @@ async function notificarListaEsperaAoCancelar(agId){
 }
 
 // ── INIT: Carrega tudo junto ───────────────────────────────
-const _origLoadDash = typeof loadDash === 'function' ? loadDash : null;
-if(typeof loadDash === 'function'){
-  const _loadDashOrig = loadDash;
-  window.loadDash = async function(){
-    await _loadDashOrig();
-    await loadPrevisaoFaturamento();
-  };
-}
-
-// Substitui loadCli pelo com score (só quando estiver na tela de clientes)
-const _origLoadCli = typeof loadCli === 'function' ? loadCli : null;
-window.loadCli = async function(){
-  if(document.getElementById('tb-cli')){
-    await loadCliComScore();
+// Hook loadDash com previsão de faturamento
+document.addEventListener('DOMContentLoaded', () => {
+  if(typeof loadDash === 'function'){
+    const _loadDashOrig = loadDash;
+    window.loadDash = async function(){
+      await _loadDashOrig();
+      setTimeout(loadPrevisaoFaturamento, 500);
+    };
   }
-};
+  // loadCli com score
+  if(typeof loadCli === 'function'){
+    window.loadCli = async function(){
+      if(document.getElementById('tb-cli')){
+        await loadCliComScore();
+      }
+    };
+  }
+});
 
 console.log('✅ Módulos avançados Klipflow v3 carregados!');
 
@@ -5732,6 +5734,18 @@ function togglePlanosPeriod(){
 
 function verificarTrial(){
   if(!CP||CE)return; // profissional da equipe não paga
+  // Se já tem plano pago, nunca mostra modal de trial
+  const planosPagos = ['starter','pro','studio','profissional','enterprise'];
+  if(planosPagos.includes(CP.plano)) return;
+  // Se plano for bloqueado, trata separado
+  if(CP.plano === 'bloqueado'){
+    id('pw-title').textContent = 'Conta bloqueada';
+    id('pw-sub').textContent = 'Entre em contato com o suporte.';
+    id('pw-expired-warn').style.display = 'block';
+    id('pw-close-btn').style.display = 'none';
+    id('m-planos').classList.add('open');
+    return;
+  }
   const criado=new Date(CP.created_at||Date.now());
   const agora=new Date();
   const diasPassados=Math.floor((agora-criado)/(1000*60*60*24));
