@@ -416,8 +416,12 @@ tr:hover td{background:var(--gray-50)}
 <script>
 const SURL='https://owanynpsbutuhcaclkif.supabase.co';
 const SKEY='sb_publishable_Hscuu9s2i8eBNe6JMss8_A_-ENUg0uo';
+const SKEY_ADMIN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YW55bnBzYnV0dWhjYWNsa2lmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjQ2NDExOCwiZXhwIjoyMDkyMDQwMTE4fQ.5AowFK5-CqQYEwsRLTDg7Fo0ClCgQ6Oqwy61PS-DQDo';
 const ADMIN_EMAIL='calderarimkt@gmail.com';
+// sb = cliente normal (login/auth)
 const sb=supabase.createClient(SURL,SKEY);
+// sbAdmin = cliente com service_role (bypassa RLS — só usar no admin.html)
+const sbAdmin=supabase.createClient(SURL,SKEY_ADMIN,{auth:{autoRefreshToken:false,persistSession:false}});
 
 let clientes=[];  // APENAS donos de conta
 let filtroAtivo='todos';
@@ -482,10 +486,10 @@ async function carregarDados(){
   document.getElementById('tabela-wrap').innerHTML='<div class="loading">Carregando...</div>';
 
   // 1. Busca profiles
-  const{data:profiles}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  const{data:profiles}=await sbAdmin.from('profiles').select('*').order('created_at',{ascending:false});
 
   // 2. Busca equipe para filtrar profissionais
-  const{data:todaEquipe}=await sb.from('equipe').select('email,auth_user_id');
+  const{data:todaEquipe}=await sbAdmin.from('equipe').select('email,auth_user_id');
   const profEmails=new Set((todaEquipe||[]).map(e=>e.email?.toLowerCase()).filter(Boolean));
   const profIds=new Set((todaEquipe||[]).map(e=>e.auth_user_id).filter(Boolean));
 
@@ -496,10 +500,10 @@ async function carregarDados(){
   );
 
   // 4. Contagens
-  const{data:cliData}=await sb.from('clientes').select('user_id');
+  const{data:cliData}=await sbAdmin.from('clientes').select('user_id');
   const cliMap={};(cliData||[]).forEach(c=>{cliMap[c.user_id]=(cliMap[c.user_id]||0)+1;});
 
-  const{data:agData}=await sb.from('agendamentos').select('user_id,valor,data_hora').eq('status','finalizado');
+  const{data:agData}=await sbAdmin.from('agendamentos').select('user_id,valor,data_hora').eq('status','finalizado');
   const agMap={};const fatMap={};
   (agData||[]).forEach(a=>{agMap[a.user_id]=(agMap[a.user_id]||0)+1;fatMap[a.user_id]=(fatMap[a.user_id]||0)+(a.valor||0);});
 
@@ -661,9 +665,9 @@ async function verDetalhes(id){
   document.getElementById('modal-subtitle').textContent=u.nome_barbearia||u.email||'';
 
   // Busca equipe DESSE cliente (user_id = id do dono)
-  const{data:equipe}=await sb.from('equipe').select('*').eq('user_id',id).order('nome');
+  const{data:equipe}=await sbAdmin.from('equipe').select('*').eq('user_id',id).order('nome');
   // Busca serviços
-  const{data:servicos}=await sb.from('servicos').select('nome,preco').eq('user_id',id).eq('ativo',true);
+  const{data:servicos}=await sbAdmin.from('servicos').select('nome,preco').eq('user_id',id).eq('ativo',true);
   const ticket=u.ag_count>0?u.faturamento/u.ag_count:0;
   const slug=u.link_page?JSON.parse(u.link_page).slug||'—':'—';
 
@@ -737,7 +741,7 @@ async function verDetalhes(id){
 // ── AÇÕES ──
 async function toggleBloquear(id,nome,bloquear){
   if(!confirm((bloquear?'Bloquear ':'Desbloquear ')+nome+'?'))return;
-  const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:bloquear?'bloqueado':'trial'});
+  const{error}=await sbAdmin.rpc('admin_update_plano',{user_id:id,novo_plano:bloquear?'bloqueado':'trial'});
   if(error){alert('Erro: '+error.message);return;}
   const u=clientes.find(x=>x.id===id);if(u)u.plano=bloquear?'bloqueado':'trial';
   renderTabela();renderOverview();
@@ -748,7 +752,7 @@ function confirmarExcluir(id,nome){
   excluirUsuario(id);
 }
 async function excluirUsuario(id){
-  const{error}=await sb.rpc('admin_delete_profile',{user_id:id});
+  const{error}=await sbAdmin.rpc('admin_delete_profile',{user_id:id});
   if(error){alert('Erro: '+error.message);return;}
   clientes=clientes.filter(u=>u.id!==id);
   renderTabela();renderOverview();renderReceita();fecharModal();
@@ -757,7 +761,7 @@ async function mudarPlano(id,plano){
   if(!plano)return;
   const u=clientes.find(x=>x.id===id);
   if(!confirm('Mudar plano de '+(u?.nome)+' para "'+plano+'"?'))return;
-  const{error}=await sb.rpc('admin_update_plano',{user_id:id,novo_plano:plano});
+  const{error}=await sbAdmin.rpc('admin_update_plano',{user_id:id,novo_plano:plano});
   if(error){alert('Erro: '+error.message);return;}
   if(u)u.plano=plano;fecharModal();carregarDados();
 }
