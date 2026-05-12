@@ -521,7 +521,7 @@ footer{padding:36px 5%;display:flex;align-items:center;justify-content:space-bet
       <div class="r">
         <div class="eyebrow" style="margin-bottom:12px">D&uacute;vidas</div>
         <h2 style="margin-bottom:16px">Perguntas<br><em>frequentes.</em></h2>
-        <p class="sec-sub" style="font-size:14px">N&atilde;o encontrou? Fale com a gente pelo WhatsApp.</p>
+        <p class="sec-sub" style="font-size:14px">N&atilde;o encontrou? <a href="https://wa.me/5511911816024?text=Olá!%20Tenho%20interesse%20no%20Klipflow." target="_blank" style="color:var(--brand);font-weight:600;text-decoration:none">Fale com a gente pelo WhatsApp.</a></p>
       </div>
       <div class="faq-list r">
         <div class="faq-item"><div class="faq-q" onclick="faq(this)">Preciso de cart&atilde;o para testar?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">N&atilde;o. 14 dias completamente gr&aacute;tis, sem cart&atilde;o e sem compromisso. Voc&ecirc; s&oacute; paga se decidir continuar ap&oacute;s o trial.</div></div></div>
@@ -541,6 +541,7 @@ footer{padding:36px 5%;display:flex;align-items:center;justify-content:space-bet
   <div class="cta-btns r">
     <a href="https://app.klipflow.com.br" class="btn-cta">Criar conta gr&aacute;tis &mdash; 14 dias</a>
     <a href="https://app.klipflow.com.br" class="btn-cta2">J&aacute; tenho conta &rarr;</a>
+    <a href="https://wa.me/5511911816024?text=Olá!%20Tenho%20interesse%20no%20Klipflow%20para%20minha%20barbearia%20de%20prótese%20capilar." target="_blank" class="btn-cta2" style="display:inline-flex;align-items:center;gap:8px;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.527 5.845L.057 23.882l6.198-1.448A11.93 11.93 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374A9.86 9.86 0 0 1 2.118 12c0-5.454 4.428-9.882 9.882-9.882 5.454 0 9.882 4.428 9.882 9.882 0 5.454-4.428 9.882-9.882 9.882z"/></svg>Falar no WhatsApp</a>
   </div>
   <p class="cta-trust r">Sem cart&atilde;o &middot; Sem compromisso &middot; 5 minutos para come&ccedil;ar</p>
 </section>
@@ -548,8 +549,8 @@ footer{padding:36px 5%;display:flex;align-items:center;justify-content:space-bet
 <footer>
   <div class="footer-logo">Klipflow</div>
   <div class="footer-links">
-    <a href="#">Privacidade</a>
-    <a href="#">Termos</a>
+    <a href="/privacidade.html">Privacidade</a>
+    <a href="/termos.html">Termos</a>
     <a href="https://app.klipflow.com.br">Entrar</a>
     <a href="https://app.klipflow.com.br">Criar conta</a>
   </div>
@@ -562,5 +563,24 @@ const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target
 document.querySelectorAll('.r').forEach(el=>io.observe(el));
 window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>20)});
 </script>
+
+<!-- BOTÃO WHATSAPP FLUTUANTE -->
+<a href="https://wa.me/5511911816024?text=Olá!%20Tenho%20interesse%20no%20Klipflow%20para%20minha%20barbearia%20de%20prótese%20capilar." target="_blank" class="wa-float" title="Falar no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.527 5.845L.057 23.882l6.198-1.448A11.93 11.93 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374A9.86 9.86 0 0 1 2.118 12c0-5.454 4.428-9.882 9.882-9.882 5.454 0 9.882 4.428 9.882 9.882 0 5.454-4.428 9.882-9.882 9.882z"/></svg>
+</a>
+<style>
+.wa-float{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  width:56px;height:56px;border-radius:50%;
+  background:#25D366;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(37,211,102,.4);
+  transition:all .2s;
+  text-decoration:none;
+}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(37,211,102,.55)}
+@keyframes wa-pulse{0%{box-shadow:0 4px 16px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,.4)}70%{box-shadow:0 4px 16px rgba(37,211,102,.4),0 0 0 14px rgba(37,211,102,0)}100%{box-shadow:0 4px 16px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,0)}}
+.wa-float{animation:wa-pulse 2.5s infinite}
+</style>
 </body>
 </html>
