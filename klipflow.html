@@ -3,437 +3,546 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Klipflow — O sistema feito para barbearias de prótese capilar</title>
-<meta name="description" content="Agenda, ficha de anamnese, controle financeiro e muito mais. O único sistema pensado 100% para especialistas em prótese capilar.">
+<title>Klipflow — O único sistema para barbearias de prótese capilar</title>
+<meta name="description" content="Agenda automatizada, anamnese digital, ciclo de vida da prótese e WhatsApp automático. Feito 100% para especialistas em prótese capilar.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 :root{
   --brand:#0D6EFD;--brand-dark:#0A56C9;--brand-light:#EBF3FF;
-  --accent:#00C48C;--warn:#F59E0B;--danger:#EF4444;
+  --accent:#00C48C;--warn:#F59E0B;--red:#EF4444;
   --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;
   --gray-300:#CBD5E1;--gray-400:#94A3B8;--gray-500:#64748B;
   --gray-600:#475569;--gray-700:#334155;--gray-800:#1E293B;--gray-900:#0F172A;
-  --white:#fff;
 }
-body{font-family:"Inter",sans-serif;font-size:15px;color:var(--gray-800);background:var(--white);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+body{font-family:'Inter',sans-serif;color:var(--gray-800);background:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--gray-200);transition:box-shadow .2s}
-.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--gray-900)}
-.nav-mark{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Sora",sans-serif;font-weight:800;font-size:13px;color:#fff}
-.nav-name{font-family:"Sora",sans-serif;font-weight:700;font-size:17px}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-200);transition:box-shadow .2s}
+nav.scrolled{box-shadow:0 1px 20px rgba(0,0,0,.07)}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.nav-mark{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#fff}
+.nav-name{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;color:var(--gray-900)}
 .nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{color:var(--gray-500);text-decoration:none;font-size:14px;font-weight:500;transition:color .15s}
+.nav-links a{font-size:14px;font-weight:500;color:var(--gray-500);text-decoration:none;transition:color .15s}
 .nav-links a:hover{color:var(--gray-900)}
 .nav-btns{display:flex;align-items:center;gap:10px}
 .btn-in{color:var(--brand);font-weight:600;font-size:14px;text-decoration:none;padding:7px 14px;border-radius:7px;transition:background .15s}
 .btn-in:hover{background:var(--brand-light)}
-.btn-nav{background:var(--brand);color:#fff;font-weight:600;font-size:14px;text-decoration:none;padding:8px 18px;border-radius:8px;transition:all .15s}
-.btn-nav:hover{background:var(--brand-dark);box-shadow:0 4px 12px rgba(13,110,253,.3)}
+.btn-nav{background:var(--brand);color:#fff;font-weight:600;font-size:14px;text-decoration:none;padding:9px 20px;border-radius:8px;transition:all .15s}
+.btn-nav:hover{background:var(--brand-dark);box-shadow:0 4px 14px rgba(13,110,253,.3)}
 
-#hero{min-height:100vh;padding:80px 40px 80px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,#fff 0%,var(--gray-50) 100%);position:relative;overflow:hidden}
-.hero-dot-bg{position:absolute;inset:0;background-image:radial-gradient(var(--gray-200) 1px,transparent 1px);background-size:24px 24px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black,transparent);pointer-events:none}
-.badge{display:inline-flex;align-items:center;gap:7px;background:var(--brand-light);border:1px solid rgba(13,110,253,.25);color:var(--brand);padding:5px 14px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;animation:fadeUp .5s ease both}
-.badge-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
-h1{font-family:"Sora",sans-serif;font-size:clamp(36px,6vw,66px);font-weight:800;letter-spacing:-2px;line-height:1.07;max-width:780px;margin:0 auto 20px;color:var(--gray-900);animation:fadeUp .5s .08s ease both}
+/* HERO */
+#hero{padding:112px 5% 80px;min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(170deg,#fff 60%,var(--gray-50) 100%)}
+.hero-dot-bg{position:absolute;inset:0;background-image:radial-gradient(var(--gray-200) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 75% 75% at 50% 40%,black,transparent);pointer-events:none}
+.hero-inner{max-width:1160px;margin:0 auto;width:100%;position:relative;z-index:1}
+
+/* Hero em 2 colunas assimétricas */
+.hero-cols{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--brand-light);border:1px solid rgba(13,110,253,.2);color:var(--brand);padding:5px 14px;border-radius:50px;font-size:12.5px;font-weight:600;margin-bottom:24px;animation:fadeUp .5s ease both}
+.hero-eyebrow-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
+h1{font-family:'Sora',sans-serif;font-size:clamp(38px,4.8vw,60px);font-weight:800;letter-spacing:-1.8px;line-height:1.07;color:var(--gray-900);margin-bottom:22px;animation:fadeUp .5s .08s ease both}
 h1 em{font-style:normal;color:var(--brand)}
-.sub{font-size:clamp(15px,1.8vw,18px);color:var(--gray-500);max-width:520px;line-height:1.7;margin:0 auto 36px;animation:fadeUp .5s .15s ease both}
-.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s .22s ease both}
-.btn-p{background:var(--brand);color:#fff;font-weight:700;font-size:15px;padding:13px 28px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 2px 8px rgba(13,110,253,.25)}
-.btn-p:hover{background:var(--brand-dark);transform:translateY(-2px);box-shadow:0 8px 20px rgba(13,110,253,.35)}
-.btn-g{background:#fff;color:var(--gray-700);font-weight:600;font-size:15px;padding:13px 28px;border-radius:9px;text-decoration:none;border:1.5px solid var(--gray-200);transition:all .2s}
+.hero-desc{font-size:17px;color:var(--gray-500);line-height:1.75;max-width:480px;margin-bottom:36px;animation:fadeUp .5s .15s ease both}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .5s .22s ease both}
+.btn-p{background:var(--brand);color:#fff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;box-shadow:0 2px 10px rgba(13,110,253,.25)}
+.btn-p:hover{background:var(--brand-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,110,253,.35)}
+.btn-p svg{transition:transform .2s}
+.btn-p:hover svg{transform:translateX(3px)}
+.btn-g{background:#fff;color:var(--gray-700);font-weight:600;font-size:15px;padding:14px 28px;border-radius:9px;text-decoration:none;border:1.5px solid var(--gray-200);transition:all .2s}
 .btn-g:hover{border-color:var(--gray-300);background:var(--gray-50)}
-.trust{display:flex;align-items:center;gap:18px;justify-content:center;margin-top:24px;font-size:13px;color:var(--gray-400);animation:fadeUp .5s .28s ease both;flex-wrap:wrap}
-.trust-dot{width:3px;height:3px;background:var(--gray-300);border-radius:50%}
+.hero-trust{display:flex;align-items:center;gap:16px;margin-top:28px;font-size:13px;color:var(--gray-400);animation:fadeUp .5s .28s ease both;flex-wrap:wrap}
+.td{width:3px;height:3px;background:var(--gray-300);border-radius:50%}
 
-.dash-wrap{margin-top:60px;max-width:860px;width:100%;animation:fadeUp .5s .35s ease both;position:relative}
-.dash-wrap::before{content:"";position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(13,110,253,.25),rgba(0,196,140,.12),transparent);border-radius:17px;filter:blur(1px);z-index:-1}
-.dash-mock{background:#fff;border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.07)}
-.dash-bar{background:var(--gray-50);padding:10px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--gray-200)}
-.dd{width:10px;height:10px;border-radius:50%}
-.dash-url{background:var(--gray-200);border-radius:4px;padding:3px 12px;font-size:11px;color:var(--gray-400);margin:0 auto}
-.dash-body{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.ds{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px 14px}
-.ds-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--gray-400);margin-bottom:6px}
-.ds-val{font-family:"Sora",sans-serif;font-size:24px;font-weight:700;color:var(--gray-900)}
-.ds-sub{font-size:11px;color:var(--accent);margin-top:2px}
-.dash-chart{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px;grid-column:span 2}
-.dc-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:10px}
-.dc-bars{display:flex;align-items:flex-end;gap:5px;height:48px}
-.dcb{flex:1;background:var(--brand);border-radius:2px 2px 0 0;opacity:.45}
-.dcb:last-child{opacity:1;background:var(--accent)}
-.dash-list{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:14px;grid-column:span 2}
-.dl-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-100);font-size:12px}
-.dl-item:last-child{border:none}
-.dl-av{width:24px;height:24px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--brand);flex-shrink:0}
-.dl-badge{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:100px;background:#DCFCE7;color:#166534;font-weight:600}
+/* Coluna direita do hero — pilha de diferenciais */
+.hero-stack{display:flex;flex-direction:column;gap:10px;animation:fadeUp .6s .32s ease both}
+.hs-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:all .2s;cursor:default}
+.hs-card:hover{border-color:rgba(13,110,253,.25);transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.hs-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hs-ico.b{background:var(--brand-light)}
+.hs-ico.g{background:#F0FDF4}
+.hs-ico.p{background:#F5F3FF}
+.hs-ico.a{background:#FFFBEB}
+.hs-ico.r{background:#FEF2F2}
+.hs-body{flex:1}
+.hs-title{font-size:13.5px;font-weight:700;color:var(--gray-900);margin-bottom:2px}
+.hs-sub{font-size:12px;color:var(--gray-500);line-height:1.45}
+.hs-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.hs-badge.exc{background:var(--brand-light);color:var(--brand)}
+.hs-badge.new{background:#F0FDF4;color:#16A34A}
+.hs-badge.em{background:var(--gray-100);color:var(--gray-500)}
 
-section{padding:88px 40px}
-.wrap{max-width:1100px;margin:0 auto}
-.sec-eyebrow{font-size:13px;font-weight:600;color:var(--brand);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
-h2{font-family:"Sora",sans-serif;font-size:clamp(26px,4vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.15;color:var(--gray-900);margin-bottom:14px}
-.sec-sub{font-size:16px;color:var(--gray-500);line-height:1.7;max-width:520px}
+/* SEÇÃO GENÉRICA */
+section{padding:96px 5%}
+.wrap{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:12.5px;font-weight:700;color:var(--brand);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+h2{font-family:'Sora',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;letter-spacing:-1.2px;line-height:1.12;color:var(--gray-900);margin-bottom:16px}
+h2 em{font-style:normal;color:var(--brand)}
+.sec-sub{font-size:16px;color:var(--gray-500);line-height:1.72;max-width:540px}
 
-#dores{background:var(--gray-50)}
-.dores-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:44px;max-width:820px}
-.dor{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:22px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s,box-shadow .2s}
-.dor:hover{border-color:rgba(239,68,68,.25);box-shadow:0 4px 16px rgba(239,68,68,.06)}
-.dor-ico{width:36px;height:36px;border-radius:9px;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.dor-title{font-weight:700;font-size:14px;color:var(--gray-900);margin-bottom:4px}
-.dor-txt{font-size:13px;color:var(--gray-500);line-height:1.6}
+/* ═══════════════════════════════
+   SEÇÃO DIFERENCIAIS — o coração
+   ═══════════════════════════════ */
+#dif{background:var(--gray-900);padding:96px 5%}
+.dif-inner{max-width:1160px;margin:0 auto}
+.dif-header{text-align:center;margin-bottom:64px}
+.dif-eyebrow{font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.dif-h{font-family:'Sora',sans-serif;font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;color:#fff;margin-bottom:16px}
+.dif-h em{font-style:normal;color:#93C5FD}
+.dif-sub{font-size:16px;color:rgba(255,255,255,.45);max-width:560px;margin:0 auto;line-height:1.7}
 
-#features{background:#fff}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;margin-top:52px}
-.feat{padding:32px;border-right:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);transition:background .2s}
+/* Layout dos diferenciais: 1 grande em cima, 4 embaixo */
+.dif-top-row{margin-bottom:2px}
+.dif-bottom-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.dif-card{background:#111827;padding:36px 32px;border:1px solid rgba(255,255,255,.06);transition:background .2s;position:relative}
+.dif-card:hover{background:#1a2535}
+.dif-card.main{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:48px}
+.dif-card-num{font-size:11px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:20px;font-family:'Inter',sans-serif}
+.dif-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.dif-ico.b{background:rgba(13,110,253,.2)}
+.dif-ico.g{background:rgba(0,196,140,.15)}
+.dif-ico.p{background:rgba(124,58,237,.2)}
+.dif-ico.a{background:rgba(245,158,11,.15)}
+.dif-ico.r{background:rgba(239,68,68,.15)}
+.dif-card-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
+.dif-card-txt{font-size:13.5px;color:rgba(255,255,255,.5);line-height:1.72}
+.dif-pill{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.dif-pill.b{color:#93C5FD}
+.dif-pill.g{color:#4ADE80}
+.dif-pill.a{color:#FCD34D}
+
+/* Ficha mockup dentro do card main */
+.dif-ficha{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:22px}
+.dfh{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.dfs{font-size:10px;background:rgba(0,196,140,.15);color:#4ADE80;padding:2px 8px;border-radius:100px}
+.dfg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dff{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:8px 10px}
+.dfl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:3px}
+.dfv{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.8)}
+.df2{grid-column:span 2}
+.dfnw{display:flex;gap:4px;margin-top:10px}
+.dfn{flex:1;padding:5px 3px;text-align:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:5px;font-size:11px;color:rgba(255,255,255,.3);font-weight:500}
+.dfn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* COMO FUNCIONA */
+#como{background:#fff}
+.como-wrap{max-width:1160px;margin:0 auto;text-align:center}
+.como-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:56px;position:relative}
+.como-steps::before{content:'';position:absolute;top:27px;left:calc(16.6% + 18px);right:calc(16.6% + 18px);height:1px;background:var(--gray-200)}
+.step{padding:0 20px;text-align:center}
+.step-n{width:54px;height:54px;border-radius:50%;background:#fff;border:2px solid var(--brand);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--brand);margin:0 auto 20px;position:relative;z-index:1}
+.step-title{font-weight:700;font-size:15px;color:var(--gray-900);margin-bottom:8px}
+.step-txt{font-size:13.5px;color:var(--gray-500);line-height:1.65}
+
+/* FUNCIONALIDADES */
+#feat{background:var(--gray-50)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;margin-top:52px;background:#fff}
+.feat{padding:30px 28px;border-right:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);transition:background .2s}
 .feat:hover{background:var(--gray-50)}
 .feat:nth-child(3n){border-right:none}
 .feat:nth-child(7),.feat:nth-child(8),.feat:nth-child(9){border-bottom:none}
-.feat-ico{width:40px;height:40px;border-radius:10px;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-.feat-title{font-weight:700;font-size:14.5px;color:var(--gray-900);margin-bottom:7px}
-.feat-txt{font-size:13.5px;color:var(--gray-500);line-height:1.65}
-.feat-chip{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;color:var(--accent);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:100px;padding:2px 9px}
+.feat-ico{width:40px;height:40px;border-radius:10px;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.feat-title{font-weight:700;font-size:14px;color:var(--gray-900);margin-bottom:6px}
+.feat-txt{font-size:13px;color:var(--gray-500);line-height:1.62}
+.feat-chip{display:inline-block;margin-top:10px;font-size:10.5px;font-weight:700;color:var(--accent);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:100px;padding:2px 9px}
 
-#unico{background:var(--gray-50)}
-.unico-wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:52px}
-.unico-items{display:flex;flex-direction:column;gap:16px}
-.unico-item{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:18px 20px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s}
-.unico-item:hover{border-color:rgba(13,110,253,.25)}
-.unico-n{font-family:"Sora",sans-serif;font-size:28px;font-weight:800;color:var(--brand-light);line-height:1;flex-shrink:0;width:38px}
-.unico-title{font-weight:700;font-size:14px;color:var(--gray-900);margin-bottom:4px}
-.unico-txt{font-size:13px;color:var(--gray-500);line-height:1.6}
-.anam-card{background:#fff;border:1px solid var(--gray-200);border-radius:16px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,.06)}
-.anam-head{font-family:"Sora",sans-serif;font-size:14px;font-weight:700;color:var(--gray-900);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.anam-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.af{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:8px 11px}
-.af-lbl{font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.af-val{font-size:13px;font-weight:600;color:var(--gray-800)}
-.nw-row{display:flex;gap:5px;margin-top:12px}
-.nw{flex:1;padding:5px;border-radius:5px;background:var(--gray-50);border:1px solid var(--gray-200);text-align:center;font-size:11px;font-weight:600;color:var(--gray-400)}
-.nw.on{background:var(--brand-light);border-color:var(--brand);color:var(--brand)}
-.anam-ok{margin-top:12px;font-size:11.5px;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:5px}
-
-#como{background:#fff}
-.como-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:52px;position:relative}
-.como-steps::before{content:"";position:absolute;top:26px;left:calc(16.6% + 16px);right:calc(16.6% + 16px);height:1px;background:var(--gray-200)}
-.step{text-align:center;padding:0 20px}
-.step-n{width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--brand);display:flex;align-items:center;justify-content:center;font-family:"Sora",sans-serif;font-size:20px;font-weight:800;color:var(--brand);margin:0 auto 18px;position:relative;z-index:1}
-.step-title{font-weight:700;font-size:15px;color:var(--gray-900);margin-bottom:7px}
-.step-txt{font-size:13.5px;color:var(--gray-500);line-height:1.65}
-
-#deps{background:var(--gray-50)}
-.deps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px}
-.dep{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:26px;transition:box-shadow .2s}
+/* DEPOIMENTOS */
+#deps{background:#fff}
+.deps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.dep{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:14px;padding:28px;transition:box-shadow .2s}
 .dep:hover{box-shadow:0 8px 24px rgba(0,0,0,.07)}
-.dep-stars{color:var(--warn);font-size:14px;margin-bottom:13px;letter-spacing:2px}
-.dep-txt{font-size:14px;color:var(--gray-600);line-height:1.7;margin-bottom:18px}
-.dep-txt strong{color:var(--gray-800);font-weight:600}
-.dep-author{display:flex;align-items:center;gap:11px}
+.dep-stars{color:var(--warn);font-size:14px;margin-bottom:14px;letter-spacing:2px}
+.dep-txt{font-size:14px;color:var(--gray-700);line-height:1.75;margin-bottom:20px}
+.dep-txt strong{color:var(--gray-900);font-weight:600}
+.dep-au{display:flex;align-items:center;gap:11px;padding-top:16px;border-top:1px solid var(--gray-200)}
 .dep-av{width:36px;height:36px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--brand);flex-shrink:0}
 .dep-name{font-weight:700;font-size:13px;color:var(--gray-900)}
 .dep-city{font-size:12px;color:var(--gray-400)}
 
-#planos{background:#fff}
-.planos-wrap{max-width:900px;margin:0 auto}
-.planos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px}
-.plano{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;padding:28px;position:relative;transition:all .2s}
-.plano:hover{border-color:var(--brand);box-shadow:0 8px 24px rgba(13,110,253,.1)}
+/* PLANOS */
+#planos{background:var(--gray-50)}
+.planos-inner{max-width:1000px;margin:0 auto;text-align:center}
+.planos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;text-align:left}
+.plano{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;padding:32px;position:relative;transition:all .2s}
+.plano:hover:not(.pop){border-color:var(--brand);box-shadow:0 8px 24px rgba(13,110,253,.1)}
 .plano.pop{border-color:var(--brand);box-shadow:0 0 0 3px rgba(13,110,253,.1)}
-.pop-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:100px;white-space:nowrap}
-.plano-name{font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
-.plano-price{font-family:"Sora",sans-serif;font-size:44px;font-weight:800;color:var(--gray-900);letter-spacing:-2px;line-height:1}
-.plano-price span{font-size:15px;color:var(--gray-400);font-family:"Inter",sans-serif;font-weight:400}
-.plano-feats{margin:20px 0;display:flex;flex-direction:column;gap:9px}
-.pf{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--gray-500)}
+.pop-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:100px;white-space:nowrap}
+.plano-name{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.plano-price{font-family:'Sora',sans-serif;font-size:46px;font-weight:800;color:var(--gray-900);letter-spacing:-2px;line-height:1}
+.plano-price span{font-size:14px;color:var(--gray-400);font-family:'Inter',sans-serif;font-weight:400}
+.plano-per{font-size:13px;color:var(--gray-400);margin-bottom:28px}
+.plano-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.pf{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--gray-600)}
 .pf svg{flex-shrink:0;color:var(--accent)}
-.plano-btn{display:block;text-align:center;padding:11px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;transition:all .2s;border:1.5px solid var(--gray-200);color:var(--gray-700)}
+.plano-btn{display:block;text-align:center;padding:12px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;transition:all .2s;border:1.5px solid var(--gray-200);color:var(--gray-700)}
+.plano:not(.pop) .plano-btn:hover{border-color:var(--brand);color:var(--brand)}
 .plano.pop .plano-btn{background:var(--brand);border-color:var(--brand);color:#fff}
 .plano.pop .plano-btn:hover{background:var(--brand-dark)}
-.plano-btn:hover{border-color:var(--brand);color:var(--brand)}
 
-#faq{background:var(--gray-50)}
-.faq-list{max-width:660px;margin-top:44px}
-.faq-item{border:1px solid var(--gray-200);border-radius:10px;margin-bottom:6px;overflow:hidden;background:#fff}
-.faq-q{padding:16px 20px;font-weight:600;font-size:14px;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .15s;user-select:none}
+/* FAQ */
+#faq{background:#fff}
+.faq-layout{display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start}
+.faq-list{display:flex;flex-direction:column;gap:6px}
+.faq-item{border:1px solid var(--gray-200);border-radius:10px;overflow:hidden}
+.faq-q{padding:16px 20px;font-weight:600;font-size:14px;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:background .15s;user-select:none}
 .faq-q:hover{background:var(--gray-50)}
 .faq-q svg{flex-shrink:0;transition:transform .25s;color:var(--gray-400)}
 .faq-item.open .faq-q svg{transform:rotate(45deg);color:var(--brand)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s}
 .faq-item.open .faq-a{max-height:180px}
 .faq-a-inner{padding:0 20px 16px;font-size:13.5px;color:var(--gray-500);line-height:1.7;border-top:1px solid var(--gray-100)}
 
-#cta{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);text-align:center;padding:96px 40px;position:relative;overflow:hidden}
-#cta::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:24px 24px}
-#cta h2{color:#fff;max-width:600px;margin:0 auto 14px;position:relative;z-index:1;letter-spacing:-1.5px}
-.cta-sub{color:rgba(255,255,255,.75);margin:0 auto 36px;max-width:480px;position:relative;z-index:1;font-size:16px;line-height:1.7}
-.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
-.btn-cta{background:#fff;color:var(--brand);font-weight:700;font-size:15px;padding:13px 28px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+/* CTA */
+#cta{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%);text-align:center;padding:100px 5%;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}
+#cta h2{color:#fff;position:relative;z-index:1;margin-bottom:16px;letter-spacing:-1.5px}
+.cta-sub{font-size:17px;color:rgba(255,255,255,.7);max-width:500px;margin:0 auto 40px;line-height:1.7;position:relative;z-index:1}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.btn-cta{background:#fff;color:var(--brand);font-weight:700;font-size:15px;padding:14px 32px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
 .btn-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
-.btn-cta2{background:transparent;color:#fff;font-weight:600;font-size:15px;padding:13px 28px;border-radius:9px;text-decoration:none;border:2px solid rgba(255,255,255,.35);transition:all .2s}
+.btn-cta2{background:transparent;color:#fff;font-weight:600;font-size:15px;padding:14px 28px;border-radius:9px;text-decoration:none;border:2px solid rgba(255,255,255,.35);transition:all .2s}
 .btn-cta2:hover{border-color:rgba(255,255,255,.7)}
-.cta-trust{margin-top:20px;font-size:13px;color:rgba(255,255,255,.55);position:relative;z-index:1}
+.cta-trust{margin-top:24px;font-size:13px;color:rgba(255,255,255,.4);position:relative;z-index:1}
 
-footer{padding:36px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-200);flex-wrap:wrap;gap:16px}
-.footer-logo{font-family:"Sora",sans-serif;font-weight:700;font-size:16px;color:var(--gray-400)}
+/* FOOTER */
+footer{padding:36px 5%;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-200);flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:var(--gray-400)}
 .footer-links{display:flex;gap:24px}
 .footer-links a{font-size:13px;color:var(--gray-400);text-decoration:none;transition:color .15s}
 .footer-links a:hover{color:var(--gray-700)}
 .footer-copy{font-size:12px;color:var(--gray-300)}
 
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
-.reveal.in{opacity:1;transform:none}
+/* REVEAL */
+.r{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.r.in{opacity:1;transform:none}
 
-@media(max-width:768px){
+/* MOBILE */
+@media(max-width:860px){
   nav{padding:0 20px}.nav-links{display:none}
-  section{padding:64px 20px}#hero{padding:80px 20px 56px}
-  .dores-grid,.unico-wrap,.feat-grid,.como-steps,.deps-grid,.planos-grid{grid-template-columns:1fr}
-  .feat:nth-child(3n){border-right:none}.feat{border-right:none}
+  section,#dif{padding:72px 20px}
+  #hero{padding:96px 20px 60px}
+  .hero-cols{grid-template-columns:1fr;gap:36px}
+  .dif-card.main{grid-template-columns:1fr}
+  .dif-bottom-row{grid-template-columns:1fr 1fr}
+  .como-steps,.deps-grid,.planos-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .feat:nth-child(n){border-right:none}
   .como-steps::before{display:none}
-  .dash-body{grid-template-columns:1fr 1fr}.dash-chart,.dash-list{grid-column:span 2}
+  .faq-layout{grid-template-columns:1fr;gap:32px}
   footer{flex-direction:column;text-align:center}.footer-links{justify-content:center}
 }
 </style>
 </head>
 <body>
 
-<nav>
+<!-- NAV -->
+<nav id="nav">
   <a href="#" class="nav-logo">
     <div class="nav-mark">K</div>
     <span class="nav-name">Klipflow</span>
   </a>
   <div class="nav-links">
-    <a href="#features">Funcionalidades</a>
-    <a href="#unico">Diferenciais</a>
+    <a href="#dif">Diferenciais</a>
+    <a href="#feat">Funcionalidades</a>
     <a href="#deps">Depoimentos</a>
     <a href="#planos">Planos</a>
   </div>
   <div class="nav-btns">
     <a href="https://app.klipflow.com.br" class="btn-in">Entrar</a>
-    <a href="https://app.klipflow.com.br" class="btn-nav">Testar grátis &rarr;</a>
+    <a href="https://app.klipflow.com.br" class="btn-nav">Testar gr&aacute;tis &rarr;</a>
   </div>
 </nav>
 
+<!-- HERO -->
 <section id="hero">
   <div class="hero-dot-bg"></div>
-  <div class="badge"><span class="badge-dot"></span> Feito 100% para prótese capilar</div>
-  <p style="font-size:13px;font-weight:600;color:var(--gray-400);letter-spacing:.3px;margin-bottom:8px;animation:fadeUp .5s .04s ease both">O único sistema de agendamento no Brasil focado em barbearia de prótese capilar</p>
-  <h1>O sistema que a sua<br><em>barbearia</em> precisava</h1>
-  <p class="sub">Agenda, ficha de anamnese, ciclo de vida da prótese e controle financeiro. Tudo pensado para especialistas em prótese capilar.</p>
-  <div class="btns">
-    <a href="https://app.klipflow.com.br" class="btn-p">Começar grátis &mdash; 14 dias <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
-    <a href="#features" class="btn-g">Ver funcionalidades</a>
-  </div>
-  <div class="trust">
-    <span>&#10003; Sem cartão de crédito</span><span class="trust-dot"></span>
-    <span>&#10003; Configuração em 5 minutos</span><span class="trust-dot"></span>
-    <span>&#10003; Cancele quando quiser</span>
-  </div>
-  <div class="dash-wrap">
-    <div class="dash-mock">
-      <div class="dash-bar">
-        <div class="dd" style="background:#EF4444"></div>
-        <div class="dd" style="background:#F59E0B"></div>
-        <div class="dd" style="background:#00C48C"></div>
-        <div class="dash-url">app.klipflow.com.br &mdash; Dashboard</div>
-      </div>
-      <div class="dash-body">
-        <div class="ds"><div class="ds-lbl">Agendamentos</div><div class="ds-val">12</div><div class="ds-sub">&#8593; hoje</div></div>
-        <div class="ds"><div class="ds-lbl">Clientes</div><div class="ds-val">87</div><div class="ds-sub" style="color:var(--gray-400)">cadastrados</div></div>
-        <div class="ds"><div class="ds-lbl">Atendimentos</div><div class="ds-val">38</div><div class="ds-sub" style="color:var(--gray-400)">este mês</div></div>
-        <div class="ds"><div class="ds-lbl">Faturamento</div><div class="ds-val" style="font-size:20px">R$14k</div><div class="ds-sub">&#8593; este mês</div></div>
-        <div class="dash-chart">
-          <div class="dc-title">Faturamento &mdash; últimos 7 dias</div>
-          <div class="dc-bars">
-            <div class="dcb" style="height:40%"></div><div class="dcb" style="height:60%"></div>
-            <div class="dcb" style="height:45%"></div><div class="dcb" style="height:80%"></div>
-            <div class="dcb" style="height:65%"></div><div class="dcb" style="height:90%"></div>
-            <div class="dcb" style="height:75%"></div>
-          </div>
-        </div>
-        <div class="dash-list">
-          <div class="dc-title">Próximos agendamentos</div>
-          <div class="dl-item">
-            <div class="dl-av">RC</div>
-            <div><div style="font-weight:600;color:var(--gray-800)">Rafael Costa</div><div style="color:var(--gray-400);font-size:11px">09:00 &middot; Colocação Full Lace</div></div>
-            <div class="dl-badge">Confirmado</div>
-          </div>
-          <div class="dl-item">
-            <div class="dl-av" style="background:#F3E8FF;color:#7C3AED">MS</div>
-            <div><div style="font-weight:600;color:var(--gray-800)">Marcos Silva</div><div style="color:var(--gray-400);font-size:11px">11:00 &middot; Manutenção Micropele</div></div>
-            <div class="dl-badge" style="background:#FEF3C7;color:#92400E">Aguardando</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  <div class="hero-inner">
+    <div class="hero-cols">
 
-<section id="dores">
-  <div class="wrap">
-    <div class="sec-eyebrow reveal">O problema</div>
-    <h2 class="reveal">Você ainda gerencia assim?</h2>
-    <p class="sec-sub reveal">A maioria dos sistemas foi feita para barbearia comum. Nenhum entende de prótese capilar.</p>
-    <div class="dores-grid reveal">
-      <div class="dor"><div class="dor-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="dor-title">Agenda no caderno ou no WhatsApp</div><div class="dor-txt">Conflitos, esquecimentos e zero controle do histórico dos seus clientes.</div></div></div>
-      <div class="dor"><div class="dor-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="dor-title">Ficha de anamnese no papel</div><div class="dor-txt">Informações de grisalho, tipo de peça e cola se perdem. Sem histórico entre atendimentos.</div></div></div>
-      <div class="dor"><div class="dor-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="dor-title">Financeiro no Excel ou na memória</div><div class="dor-txt">Não sabe exatamente quanto faturou, quanto deve pagar de comissão ou seu ticket médio.</div></div></div>
-      <div class="dor"><div class="dor-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div><div><div class="dor-title">Clientes sumindo sem controle</div><div class="dor-txt">Sem alerta de retorno. Clientes deixam de voltar para manutenção e você só percebe tarde demais.</div></div></div>
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <div class="wrap">
-    <div class="sec-eyebrow reveal">Funcionalidades</div>
-    <h2 class="reveal">Tudo para sua barbearia<br>de prótese capilar</h2>
-    <p class="sec-sub reveal">Do agendamento ao financeiro. Da anamnese ao controle de retorno. Tudo integrado.</p>
-    <div class="feat-grid reveal">
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="feat-title">Agenda inteligente</div><div class="feat-txt">Visão diária e semanal por profissional. Arraste para reagendar. Lembretes automáticos via WhatsApp.</div><span class="feat-chip">Por profissional</span></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="feat-title">Ficha de anamnese digital</div><div class="feat-txt">Tipo de cabelo, % grisalho, grau Norwood, modelo de peça, tipo de cola e medidas. Específica para prótese.</div><span class="feat-chip">Exclusivo Klipflow</span></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="feat-title">Financeiro completo</div><div class="feat-txt">Comandas, caixa, comissões automáticas por profissional e relatórios detalhados por período.</div></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg></div><div class="feat-title">Ciclo de vida da prótese</div><div class="feat-txt">Acompanhe a instalação, vida útil estimada e receba alerta quando é hora de trocar a peça do cliente.</div><span class="feat-chip">Novidade</span></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="feat-title">Score de clientes</div><div class="feat-txt">VIP, Ativo, Em risco, Perdido. Saiba quem são seus melhores clientes e quais estão sumindo.</div><span class="feat-chip">Retenção inteligente</span></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="feat-title">Termo de compromisso</div><div class="feat-txt">Gerado automaticamente com os dados da anamnese. Só aparece o que foi preenchido. PDF em 1 clique.</div><span class="feat-chip">PDF automático</span></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div><div class="feat-title">Minha Página &mdash; link na bio</div><div class="feat-txt">Crie sua página de links profissional para o Instagram. Agendamento, WhatsApp e endereço em um link.</div></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="feat-title">Gestão de equipe</div><div class="feat-txt">Cada profissional acessa sua própria agenda. Comissões calculadas automaticamente por serviço realizado.</div></div>
-      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="feat-title">Controle de manutenção</div><div class="feat-txt">Alerta automático para clientes na hora de retornar. Nunca mais perca um retorno de manutenção.</div><span class="feat-chip">Fidelização automática</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="unico">
-  <div class="wrap">
-    <div class="sec-eyebrow reveal">Por que Klipflow</div>
-    <h2 class="reveal">Feito por quem entende<br>da área</h2>
-    <div class="unico-wrap reveal">
-      <div class="unico-items">
-        <div class="unico-item"><div class="unico-n">01</div><div><div class="unico-title">Anamnese específica para prótese capilar</div><div class="unico-txt">Nenhum outro sistema tem ficha com grau Norwood, % grisalho, tipo de cola e modelo de peça integrados ao histórico do cliente.</div></div></div>
-        <div class="unico-item"><div class="unico-n">02</div><div><div class="unico-title">Termo de compromisso automático</div><div class="unico-txt">Gera o documento com exatamente os dados preenchidos na ficha. Proteção jurídica sem trabalho extra.</div></div></div>
-        <div class="unico-item"><div class="unico-n">03</div><div><div class="unico-title">Ciclo de vida da prótese</div><div class="unico-txt">Saiba quando cada cliente instalou a peça e quando está na hora de trocar. Aumente o ticket médio antecipando a troca.</div></div></div>
-        <div class="unico-item"><div class="unico-n">04</div><div><div class="unico-title">Score de cliente com retenção inteligente</div><div class="unico-txt">Identifica VIPs, clientes em risco e sumidos. Envie mensagem no WhatsApp para trazer de volta quem desapareceu.</div></div></div>
-      </div>
+      <!-- Texto -->
       <div>
-        <div class="anam-card">
-          <div class="anam-head"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ficha de Anamnese</div>
-          <div class="anam-grid">
-            <div class="af"><div class="af-lbl">Tipo de cabelo</div><div class="af-val">Liso</div></div>
-            <div class="af"><div class="af-lbl">% Grisalho</div><div class="af-val">20%</div></div>
-            <div class="af"><div class="af-lbl">Cor do cabelo</div><div class="af-val">#1B Cast. Esc.</div></div>
-            <div class="af"><div class="af-lbl">Modelo de prótese</div><div class="af-val">Micropele</div></div>
-            <div class="af"><div class="af-lbl">Fixação</div><div class="af-val">Cola acrílica</div></div>
-            <div class="af"><div class="af-lbl">Tipo de pele</div><div class="af-val">Oleosa</div></div>
-            <div class="af" style="grid-column:span 2"><div class="af-lbl">Medidas</div><div class="af-val">Testa 32 cm &middot; Orelha a orelha 38 cm</div></div>
-          </div>
-          <div class="nw-row">
-            <div class="nw">I</div><div class="nw">II</div><div class="nw">III</div>
-            <div class="nw on">IV</div><div class="nw">V</div><div class="nw">VI</div><div class="nw">VII</div>
-          </div>
-          <div class="anam-ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ficha salva &middot; Termo gerado automaticamente</div>
+        <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>O &uacute;nico sistema de agendamento no Brasil focado em pr&oacute;tese capilar</div>
+        <h1>Gerencie sua barbearia<br>como <em>especialista.</em><br>n&atilde;o como todo mundo.</h1>
+        <p class="hero-desc">Enquanto os outros usam sistema gen&eacute;rico, voc&ecirc; tem anamnese digital, ciclo de vida da pr&oacute;tese, WhatsApp autom&aacute;tico e muito mais &mdash; tudo pensado para quem vive de pr&oacute;tese capilar.</p>
+        <div class="hero-btns">
+          <a href="https://app.klipflow.com.br" class="btn-p">
+            Come&ccedil;ar gr&aacute;tis &mdash; 14 dias
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#dif" class="btn-g">Ver diferenciais</a>
         </div>
+        <div class="hero-trust">
+          <span>&#10003; Sem cart&atilde;o</span><span class="td"></span>
+          <span>&#10003; 14 dias gr&aacute;tis</span><span class="td"></span>
+          <span>&#10003; Cancele quando quiser</span>
+        </div>
+      </div>
+
+      <!-- Pilha de diferenciais -->
+      <div class="hero-stack">
+        <div class="hs-card">
+          <div class="hs-ico b"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+          <div class="hs-body">
+            <div class="hs-title">Anamnese digital para pr&oacute;tese</div>
+            <div class="hs-sub">Norwood, % gris&aacute;lho, cola, modelo &mdash; hist&oacute;rico completo de cada cliente</div>
+          </div>
+          <div class="hs-badge exc">Exclusivo</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-ico g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg></div>
+          <div class="hs-body">
+            <div class="hs-title">Ciclo de vida da pr&oacute;tese</div>
+            <div class="hs-sub">Alerta autom&aacute;tico de troca. Nunca mais perca uma manuten&ccedil;&atilde;o.</div>
+          </div>
+          <div class="hs-badge new">Novidade</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-ico a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/></svg></div>
+          <div class="hs-body">
+            <div class="hs-title">Termo de compromisso autom&aacute;tico</div>
+            <div class="hs-sub">Gerado com os dados da anamnese. PDF em 1 clique.</div>
+          </div>
+          <div class="hs-badge exc">PDF auto</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-ico p"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="hs-body">
+            <div class="hs-title">WhatsApp 100% autom&aacute;tico</div>
+            <div class="hs-sub">Confirma&ccedil;&atilde;o, lembrete, retorno &mdash; sem digitar nada</div>
+          </div>
+          <div class="hs-badge em">Em breve</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-ico r"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="hs-body">
+            <div class="hs-title">Agenda que se gerencia sozinha</div>
+            <div class="hs-sub">Lembretes, reagendamento e recorr&ecirc;ncia autom&aacute;tica</div>
+          </div>
+          <div class="hs-badge new">Auto</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DIFERENCIAIS — seção principal -->
+<section id="dif">
+  <div class="dif-inner">
+    <div class="dif-header r">
+      <div class="dif-eyebrow">Por que o Klipflow &eacute; diferente</div>
+      <h2 class="dif-h">Cada funcionalidade resolvendo<br>um problema <em>real de pr&oacute;tese.</em></h2>
+      <p class="dif-sub">N&atilde;o adaptamos um sistema gen&eacute;rico. Constru&iacute;mos do zero para o barbeiro especialista em pr&oacute;tese capilar.</p>
+    </div>
+
+    <!-- 1. Anamnese — card grande com ficha mockup -->
+    <div class="dif-top-row r">
+      <div class="dif-card main">
+        <div>
+          <div class="dif-card-num">01 &mdash; Ficha de Anamnese</div>
+          <div class="dif-ico b"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+          <h3 class="dif-card-title">A &uacute;nica ficha criada especificamente para pr&oacute;tese capilar</h3>
+          <p class="dif-card-txt">Todo sistema de barbearia tem ficha de cliente. Nenhum tem grau Norwood, % gris&aacute;lho, tipo de cola e modelo de pe&ccedil;a. Aqui tem. E tudo fica no hist&oacute;rico do cliente para sempre. Nunca mais pergunte duas vezes.</p>
+          <div class="dif-pill b">&#10003;&nbsp; Exclusivo do Klipflow</div>
+        </div>
+        <div class="dif-ficha">
+          <div class="dfh">Ficha de anamnese <span class="dfs">&#10003; Salva</span></div>
+          <div class="dfg">
+            <div class="dff"><div class="dfl">Tipo de cabelo</div><div class="dfv">Liso</div></div>
+            <div class="dff"><div class="dfl">% Gris&aacute;lho</div><div class="dfv">20%</div></div>
+            <div class="dff"><div class="dfl">Modelo</div><div class="dfv">Micropele</div></div>
+            <div class="dff"><div class="dfl">Fixa&ccedil;&atilde;o</div><div class="dfv">Cola acr&iacute;lica</div></div>
+            <div class="dff df2"><div class="dfl">Medidas</div><div class="dfv">Testa 32 cm &middot; Orelha 38 cm</div></div>
+          </div>
+          <div class="dfnw">
+            <div class="dfn">I</div><div class="dfn">II</div><div class="dfn">III</div>
+            <div class="dfn on">IV</div><div class="dfn">V</div><div class="dfn">VI</div><div class="dfn">VII</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 cards menores -->
+    <div class="dif-bottom-row r">
+      <div class="dif-card">
+        <div class="dif-card-num">02 &mdash; Ciclo de vida</div>
+        <div class="dif-ico g"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg></div>
+        <h3 class="dif-card-title">Sabe quando cada pr&oacute;tese precisa ser trocada</h3>
+        <p class="dif-card-txt">Registra a instala&ccedil;&atilde;o, acompanha a vida &uacute;til e dispara alerta autom&aacute;tico na hora da troca. Mais ticket m&eacute;dio sem esfor&ccedil;o.</p>
+        <div class="dif-pill g">&#10003;&nbsp; Nenhum outro sistema tem</div>
+      </div>
+
+      <div class="dif-card">
+        <div class="dif-card-num">03 &mdash; Termo de compromisso</div>
+        <div class="dif-ico a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
+        <h3 class="dif-card-title">Documento gerado com os dados da ficha</h3>
+        <p class="dif-card-txt">O termo usa exatamente o que foi preenchido na anamnese. S&oacute; aparecem os campos completos. PDF com 1 clique. Prote&ccedil;&atilde;o jur&iacute;dica sem trabalho manual.</p>
+        <div class="dif-pill a">&#10003;&nbsp; PDF autom&aacute;tico</div>
+      </div>
+
+      <div class="dif-card">
+        <div class="dif-card-num">04 &mdash; WhatsApp autom&aacute;tico</div>
+        <div class="dif-ico p"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3 class="dif-card-title">Mensagens que saem sozinhas no momento certo</h3>
+        <p class="dif-card-txt">Confirma&ccedil;&atilde;o de agendamento, lembrete 1 dia antes, alerta de retorno e reativa&ccedil;&atilde;o de sumidos. Conecta no seu pr&oacute;prio n&uacute;mero via QR Code.</p>
+        <div class="dif-pill g">Em breve</div>
+      </div>
+
+      <div class="dif-card">
+        <div class="dif-card-num">05 &mdash; Agenda automatizada</div>
+        <div class="dif-ico b"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <h3 class="dif-card-title">N&atilde;o s&oacute; agenda &mdash; se gerencia</h3>
+        <p class="dif-card-txt">Lembretes autom&aacute;ticos, recorr&ecirc;ncia de manuten&ccedil;&atilde;o, lista de espera e score de clientes. A agenda trabalha enquanto voc&ecirc; atende.</p>
+        <div class="dif-pill b">&#10003;&nbsp; Tudo integrado</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como">
+  <div class="como-wrap">
+    <div class="eyebrow r">Como funciona</div>
+    <h2 class="r">Configure hoje.<br><em>Use amanh&atilde;.</em></h2>
+    <div class="como-steps r">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-title">Crie sua conta gr&aacute;tis</div>
+        <div class="step-txt">Menos de 2 minutos. Sem cart&atilde;o de cr&eacute;dito. 14 dias para testar tudo sem restri&ccedil;&atilde;o.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-title">Configure sua barbearia</div>
+        <div class="step-txt">Adicione servi&ccedil;os, profissionais e importe sua lista de clientes. Pronto no mesmo dia.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-title">Pare de improvisar</div>
+        <div class="step-txt">Agenda organizada, clientes fidelizados, financeiro controlado. Foco no que voc&ecirc; faz de melhor.</div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="como">
-  <div class="wrap" style="text-align:center">
-    <div class="sec-eyebrow reveal">Como funciona</div>
-    <h2 class="reveal">Configure em minutos,<br>use para sempre</h2>
-    <div class="como-steps reveal">
-      <div class="step"><div class="step-n">1</div><div class="step-title">Crie sua conta grátis</div><div class="step-txt">Cadastre em menos de 2 minutos. Sem cartão de crédito. 14 dias para testar tudo sem restrições.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-title">Configure sua barbearia</div><div class="step-txt">Adicione serviços, profissionais e importe sua lista de clientes. Pronto para usar no mesmo dia.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-title">Fature mais com organização</div><div class="step-txt">Agenda organizada, clientes fidelizados, financeiro sob controle. Mais tempo para o que importa.</div></div>
+<!-- FUNCIONALIDADES -->
+<section id="feat">
+  <div class="wrap">
+    <div class="eyebrow r">Tudo incluso</div>
+    <h2 class="r">Cada funcionalidade pensada<br>para <em>pr&oacute;tese capilar.</em></h2>
+    <p class="sec-sub r">Nada gen&eacute;rico. Cada detalhe constru&iacute;do para o dia a dia de quem trabalha com pr&oacute;tese.</p>
+    <div class="feat-grid r">
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="feat-title">Agenda inteligente</div><div class="feat-txt">Di&aacute;ria e semanal por profissional. Arraste para reagendar. Recorr&ecirc;ncia autom&aacute;tica de manuten&ccedil;&atilde;o.</div><span class="feat-chip">Autom&aacute;tica</span></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="feat-title">Ficha de anamnese digital</div><div class="feat-txt">Grau Norwood, % gris&aacute;lho, modelo, cola e medidas. Nenhum outro sistema tem esse n&iacute;vel para pr&oacute;tese.</div><span class="feat-chip">Exclusivo</span></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0D6EFD" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="feat-title">Financeiro completo</div><div class="feat-txt">Comandas, caixa, comiss&otilde;es autom&aacute;ticas por profissional e relat&oacute;rios por per&iacute;odo.</div></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg></div><div class="feat-title">Ciclo de vida da pr&oacute;tese</div><div class="feat-txt">Instala&ccedil;&atilde;o, vida &uacute;til e alerta autom&aacute;tico de troca. Ticket m&eacute;dio maior sem esfor&ccedil;o.</div><span class="feat-chip">Novidade</span></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="feat-title">Score de clientes</div><div class="feat-txt">VIP, Ativo, Em risco, Perdido. Reten&ccedil;&atilde;o inteligente com WhatsApp autom&aacute;tico.</div><span class="feat-chip">Reten&ccedil;&atilde;o</span></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C48C" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="feat-title">Termo de compromisso</div><div class="feat-txt">Gerado com os dados da anamnese. S&oacute; o que foi preenchido. PDF em 1 clique.</div><span class="feat-chip">PDF auto</span></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div><div class="feat-title">Minha P&aacute;gina &mdash; link na bio</div><div class="feat-txt">P&aacute;gina de links profissional para o Instagram com editor de foto drag+zoom.</div></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="feat-title">Gest&atilde;o de equipe</div><div class="feat-txt">Cada profissional com acesso individual. Comiss&otilde;es calculadas automaticamente.</div></div>
+      <div class="feat"><div class="feat-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="feat-title">Controle de manuten&ccedil;&atilde;o</div><div class="feat-txt">Alerta autom&aacute;tico de retorno por cliente. Nunca mais perca um cliente por esquecimento.</div><span class="feat-chip">Fideliza&ccedil;&atilde;o</span></div>
     </div>
   </div>
 </section>
 
+<!-- DEPOIMENTOS -->
 <section id="deps">
   <div class="wrap">
-    <div class="sec-eyebrow reveal">Resultados reais</div>
-    <h2 class="reveal">Barbeiros que transformaram<br>sua gestão com Klipflow</h2>
-    <div class="deps-grid reveal">
-      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">"Antes eu perdia <strong>retorno de manutenção</strong> porque não tinha controle. Hoje o sistema me avisa quem está na hora de voltar. Meu faturamento subiu <strong>40% em 3 meses</strong>."</p><div class="dep-author"><div class="dep-av">RS</div><div><div class="dep-name">Rafael Santos</div><div class="dep-city">Studio Capilar Pro &middot; São Paulo, SP</div></div></div></div>
-      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">"A <strong>ficha de anamnese digital</strong> mudou tudo. Tenho o histórico completo de cada cliente — o grisalho, a cola usada, o modelo da peça. Profissionalismo total."</p><div class="dep-author"><div class="dep-av" style="background:#F3E8FF;color:#7C3AED">MC</div><div><div class="dep-name">Marcos Costa</div><div class="dep-city">MC Próteses Capilares &middot; Campinas, SP</div></div></div></div>
-      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">"Tenho 3 profissionais e o <strong>controle de comissões era um caos</strong>. Hoje cada um vê sua própria agenda e tenho o relatório automático de quanto pagar para cada um."</p><div class="dep-author"><div class="dep-av" style="background:#F0FDF4;color:#16A34A">AT</div><div><div class="dep-name">Andressa Torres</div><div class="dep-city">AT Beauty Studio &middot; Ribeirão Preto, SP</div></div></div></div>
+    <div class="eyebrow r">Resultados reais</div>
+    <h2 class="r">Barbeiros que pararam<br>de <em>improvisar.</em></h2>
+    <div class="deps-grid r">
+      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">Antes eu perdia <strong>retorno de manuten&ccedil;&atilde;o</strong> porque n&atilde;o tinha controle. Hoje o sistema avisa quem est&aacute; na hora de voltar. Faturamento subiu <strong>40% em 3 meses</strong>.</p><div class="dep-au"><div class="dep-av">RS</div><div><div class="dep-name">Rafael Santos</div><div class="dep-city">Studio Capilar Pro &middot; S&atilde;o Paulo, SP</div></div></div></div>
+      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">A <strong>ficha de anamnese digital</strong> mudou tudo. Tenho o hist&oacute;rico completo de cada cliente &mdash; gris&aacute;lho, cola usada, modelo da pe&ccedil;a. Nunca mais precisei perguntar duas vezes.</p><div class="dep-au"><div class="dep-av" style="background:#F3E8FF;color:#7C3AED">MC</div><div><div class="dep-name">Marcos Costa</div><div class="dep-city">MC Pr&oacute;teses Capilares &middot; Campinas, SP</div></div></div></div>
+      <div class="dep"><div class="dep-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="dep-txt">Tenho 3 profissionais e o <strong>controle de comiss&otilde;es era um caos</strong>. Hoje o relat&oacute;rio sai autom&aacute;tico e cada um v&ecirc; sua pr&oacute;pria agenda. Acabou a confus&atilde;o.</p><div class="dep-au"><div class="dep-av" style="background:#F0FDF4;color:#16A34A">AT</div><div><div class="dep-name">Andressa Torres</div><div class="dep-city">AT Beauty Studio &middot; Ribeir&atilde;o Preto, SP</div></div></div></div>
     </div>
   </div>
 </section>
 
+<!-- PLANOS -->
 <section id="planos">
-  <div class="planos-wrap">
-    <div style="text-align:center">
-      <div class="sec-eyebrow reveal">Planos e preços</div>
-      <h2 class="reveal">Simples e transparente</h2>
-      <p class="sec-sub reveal" style="margin:0 auto">Sem taxa de setup, sem surpresas. Cancele quando quiser.</p>
-    </div>
-    <div class="planos-grid reveal">
+  <div class="planos-inner">
+    <div class="eyebrow r">Planos</div>
+    <h2 class="r">Simples e <em>transparente.</em></h2>
+    <p class="sec-sub r" style="margin:0 auto">14 dias gr&aacute;tis em todos os planos. Sem cart&atilde;o. Cancele quando quiser.</p>
+    <div class="planos-grid r">
       <div class="plano">
         <div class="plano-name">Starter</div>
-        <div class="plano-price">R$49<span>/mês</span></div>
+        <div class="plano-price">R$49<span>/m&ecirc;s</span></div>
+        <div class="plano-per">por m&ecirc;s</div>
         <div class="plano-feats">
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>1 profissional</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Agenda completa</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ficha de anamnese</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Financeiro básico</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Minha Página</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Financeiro b&aacute;sico</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Minha P&aacute;gina</div>
         </div>
-        <a href="https://app.klipflow.com.br" class="plano-btn">Começar grátis</a>
+        <a href="https://app.klipflow.com.br" class="plano-btn">Come&ccedil;ar gr&aacute;tis</a>
       </div>
       <div class="plano pop">
-        <div class="pop-badge">&#11088; Mais popular</div>
+        <div class="pop-tag">&#11088; Mais popular</div>
         <div class="plano-name">Profissional</div>
-        <div class="plano-price">R$89<span>/mês</span></div>
+        <div class="plano-price">R$89<span>/m&ecirc;s</span></div>
+        <div class="plano-per">por m&ecirc;s</div>
         <div class="plano-feats">
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Até 5 profissionais</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>At&eacute; 5 profissionais</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Starter</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ciclo de vida da prótese</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ciclo de vida da pr&oacute;tese</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Score de clientes</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relatórios avançados</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Importar clientes (CSV)</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Relat&oacute;rios avan&ccedil;ados</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Importar clientes CSV</div>
         </div>
-        <a href="https://app.klipflow.com.br" class="plano-btn">Começar grátis</a>
+        <a href="https://app.klipflow.com.br" class="plano-btn">Come&ccedil;ar gr&aacute;tis</a>
       </div>
       <div class="plano">
         <div class="plano-name">Enterprise</div>
-        <div class="plano-price">R$189<span>/mês</span></div>
+        <div class="plano-price">R$189<span>/m&ecirc;s</span></div>
+        <div class="plano-per">por m&ecirc;s</div>
         <div class="plano-feats">
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Profissionais ilimitados</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Profissional</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suporte VIP prioritário</div>
-          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Acesso à API</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Suporte VIP</div>
+          <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Acesso &agrave; API</div>
           <div class="pf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Onboarding guiado</div>
         </div>
         <a href="https://app.klipflow.com.br" class="plano-btn">Falar com vendas</a>
       </div>
     </div>
-    <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--gray-400)" class="reveal">Todos os planos incluem <strong style="color:var(--gray-600)">14 dias grátis</strong> &middot; Pix, Cartão &middot; Cancele quando quiser</p>
+    <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--gray-400)" class="r">Pix &middot; Cart&atilde;o &middot; Cancele quando quiser</p>
   </div>
 </section>
 
+<!-- FAQ -->
 <section id="faq">
   <div class="wrap">
-    <div class="sec-eyebrow reveal">Dúvidas frequentes</div>
-    <h2 class="reveal">Tem alguma dúvida?</h2>
-    <div class="faq-list reveal">
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Preciso de cartão de crédito para testar?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Não. O período de teste de 14 dias é completamente gratuito e sem necessidade de cartão. Você só paga se decidir continuar após o trial.</div></div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Funciona para barbearia com vários profissionais?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim! Nos planos Profissional e Enterprise você cadastra múltiplos profissionais, cada um com sua própria agenda. O controle de comissões é automático.</div></div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Posso importar minha lista de clientes?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim! Basta exportar do Excel ou Google Sheets em formato CSV e importar no Klipflow. Em minutos seus clientes já estarão no sistema.</div></div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">O sistema funciona no celular?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim! O Klipflow é totalmente responsivo e funciona perfeitamente no celular pelo navegador. Em breve lançamos o app nativo para iOS e Android.</div></div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Meus dados ficam seguros?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Totalmente. Utilizamos infraestrutura com criptografia de ponta a ponta e backups diários automáticos. Seus dados e os dos seus clientes estão protegidos em conformidade com a LGPD.</div></div></div>
+    <div class="faq-layout">
+      <div class="r">
+        <div class="eyebrow" style="margin-bottom:12px">D&uacute;vidas</div>
+        <h2 style="margin-bottom:16px">Perguntas<br><em>frequentes.</em></h2>
+        <p class="sec-sub" style="font-size:14px">N&atilde;o encontrou? Fale com a gente pelo WhatsApp.</p>
+      </div>
+      <div class="faq-list r">
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)">Preciso de cart&atilde;o para testar?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">N&atilde;o. 14 dias completamente gr&aacute;tis, sem cart&atilde;o e sem compromisso. Voc&ecirc; s&oacute; paga se decidir continuar ap&oacute;s o trial.</div></div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)">Funciona para barbearia com v&aacute;rios profissionais?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim. Nos planos Profissional e Enterprise voc&ecirc; cadastra m&uacute;ltiplos profissionais com acesso individual. Comiss&otilde;es s&atilde;o calculadas automaticamente por servi&ccedil;o.</div></div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)">Posso importar minha lista de clientes?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim. Exporte do Excel ou Google Sheets em CSV e importe no Klipflow. Em minutos seus clientes est&atilde;o no sistema.</div></div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)">Funciona no celular?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim, totalmente responsivo. Funciona no celular pelo navegador. App nativo para iOS e Android em breve.</div></div></div>
+        <div class="faq-item"><div class="faq-q" onclick="faq(this)">Meus dados ficam seguros?<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="faq-a"><div class="faq-a-inner">Sim. Criptografia de ponta a ponta, backups di&aacute;rios autom&aacute;ticos e conformidade com a LGPD.</div></div></div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- CTA -->
 <section id="cta">
-  <h2 class="reveal">Pronto para organizar<br>sua barbearia?</h2>
-  <p class="cta-sub reveal">Junte-se a dezenas de especialistas em prótese capilar que já profissionalizaram sua gestão com o Klipflow.</p>
-  <div class="cta-btns reveal">
-    <a href="https://app.klipflow.com.br" class="btn-cta">Criar conta grátis &mdash; 14 dias</a>
-    <a href="https://app.klipflow.com.br" class="btn-cta2">Já tenho conta &rarr;</a>
+  <h2 class="r">Pronto para ser o<br>especialista que se <em>destaca?</em></h2>
+  <p class="cta-sub r">Pare de usar sistema gen&eacute;rico. Use o &uacute;nico feito do zero para barbearias de pr&oacute;tese capilar.</p>
+  <div class="cta-btns r">
+    <a href="https://app.klipflow.com.br" class="btn-cta">Criar conta gr&aacute;tis &mdash; 14 dias</a>
+    <a href="https://app.klipflow.com.br" class="btn-cta2">J&aacute; tenho conta &rarr;</a>
   </div>
-  <p class="cta-trust reveal">Sem cartão &middot; Sem compromisso &middot; Configuração em 5 minutos</p>
+  <p class="cta-trust r">Sem cart&atilde;o &middot; Sem compromisso &middot; 5 minutos para come&ccedil;ar</p>
 </section>
 
 <footer>
@@ -448,17 +557,10 @@ footer{padding:36px 40px;display:flex;align-items:center;justify-content:space-b
 </footer>
 
 <script>
-function toggleFaq(el){
-  const item=el.closest(".faq-item");
-  const open=item.classList.contains("open");
-  document.querySelectorAll(".faq-item.open").forEach(i=>i.classList.remove("open"));
-  if(!open)item.classList.add("open");
-}
-const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add("in")})},{threshold:.08});
-document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
-window.addEventListener("scroll",()=>{
-  document.querySelector("nav").style.boxShadow=window.scrollY>10?"0 1px 16px rgba(0,0,0,.08)":"none";
-});
+function faq(el){const i=el.closest('.faq-item');const o=i.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(x=>x.classList.remove('open'));if(!o)i.classList.add('open');}
+const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')});},{threshold:.07});
+document.querySelectorAll('.r').forEach(el=>io.observe(el));
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>20)});
 </script>
 </body>
 </html>
