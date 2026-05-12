@@ -1,1 +1,12 @@
-{"routes":[{"src":"/admin.html","dest":"/admin.html"},{"src":"/(.*)","dest":"/klipflow.html","has":[{"type":"host","value":"www.klipflow.com.br"}]},{"src":"/(.*)","dest":"/klipflow.html","has":[{"type":"host","value":"klipflow.com.br"}]},{"src":"/(.*)","dest":"/index.html","has":[{"type":"host","value":"app.klipflow.com.br"}]},{"src":"/(.*)","dest":"/index.html"}]}
+{
+    "routes": [
+          {"src":"/admin.html","dest":"/admin.html"},
+          {"src":"/privacidade.html","dest":"/privacidade.html"},
+          {"src":"/termos.html","dest":"/termos.html"},
+          {"src":"/klipflow.html","dest":"/klipflow.html"},
+          {"src":"/(.*)","dest":"/klipflow.html","has":[{"type":"host","value":"www.klipflow.com.br"}]},
+          {"src":"/(.*)","dest":"/klipflow.html","has":[{"type":"host","value":"klipflow.com.br"}]},
+          {"src":"/(.*)","dest":"/index.html","has":[{"type":"host","value":"app.klipflow.com.br"}]},
+          {"src":"/(.*)","dest":"/index.html"}
+    ]
+}
