@@ -1334,10 +1334,115 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 
     <!-- WHATSAPP -->
     <div class="view" id="view-whatsapp">
-      <div class="ph"><div><div class="pt">WhatsApp Automático</div></div></div>
-      <div class="card"><div class="st" style="margin-bottom:12px">Lembretes automáticos</div>
-        <div style="background:var(--gray-50);border-radius:var(--radius);padding:16px;border-left:3px solid var(--accent)">
-          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Integração com Z-API em breve. Lembretes serão enviados automaticamente antes dos agendamentos.</p>
+      <div class="ph">
+        <div>
+          <div class="pt">WhatsApp Automático</div>
+          <div class="ps" id="wa-status-txt">Verificando conexão...</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="wa-status-badge" class="wa-status-pill connecting"><span class="wa-status-dot"></span><span id="wa-badge-txt">Conectando...</span></span>
+          <button class="btn btn-md btn-outline" id="btn-wa-desc" onclick="waDesconectar()" style="display:none">Desconectar</button>
+          <button class="btn btn-md btn-primary" id="btn-wa-conn" onclick="waConectar()">Conectar WhatsApp</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
+
+        <!-- Coluna esquerda: conexão QR -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="sh" style="margin-bottom:20px">
+              <div class="st">Conexão via QR Code</div>
+            </div>
+
+            <div id="wa-area-disc">
+              <div class="wa-qr-box" id="wa-qr-box" style="display:flex">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <div style="font-size:14px;font-weight:600;color:var(--gray-700);text-align:center">Clique em "Conectar WhatsApp"<br>para gerar o QR Code</div>
+                <div class="wa-qr-hint">Abra o WhatsApp no celular → Menu → Aparelhos conectados → Conectar aparelho</div>
+              </div>
+              <div id="wa-qr-wrap" style="display:none;flex-direction:column;align-items:center;gap:12px">
+                <img id="wa-qr-img" class="wa-qr-img" src="" alt="QR Code">
+                <div class="wa-qr-hint">Escaneie com seu WhatsApp.<br>O código expira em <strong id="wa-timer">60</strong>s</div>
+                <button class="btn btn-sm btn-outline" onclick="waConectar()">Recarregar QR</button>
+              </div>
+            </div>
+
+            <div id="wa-area-conn" style="display:none">
+              <div class="wa-connected-box">
+                <div style="width:44px;height:44px;background:#22C55E;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:14px;color:#166534">WhatsApp conectado!</div>
+                  <div style="font-size:12px;color:#16A34A;margin-top:3px" id="wa-num-conn">Número conectado</div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
+                <div style="font-size:12px;color:var(--gray-500);line-height:1.6">
+                  💡 Seu WhatsApp fica conectado enquanto o celular tiver internet. Se desconectar, clique em "Conectar WhatsApp" para escanear novamente.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna direita: automações -->
+        <div class="card">
+          <div class="sh" style="margin-bottom:20px">
+            <div class="st">Automações</div>
+            <div style="font-size:12px;color:var(--gray-400)">As mensagens saem automaticamente no momento certo</div>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">✅ Confirmação de agendamento</div><div class="wa-toggle-sub">Enviada logo após o agendamento ser criado</div></div>
+            <button class="wa-sw on" id="wa-sw-confirm" onclick="waToogleSw(this)"></button>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">⏰ Lembrete 1 dia antes</div><div class="wa-toggle-sub">Enviado na véspera do atendimento</div></div>
+            <button class="wa-sw on" id="wa-sw-lembrete" onclick="waToogleSw(this)"></button>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">🔄 Alerta de retorno/manutenção</div><div class="wa-toggle-sub">Avisa quando está na hora de voltar (3, 7 e 15 dias)</div></div>
+            <button class="wa-sw on" id="wa-sw-retorno" onclick="waToogleSw(this)"></button>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">🎂 Aniversário do cliente</div><div class="wa-toggle-sub">Mensagem automática no dia do aniversário</div></div>
+            <button class="wa-sw on" id="wa-sw-aniv" onclick="waToogleSw(this)"></button>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">💤 Reativação de clientes sumidos</div><div class="wa-toggle-sub">Para clientes sem visita há mais de 45 dias</div></div>
+            <button class="wa-sw on" id="wa-sw-sumido" onclick="waToogleSw(this)"></button>
+          </div>
+          <div class="wa-toggle-row">
+            <div><div class="wa-toggle-label">⭐ Pós-atendimento</div><div class="wa-toggle-sub">Enviado 2 horas após o atendimento ser finalizado</div></div>
+            <button class="wa-sw on" id="wa-sw-pos" onclick="waToogleSw(this)"></button>
+          </div>
+
+          <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-200)">
+            <div class="st" style="margin-bottom:14px;font-size:13px">Personalizar mensagens</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Confirmação de agendamento</div>
+                <div class="wa-msg-box" id="msg-confirm" contenteditable="true">Olá {nome}! ✅ Seu agendamento foi confirmado:
+📅 {data} às {hora}
+✂️ {servico}
+Te esperamos! 💈</div>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Lembrete (1 dia antes)</div>
+                <div class="wa-msg-box" id="msg-lembrete" contenteditable="true">Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.
+
+Confirma sua presença? Responda SIM ✅ ou NÃO ❌</div>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Retorno/Manutenção</div>
+                <div class="wa-msg-box" id="msg-retorno" contenteditable="true">Olá {nome}! Faz {dias} dias desde sua última manutenção. 💈
+
+Que tal agendar seu retorno? {link}</div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-md" style="margin-top:14px" onclick="waSalvarMensagens()">Salvar mensagens</button>
+          </div>
         </div>
       </div>
     </div>
