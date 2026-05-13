@@ -547,22 +547,22 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   #dash-body{grid-template-columns:1fr!important}
 }
 
-/* ── SCORE DO CLIENTE ─────────────────────────────── */
+/* -- SCORE DO CLIENTE --───────────────────────────── */
 .score-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
 .sc-vip{background:#FEF3C7;color:#92400E}.sc-ativo{background:#D1FAE5;color:#065F46}
 .sc-risco{background:#FEE2E2;color:#991B1B}.sc-perdido{background:#F1F5F9;color:#64748B}.sc-novo{background:#EDE9FE;color:#5B21B6}
 .sc-conf{font-size:11px;color:#00C48C;font-weight:600}.sc-falt{font-size:11px;color:#EF4444;font-weight:600}
-/* ── LISTA DE ESPERA ──────────────────────────────── */
+/* -- LISTA DE ESPERA --────────────────────────────── */
 .espera-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
 .espera-item:last-child{border:none}
 .espera-num{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-/* ── CICLO BTN ────────────────────────────────────── */
+/* -- CICLO BTN --──────────────────────────────────── */
 .ciclo-btn.active{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important}
-/* ── PRÓTESE BARRA ────────────────────────────────── */
+/* -- PRÓTESE BARRA --──────────────────────────────── */
 .prot-barra{height:7px;border-radius:4px;background:var(--gray-100);overflow:hidden;margin:6px 0}
 .prot-fill-ok{background:var(--accent)}.prot-fill-warn{background:var(--warn)}.prot-fill-crit{background:var(--danger)}
 
-/* ── EDITOR DE FOTO AVATAR ─────────────────────────────── */
+/* -- EDITOR DE FOTO AVATAR --───────────────────────────── */
 .foto-editor-wrap{display:none;flex-direction:column;align-items:center;gap:12px;margin-top:12px;padding:16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:12px}
 .foto-editor-wrap.open{display:flex}
 .foto-editor-stage{width:140px;height:140px;border-radius:50%;overflow:hidden;border:3px solid var(--brand);cursor:grab;position:relative;background:#000;flex-shrink:0;user-select:none}
@@ -574,7 +574,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 .foto-editor-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 2px 6px rgba(13,110,253,.4)}
 .foto-editor-hint{font-size:11px;color:var(--gray-400);text-align:center}
 
-/* ── WA TOGGLE SWITCHES ─────────────────────────── */
+/* -- WA TOGGLE SWITCHES --───────────────────────── */
 .wa-sw{width:44px;height:24px;border-radius:100px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;background:var(--gray-200)}
 .wa-sw.on{background:#22C55E}
 .wa-sw::after{content:'';width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
@@ -1959,9 +1959,9 @@ Que tal agendar seu retorno? {link}</div>
 
 
 
-// ═══════════════════════════════════════════════════
-// WHATSAPP — Evolution API
-// ═══════════════════════════════════════════════════
+// ===================================================
+// WHATSAPP - Evolution API
+// ===================================================
 const EVO_URL = 'https://evolution-api-production-55e7.up.railway.app';
 const EVO_KEY = 'e40b81255bb4961a4c65b2393ddd8781479b7e0ec8f595d5e7ad8f7c08296adc';
 let waTimer = null;
@@ -2142,10 +2142,10 @@ function waSalvarMensagens(){
 }
 
 
-// ─────────────────────────────────────────────────
-// WHATSAPP — Automações periódicas
+// -------------------------------------------------
+// WHATSAPP - Automações periódicas
 // Roda ao carregar o sistema se WA estiver conectado
-// ─────────────────────────────────────────────────
+// -------------------------------------------------
 async function waRodarAutomacoes(){
   const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
   if(!wasConn || !CU) return;
@@ -2164,7 +2164,7 @@ async function waRodarAutomacoes(){
     for(const cli of clientes){
       if(!cli.telefone) continue;
 
-      // ── ANIVERSÁRIO ──
+      // -- ANIVERSÁRIO --
       const swAniv = document.getElementById('wa-sw-aniv');
       if(swAniv?.classList.contains('on') && cli.data_nascimento){
         const nasc = new Date(cli.data_nascimento + 'T12:00');
@@ -2181,7 +2181,7 @@ async function waRodarAutomacoes(){
         }
       }
 
-      // ── CLIENTES SUMIDOS (45+ dias) ──
+      // -- CLIENTES SUMIDOS (45+ dias) --
       const swSumido = document.getElementById('wa-sw-sumido');
       if(swSumido?.classList.contains('on') && cli.ultimo_atendimento){
         const ult = new Date(cli.ultimo_atendimento + 'T12:00');
@@ -2203,7 +2203,7 @@ async function waRodarAutomacoes(){
   } catch(e){ console.error('WA automações erro:', e); }
 }
 
-// ── LEMBRETE 24H ANTES ──
+// -- LEMBRETE 24H ANTES --
 async function waRodarLembretes(){
   const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
   const swLemb = document.getElementById('wa-sw-lembrete');
@@ -2253,7 +2253,7 @@ async function waRodarLembretes(){
   } catch(e){ console.error('WA lembretes erro:', e); }
 }
 
-// ── ALERTA DE RETORNO ──
+// -- ALERTA DE RETORNO --
 async function waRodarRetornos(){
   const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
   const swRet = document.getElementById('wa-sw-retorno');
@@ -2328,7 +2328,7 @@ function initWaView(){
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
   }catch(e){}
-  // Checa se estava conectado — localStorage ou Supabase
+  // Checa se estava conectado - localStorage ou Supabase
   const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
   if(wasLocal){
     waCheckStatus();
@@ -2865,7 +2865,7 @@ function resetAgServsList(){
 
 // Override autoPrecoServ para compatibilidade
 function autoPrecoServ(){
-  // Mantido para compatibilidade — a lógica agora está em agServChange
+  // Mantido para compatibilidade - a lógica agora está em agServChange
   calcAgTotal();
 }
 
@@ -3382,7 +3382,7 @@ function getDashDates(){
   } else if(periodo==='ano'){
     ini=`${hoje.getFullYear()}-01-01`;fim=`${hoje.getFullYear()}-12-31`;label=`${hoje.getFullYear()}`;
   } else {
-    // fallback — mês atual
+    // fallback - mês atual
     ini=`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-01`;
     fim=fmt(new Date(hoje.getFullYear(),hoje.getMonth()+1,0));
     label=`${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][hoje.getMonth()]} ${hoje.getFullYear()}`;
@@ -3510,7 +3510,7 @@ async function loadDashProf(dates,ownId){
     comissaoByNome[(s.nome||'').toLowerCase()]=s.comissao_pct||0;
   });
 
-  // Calcula comissão total — tenta por servico_id, depois por nome do serviço
+  // Calcula comissão total - tenta por servico_id, depois por nome do serviço
   const comissaoTotal=(fat||[]).reduce((sum,a)=>{
     let pct=0;
     if(a.servico_id && comissaoById[a.servico_id]!==undefined) pct=comissaoById[a.servico_id];
@@ -3584,7 +3584,7 @@ async function finalizarAg(agId,cliId,servico){
   const realCliId=ag?.cliente_id||cliId;
   if(realCliId&&id('cmd-cli'))id('cmd-cli').value=realCliId;
 
-  // Profissional — pequeno delay para garantir que o select foi populado
+  // Profissional - pequeno delay para garantir que o select foi populado
   setTimeout(()=>{
     const realProfId=ag?.profissional_id||null;
     if(realProfId&&id('cmd-prof')){
@@ -3856,13 +3856,13 @@ async function salvarAg(){
   
   toast('Agendamento salvo','ok');
 
-  // ── WHATSAPP AUTOMÁTICO ──
+  // -- WHATSAPP AUTOMÁTICO --
   // Envia confirmação de agendamento se WA conectado
   try {
     const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
     const swConfirm = document.getElementById('wa-sw-confirm');
     if(wasConn && swConfirm?.classList.contains('on')){
-      // Busca dados do cliente — tenta allCli primeiro, depois Supabase
+      // Busca dados do cliente - tenta allCli primeiro, depois Supabase
       let cliData = allCli.find(c => c.id === dados.cliente_id);
       if(!cliData){
         const {data:cliDb} = await sb.from('clientes').select('nome,telefone').eq('id',dados.cliente_id).single();
@@ -4505,7 +4505,7 @@ async function salvarRetorno(){
   loadManutencao();
 }
 
-// ── LEMBRETES DE AGENDAMENTO ──────────────────────────────────
+// -- LEMBRETES DE AGENDAMENTO --────────────────────────────────
 async function verificarLembretes(){
   if(!CU || CE) return; // Só admin vê lembretes
   const ownId = getOwn();
@@ -4998,7 +4998,7 @@ function getTermoHTML(cli, anam){
   const hoje = new Date().toLocaleDateString('pt-BR');
   const nome = cli?.nome || '___________________';
 
-  // ── Campos da ficha: só inclui se preenchido ──────────────
+  // -- Campos da ficha: só inclui se preenchido --────────────
   const graus = ['I','II','III','IV','V','VI','VII'];
   const campos = [
     { label: 'Tipo de cabelo',      val: anam?.tipo_alopecia || null },
@@ -5013,7 +5013,7 @@ function getTermoHTML(cli, anam){
     { label: 'Material',             val: obs.mat || null },
   ].filter(c => c.val); // Remove os não preenchidos
 
-  // Bloco de ficha — só renderiza se tiver pelo menos 1 campo preenchido
+  // Bloco de ficha - só renderiza se tiver pelo menos 1 campo preenchido
   const fichaHTML = campos.length > 0 ? `
     <div style="background:#f0f4ff;border:1px solid #c7d7f7;border-radius:6px;padding:8px 12px;margin-bottom:10px">
       <div style="font-weight:700;margin-bottom:6px;font-size:11px;color:#1a3a6e;text-transform:uppercase;letter-spacing:.5px">Ficha de Anamnese</div>
@@ -5135,7 +5135,7 @@ async function enviarTermoWhatsApp(){
 }
 
 // ============================================================
-// LINK PAGE — PÁGINA PÚBLICA
+// LINK PAGE - PÁGINA PÚBLICA
 // ============================================================
 // Estado do editor de foto
 window._lpFotoSrc = null;
@@ -5530,7 +5530,7 @@ async function renderizarLinkPage(slug){
   const initials=(dados.nome||'BF').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   if(id('lp-initials'))id('lp-initials').textContent=initials;
 
-  // Logo/foto — vem dos dados salvos no banco (não localStorage)
+  // Logo/foto - vem dos dados salvos no banco (não localStorage)
   const foto=dados.foto||null;
   if(foto){
     id('lp-avatar').innerHTML=`<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
@@ -5727,7 +5727,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 function upPermDesc(){const d={admin:'Admin: acesso total.',financeiro:'Financeiro: vê relatórios. Não agenda.',recepcao:'Recepção: agenda e clientes. Sem financeiro.',profissional:'Profissional: só sua agenda e ganhos.'};id('perm-desc').textContent=d[v('eq-perm')]||'';}
 function selCor(el){document.querySelectorAll('#cor-picker div').forEach(x=>x.style.border='none');el.style.border='3px solid '+el.dataset.cor;corSel=el.dataset.cor;}
-// Toggle para campos da anamnese — permite desselecionar
+// Toggle para campos da anamnese - permite desselecionar
 function togAnam(gid, el){
   if(el.classList.contains('active')){
     el.classList.remove('active'); // Desseleciona
@@ -5796,7 +5796,7 @@ function mascaraCPF(el){
   else if(v.length>3)v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
   el.value=v;
 }
-// ── LINKS PERSONALIZADOS NA PÁGINA ──────────────────────────
+// -- LINKS PERSONALIZADOS NA PÁGINA --────────────────────────
 let lpLinksCustom = [];
 
 function renderLinksCustom(){
@@ -5871,7 +5871,7 @@ async function loadProfsBD(){
   if(!CU)return;
   const{data}=await sb.from('equipe').select('*').eq('user_id',getOwn()).order('nome');
   const todos=data||[];
-  // allProf = só permissão "profissional" — usados nas colunas da agenda
+  // allProf = só permissão "profissional" - usados nas colunas da agenda
   allProf=todos.filter(p=>p.permissao==='profissional');
   // Selects de agendamento/comanda usam só profissionais também
   ['ag-prof','cmd-prof'].forEach(sid=>{
@@ -5973,7 +5973,7 @@ function verificarTrial(){
   const diasRestantes=TRIAL_DIAS-diasPassados;
 
   if(diasPassados>=TRIAL_DIAS){
-    // Trial expirado — abre modal sem opção de fechar
+    // Trial expirado - abre modal sem opção de fechar
     id('pw-title').textContent='Seu período de teste expirou';
     id('pw-sub').textContent='Assine um plano para continuar usando o Klipflow.';
     id('pw-expired-warn').style.display='block';
@@ -5984,7 +5984,7 @@ function verificarTrial(){
     return;
   }
 
-  // Trial ativo — mostra barra de aviso
+  // Trial ativo - mostra barra de aviso
   const tb=id('trial-bar');
   if(tb){
     tb.style.display='block';
@@ -6267,7 +6267,7 @@ async function loadCtx(){
     }
   }
   await loadServsBD();await loadProfsBD();await loadCliSels();
-  // Ativa realtime — atualiza agenda automaticamente quando há mudanças
+  // Ativa realtime - atualiza agenda automaticamente quando há mudanças
   ativarRealtime();
 }
 
@@ -6456,12 +6456,12 @@ async function alterarSenha(){
 }
 
 
-// ══════════════════════════════════════════════════════════
-// MÓDULOS AVANÇADOS — KLIPFLOW
+// ===================================================═══════
+// MÓDULOS AVANÇADOS - KLIPFLOW
 // Score, Recorrência, Prótese, Lista de Espera
-// ══════════════════════════════════════════════════════════
+// ===================================================═══════
 
-// ── SCORE DO CLIENTE ──────────────────────────────────────
+// -- SCORE DO CLIENTE --────────────────────────────────────
 async function calcScore(cliId, ownId){
   try{
     const[{data:ags},{data:canc},{data:ultimo}]=await Promise.all([
@@ -6494,7 +6494,7 @@ function scoreBadge(sc){
   return`<span class="score-badge ${sc.cls}">${icones[sc.label]||''} ${sc.label}</span>`;
 }
 
-// ── RECORRÊNCIA AUTOMÁTICA ─────────────────────────────────
+// -- RECORRÊNCIA AUTOMÁTICA --───────────────────────────────
 let _recDados={};
 
 function abrirRecorrencia(cliId,cliNome,profId,servNome,valor,dataHora){
@@ -6538,7 +6538,7 @@ async function confirmarRecorrencia(){
   cm('m-rec');toast('Retorno agendado!','ok');loadAgenda();
 }
 
-// ── HOOK: abre recorrência após finalizar atendimento ──────
+// -- HOOK: abre recorrência após finalizar atendimento --────
 const _origAcaoFinalizar = aacaoFinalizar;
 window.aacaoFinalizar = async function(agId,cliId,servico){
   // Executa o finalizar original
@@ -6554,7 +6554,7 @@ window.aacaoFinalizar = async function(agId,cliId,servico){
   }catch(e){}
 };
 
-// ── CICLO DE VIDA DA PRÓTESE ───────────────────────────────
+// -- CICLO DE VIDA DA PRÓTESE --─────────────────────────────
 async function abrirProteseCliente(cliId,cliNome){
   id('m-prot-titulo').textContent='Prótese — '+cliNome;
   const body=id('m-prot-body');
@@ -6631,7 +6631,7 @@ async function trocarProtese(proteseId,cliId,cliNome){
   toast('Prótese trocada!','ok');abrirProteseCliente(cliId,cliNome);
 }
 
-// ── LISTA DE ESPERA ────────────────────────────────────────
+// -- LISTA DE ESPERA --──────────────────────────────────────
 async function abrirListaEspera(){
   const ownId=getOwn();
   const el=id('espera-lista');
