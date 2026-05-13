@@ -136,7 +136,11 @@ async function waCheckStatus(){
       id('wa-num-conn').textContent = inst.instance.owner ? `+${inst.instance.owner}` : 'Conectado';
       toast('WhatsApp conectado! ✅','ok');
       // Salva no localStorage
-      try{ localStorage.setItem('wa_connected_' + CU.id, '1'); }catch(e){}
+      try{
+        localStorage.setItem('wa_connected_' + CU.id, '1');
+        // Salva no Supabase para persistir entre sessões
+        await sb.from('profiles').update({wa_connected:true, wa_instance:waInstanciaId()}).eq('id',CU.id);
+      }catch(e){}
     }
   } catch(e){}
 }
@@ -155,7 +159,10 @@ async function waDesconectar(){
   const qrWrap = id('wa-qr-wrap');
   if(qrBox) qrBox.style.display='flex';
   if(qrWrap) qrWrap.style.display='none';
-  try{ localStorage.removeItem('wa_connected_' + CU.id); }catch(e){}
+  try{
+    localStorage.removeItem('wa_connected_' + CU.id);
+    await sb.from('profiles').update({wa_connected:false}).eq('id',CU.id);
+  }catch(e){}
   toast('WhatsApp desconectado','ok');
 }
 
@@ -174,11 +181,161 @@ function waSalvarMensagens(){
     const msgs = {
       confirm: id('msg-confirm')?.innerText || '',
       lembrete: id('msg-lembrete')?.innerText || '',
-      retorno: id('msg-retorno')?.innerText || ''
+      retorno: id('msg-retorno')?.innerText || '',
+      aniv: id('msg-aniv')?.innerText || '',
+      sumido: id('msg-sumido')?.innerText || '',
+      pos: id('msg-pos')?.innerText || ''
     };
     localStorage.setItem('wa_msgs', JSON.stringify(msgs));
-    toast('Mensagens salvas!','ok');
+    toast('Mensagens salvas! ✅','ok');
   }catch(e){ toast('Erro ao salvar','err'); }
+}
+
+
+// ─────────────────────────────────────────────────
+// WHATSAPP — Automações periódicas
+// Roda ao carregar o sistema se WA estiver conectado
+// ─────────────────────────────────────────────────
+async function waRodarAutomacoes(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  if(!wasConn || !CU) return;
+
+  const hoje = new Date();
+  const hojeStr = hojeLocal();
+
+  try {
+    // Busca todos os clientes do usuário
+    const {data: clientes} = await sb.from('clientes')
+      .select('id,nome,telefone,data_nascimento,ultimo_atendimento')
+      .eq('user_id', CU.id);
+
+    if(!clientes?.length) return;
+
+    for(const cli of clientes){
+      if(!cli.telefone) continue;
+
+      // ── ANIVERSÁRIO ──
+      const swAniv = document.getElementById('wa-sw-aniv');
+      if(swAniv?.classList.contains('on') && cli.data_nascimento){
+        const nasc = new Date(cli.data_nascimento + 'T12:00');
+        if(nasc.getDate() === hoje.getDate() && nasc.getMonth() === hoje.getMonth()){
+          // Verifica se já enviou hoje
+          const chave = 'wa_aniv_' + cli.id + '_' + hojeStr;
+          if(!localStorage.getItem(chave)){
+            const tmpl = document.getElementById('msg-aniv')?.innerText ||
+              'Feliz aniversário, {nome}! 🎉 Que seu dia seja especial! Como presente, temos uma condição especial pra você hoje. Chama a gente! 💈';
+            const msg = tmpl.replace(/{nome}/g, cli.nome || 'Cliente');
+            const ok = await waEnviarMensagem(cli.telefone, msg);
+            if(ok) localStorage.setItem(chave, '1');
+          }
+        }
+      }
+
+      // ── CLIENTES SUMIDOS (45+ dias) ──
+      const swSumido = document.getElementById('wa-sw-sumido');
+      if(swSumido?.classList.contains('on') && cli.ultimo_atendimento){
+        const ult = new Date(cli.ultimo_atendimento + 'T12:00');
+        const dias = Math.floor((hoje - ult) / (1000*60*60*24));
+        if(dias >= 45){
+          const chave = 'wa_sumido_' + cli.id + '_' + hojeStr;
+          if(!localStorage.getItem(chave)){
+            const tmpl = document.getElementById('msg-sumido')?.innerText ||
+              'Olá {nome}! Sentimos sua falta! 😊 Faz um tempinho que você não aparece. Que tal agendar sua próxima manutenção? 💈';
+            const msg = tmpl
+              .replace(/{nome}/g, cli.nome || 'Cliente')
+              .replace(/{dias}/g, dias);
+            const ok = await waEnviarMensagem(cli.telefone, msg);
+            if(ok) localStorage.setItem(chave, '1');
+          }
+        }
+      }
+    }
+  } catch(e){ console.error('WA automações erro:', e); }
+}
+
+// ── LEMBRETE 24H ANTES ──
+async function waRodarLembretes(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  const swLemb = document.getElementById('wa-sw-lembrete');
+  if(!wasConn || !CU || !swLemb?.classList.contains('on')) return;
+
+  try {
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const amanhaStr = hojeLocal().replace(
+      /^(\d{4})-(\d{2})-(\d{2})$/,
+      (_, y, m, d) => {
+        const dt = new Date(parseInt(y), parseInt(m)-1, parseInt(d)+1);
+        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+      }
+    );
+
+    // Busca agendamentos de amanhã
+    const {data: ags} = await sb.from('agendamentos')
+      .select('id,data_hora,servico_nome,cliente_id')
+      .eq('user_id', CU.id)
+      .gte('data_hora', amanhaStr + 'T00:00')
+      .lte('data_hora', amanhaStr + 'T23:59')
+      .eq('status', 'agendado');
+
+    if(!ags?.length) return;
+
+    for(const ag of ags){
+      const chave = 'wa_lemb_' + ag.id;
+      if(localStorage.getItem(chave)) continue;
+
+      // Busca telefone do cliente
+      const {data: cli} = await sb.from('clientes')
+        .select('nome,telefone').eq('id', ag.cliente_id).single();
+      if(!cli?.telefone) continue;
+
+      const hora = new Date(ag.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const tmpl = document.getElementById('msg-lembrete')?.innerText ||
+        'Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.\n\nConfirma sua presença? Responda SIM ✅ ou NÃO ❌';
+      const msg = tmpl
+        .replace(/{nome}/g, cli.nome || 'Cliente')
+        .replace(/{servico}/g, ag.servico_nome || '')
+        .replace(/{hora}/g, hora);
+
+      const ok = await waEnviarMensagem(cli.telefone, msg);
+      if(ok) localStorage.setItem(chave, '1');
+    }
+  } catch(e){ console.error('WA lembretes erro:', e); }
+}
+
+// ── ALERTA DE RETORNO ──
+async function waRodarRetornos(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  const swRet = document.getElementById('wa-sw-retorno');
+  if(!wasConn || !CU || !swRet?.classList.contains('on')) return;
+
+  try {
+    const hoje = new Date();
+    const hojeStr = hojeLocal();
+    const {data: clientes} = await sb.from('clientes')
+      .select('id,nome,telefone,ultimo_atendimento')
+      .eq('user_id', CU.id)
+      .not('ultimo_atendimento', 'is', null);
+
+    for(const cli of clientes){
+      if(!cli.telefone) continue;
+      const ult = new Date(cli.ultimo_atendimento + 'T12:00');
+      const dias = Math.floor((hoje - ult) / (1000*60*60*24));
+
+      // Dispara nos dias 7, 15 e 30
+      if([7,15,30].includes(dias)){
+        const chave = `wa_ret_${cli.id}_${dias}d_${hojeStr}`;
+        if(localStorage.getItem(chave)) continue;
+        const tmpl = document.getElementById('msg-retorno')?.innerText ||
+          'Olá {nome}! Faz {dias} dias desde sua última manutenção da prótese. 💈 Que tal agendar seu retorno?';
+        const msg = tmpl
+          .replace(/{nome}/g, cli.nome || 'Cliente')
+          .replace(/{dias}/g, dias);
+        const ok = await waEnviarMensagem(cli.telefone, msg);
+        if(ok) localStorage.setItem(chave, '1');
+      }
+    }
+  } catch(e){ console.error('WA retornos erro:', e); }
 }
 
 // Função para enviar mensagem via Evolution API
@@ -217,10 +374,28 @@ function initWaView(){
     if(msgs.confirm && id('msg-confirm')) id('msg-confirm').innerText = msgs.confirm;
     if(msgs.lembrete && id('msg-lembrete')) id('msg-lembrete').innerText = msgs.lembrete;
     if(msgs.retorno && id('msg-retorno')) id('msg-retorno').innerText = msgs.retorno;
+    if(msgs.aniv && id('msg-aniv')) id('msg-aniv').innerText = msgs.aniv;
+    if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
+    if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
   }catch(e){}
-  // Checa se estava conectado
-  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  if(wasConn) waCheckStatus(); else waSetStatus('disconnected');
+  // Checa se estava conectado — localStorage ou Supabase
+  const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  if(wasLocal){
+    waCheckStatus();
+  } else if(CU?.id){
+    // Verifica no Supabase
+    sb.from('profiles').select('wa_connected,wa_instance').eq('id',CU.id).single()
+      .then(({data}) => {
+        if(data?.wa_connected){
+          localStorage.setItem('wa_connected_' + CU.id, '1');
+          waCheckStatus();
+        } else {
+          waSetStatus('disconnected');
+        }
+      });
+  } else {
+    waSetStatus('disconnected');
+  }
 }
 
 
@@ -1439,7 +1614,19 @@ Confirma sua presença? Responda SIM ✅ ou NÃO ❌</div>
 Que tal agendar seu retorno? {link}</div>
               </div>
             </div>
-            <button class="btn btn-primary btn-md" style="margin-top:14px" onclick="waSalvarMensagens()">Salvar mensagens</button>
+                          <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">🎂 Aniversário do cliente</div>
+                <div class="wa-msg-box" id="msg-aniv" contenteditable="true">Feliz aniversário, {nome}! 🎉 Que seu dia seja especial! Como presente, temos uma condição especial pra você hoje. Chama a gente! 💈</div>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">💤 Reativação (cliente sumido)</div>
+                <div class="wa-msg-box" id="msg-sumido" contenteditable="true">Olá {nome}! Sentimos sua falta! 😊 Faz um tempinho que você não aparece. Que tal agendar sua próxima manutenção da prótese? 💈</div>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">⭐ Pós-atendimento</div>
+                <div class="wa-msg-box" id="msg-pos" contenteditable="true">Olá {nome}! Como foi seu atendimento hoje? 😊 Sua opinião é muito importante pra gente. Obrigado pela confiança! 💈</div>
+              </div>
+              <button class="btn btn-primary btn-md" style="margin-top:14px" onclick="waSalvarMensagens()">Salvar mensagens</button>
           </div>
         </div>
       </div>
@@ -3667,7 +3854,35 @@ async function salvarAg(){
   
   toast('Agendamento salvo','ok');
 
-
+  // ── WHATSAPP AUTOMÁTICO ──
+  // Envia confirmação de agendamento se WA conectado
+  try {
+    const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+    const swConfirm = document.getElementById('wa-sw-confirm');
+    if(wasConn && swConfirm?.classList.contains('on')){
+      // Busca dados do cliente — tenta allCli primeiro, depois Supabase
+      let cliData = allCli.find(c => c.id === dados.cliente_id);
+      if(!cliData){
+        const {data:cliDb} = await sb.from('clientes').select('nome,telefone').eq('id',dados.cliente_id).single();
+        cliData = cliDb;
+      }
+      const telefone = cliData?.telefone || '';
+      if(telefone){
+        const msgTemplate = document.getElementById('msg-confirm')?.innerText ||
+          'Olá {nome}! ✅ Seu agendamento foi confirmado:\n📅 {data} às {hora}\n✂️ {servico}\nTe esperamos! 💈';
+        const dataFmt = new Date(dados.data_hora).toLocaleDateString('pt-BR');
+        const horaFmt = new Date(dados.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+        const msg = msgTemplate
+          .replace(/{nome}/g, cliData?.nome || 'Cliente')
+          .replace(/{data}/g, dataFmt)
+          .replace(/{hora}/g, horaFmt)
+          .replace(/{servico}/g, servNome || dados.profissional || '');
+        waEnviarMensagem(telefone, msg).then(ok => {
+          if(ok) toast('✅ Confirmação enviada no WhatsApp','ok');
+        });
+      }
+    }
+  } catch(e){ console.error('WA confirmação erro:', e); }
 
   // Navega para o dia do agendamento e recarrega
   agDataAtual=new Date(dados.data_hora.split('T')[0]+'T12:00');
@@ -5993,7 +6208,9 @@ async function init(){
       } else {
         loadDash();
       }
-    }catch(e){loadDash();}
+    }catch(e){loadDash()
+  // Automações WhatsApp
+  setTimeout(()=>{ waRodarLembretes(); waRodarAutomacoes(); waRodarRetornos(); }, 3000);;}
   } else {
     go('login');
   }
