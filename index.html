@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Klipflow — Sistema para Prótese Capilar</title>
   <!-- v2 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
 
 // ═══════════════════════════════════════════════════
 // WHATSAPP — Evolution API
@@ -219,6 +221,7 @@ function initWaView(){
   const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
   if(wasConn) waCheckStatus(); else waSetStatus('disconnected');
 }
+
 
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
