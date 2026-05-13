@@ -26,25 +26,26 @@ function waSetStatus(status, txt){
   const badge = id('wa-status-badge');
   const badgeTxt = id('wa-badge-txt');
   const statusTxt = id('wa-status-txt');
-  if(!badge) return;
-  badge.className = 'wa-status-pill ' + status;
-  badgeTxt.textContent = {connected:'Conectado', disconnected:'Desconectado', connecting:'Conectando...', qr:'QR Code pronto'}[status] || status;
-  if(statusTxt) statusTxt.textContent = {connected:'WhatsApp conectado e enviando mensagens', disconnected:'Conecte seu WhatsApp para ativar as automações', connecting:'Aguardando conexão...', qr:'Escaneie o QR Code com seu WhatsApp'}[status] || '';
-  // Botões
   const btnConn = id('btn-wa-conn');
   const btnDesc = id('btn-wa-desc');
+  const areaDisc = id('wa-area-disc');
+  const areaConn = id('wa-area-conn');
+  const statsCard = id('wa-stats-card');
+  if(badge) badge.className = 'wa-status-pill ' + status;
+  if(badgeTxt) badgeTxt.textContent = {connected:'Conectado', disconnected:'Desconectado', connecting:'Conectando...', qr:'QR Code pronto'}[status] || status;
+  if(statusTxt) statusTxt.textContent = {connected:'WhatsApp conectado e enviando mensagens', disconnected:'Conecte seu WhatsApp para ativar as automações', connecting:'Aguardando conexão...', qr:'Escaneie o QR Code com seu WhatsApp'}[status] || '';
   if(status === 'connected'){
     if(btnConn) btnConn.style.display='none';
     if(btnDesc) btnDesc.style.display='inline-flex';
-    id('wa-area-disc').style.display='none';
-    id('wa-area-conn').style.display='block';
-    id('wa-stats-card').style.display='block';
+    if(areaDisc) areaDisc.style.display='none';
+    if(areaConn) areaConn.style.display='block';
+    if(statsCard) statsCard.style.display='block';
   } else {
     if(btnConn) btnConn.style.display='inline-flex';
     if(btnDesc) btnDesc.style.display='none';
-    id('wa-area-disc').style.display='block';
-    id('wa-area-conn').style.display='none';
-    id('wa-stats-card').style.display='none';
+    if(areaDisc) areaDisc.style.display='block';
+    if(areaConn) areaConn.style.display='none';
+    if(statsCard) statsCard.style.display='none';
   }
 }
 
