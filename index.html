@@ -6,400 +6,7 @@
 <title>Klipflow — Sistema para Prótese Capilar</title>
   <!-- v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
 
-
-// ═══════════════════════════════════════════════════
-// WHATSAPP — Evolution API
-// ═══════════════════════════════════════════════════
-const EVO_URL = 'https://evolution-api-production-55e7.up.railway.app';
-const EVO_KEY = 'e40b81255bb4961a4c65b2393ddd8781479b7e0ec8f595d5e7ad8f7c08296adc';
-let waTimer = null;
-let waCheckInterval = null;
-
-function waInstanciaId(){
-  // ID único por usuário: klipflow_ + user_id (primeiros 8 chars)
-  return 'klipflow_' + (CU?.id || 'demo').substring(0,8);
-}
-
-function waSetStatus(status, txt){
-  const badge = id('wa-status-badge');
-  const badgeTxt = id('wa-badge-txt');
-  const statusTxt = id('wa-status-txt');
-  const btnConn = id('btn-wa-conn');
-  const btnDesc = id('btn-wa-desc');
-  const areaDisc = id('wa-area-disc');
-  const areaConn = id('wa-area-conn');
-  const statsCard = id('wa-stats-card');
-  if(badge) badge.className = 'wa-status-pill ' + status;
-  if(badgeTxt) badgeTxt.textContent = {connected:'Conectado', disconnected:'Desconectado', connecting:'Conectando...', qr:'QR Code pronto'}[status] || status;
-  if(statusTxt) statusTxt.textContent = {connected:'WhatsApp conectado e enviando mensagens', disconnected:'Conecte seu WhatsApp para ativar as automações', connecting:'Aguardando conexão...', qr:'Escaneie o QR Code com seu WhatsApp'}[status] || '';
-  if(status === 'connected'){
-    if(btnConn) btnConn.style.display='none';
-    if(btnDesc) btnDesc.style.display='inline-flex';
-    if(areaDisc) areaDisc.style.display='none';
-    if(areaConn) areaConn.style.display='block';
-    if(statsCard) statsCard.style.display='block';
-  } else {
-    if(btnConn) btnConn.style.display='inline-flex';
-    if(btnDesc) btnDesc.style.display='none';
-    if(areaDisc) areaDisc.style.display='block';
-    if(areaConn) areaConn.style.display='none';
-    if(statsCard) statsCard.style.display='none';
-  }
-}
-
-async function waConectar(){
-  if(!CU){ toast('Você precisa estar logado','err'); return; }
-  waSetStatus('connecting');
-  const instId = waInstanciaId();
-  try{
-    // Cria instância ou busca existente
-    const res = await fetch(`${EVO_URL}/instance/create`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':EVO_KEY},
-      body: JSON.stringify({
-        instanceName: instId,
-        qrcode: true,
-        integration: 'WHATSAPP-BAILEYS'
-      })
-    });
-    const data = await res.json();
-    if(data.qrcode?.base64){
-      waShowQR(data.qrcode.base64);
-    } else if(data.instance?.state === 'open'){
-      waSetStatus('connected');
-      id('wa-num-conn').textContent = data.instance.owner || 'Conectado';
-    } else {
-      // Busca QR se instância já existe
-      await waGetQR(instId);
-    }
-  } catch(e){
-    console.error('WA erro:', e);
-    toast('Erro ao conectar. Tente novamente.','err');
-    waSetStatus('disconnected');
-  }
-}
-
-async function waGetQR(instId){
-  try{
-    const res = await fetch(`${EVO_URL}/instance/connect/${instId}`, {
-      headers: {'apikey': EVO_KEY}
-    });
-    const data = await res.json();
-    if(data.qrcode?.base64 || data.base64){
-      waShowQR(data.qrcode?.base64 || data.base64);
-    } else if(data.instance?.state === 'open'){
-      waSetStatus('connected');
-    }
-  } catch(e){
-    console.error('WA getQR erro:', e);
-    waSetStatus('disconnected');
-    toast('Não foi possível gerar QR Code','err');
-  }
-}
-
-function waShowQR(base64){
-  waSetStatus('qr', 'QR pronto');
-  const qrBox = id('wa-qr-box');
-  const qrWrap = id('wa-qr-wrap');
-  const qrImg = id('wa-qr-img');
-  if(qrBox) qrBox.style.display='none';
-  if(qrWrap){ qrWrap.style.display='flex'; }
-  if(qrImg) qrImg.src = base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`;
-  // Timer 60s
-  let secs = 60;
-  if(waTimer) clearInterval(waTimer);
-  waTimer = setInterval(()=>{
-    secs--;
-    const timerEl = id('wa-timer');
-    if(timerEl) timerEl.textContent = secs;
-    if(secs <= 0){ clearInterval(waTimer); }
-  }, 1000);
-  // Polling para verificar se conectou
-  if(waCheckInterval) clearInterval(waCheckInterval);
-  waCheckInterval = setInterval(()=> waCheckStatus(), 4000);
-}
-
-async function waCheckStatus(){
-  const instId = waInstanciaId();
-  try{
-    const res = await fetch(`${EVO_URL}/instance/fetchInstances`, {
-      headers: {'apikey': EVO_KEY}
-    });
-    const data = await res.json();
-    const inst = Array.isArray(data) ? data.find(i => i.instance?.instanceName === instId) : null;
-    if(inst?.instance?.state === 'open'){
-      clearInterval(waCheckInterval);
-      if(waTimer) clearInterval(waTimer);
-      waSetStatus('connected');
-      id('wa-num-conn').textContent = inst.instance.owner ? `+${inst.instance.owner}` : 'Conectado';
-      toast('WhatsApp conectado! ✅','ok');
-      // Salva no localStorage
-      try{
-        localStorage.setItem('wa_connected_' + CU.id, '1');
-        // Salva no Supabase para persistir entre sessões
-        await sb.from('profiles').update({wa_connected:true, wa_instance:waInstanciaId()}).eq('id',CU.id);
-      }catch(e){}
-    }
-  } catch(e){}
-}
-
-async function waDesconectar(){
-  const instId = waInstanciaId();
-  try{
-    await fetch(`${EVO_URL}/instance/logout/${instId}`, {
-      method:'DELETE', headers:{'apikey':EVO_KEY}
-    });
-  }catch(e){}
-  if(waCheckInterval) clearInterval(waCheckInterval);
-  if(waTimer) clearInterval(waTimer);
-  waSetStatus('disconnected');
-  const qrBox = id('wa-qr-box');
-  const qrWrap = id('wa-qr-wrap');
-  if(qrBox) qrBox.style.display='flex';
-  if(qrWrap) qrWrap.style.display='none';
-  try{
-    localStorage.removeItem('wa_connected_' + CU.id);
-    await sb.from('profiles').update({wa_connected:false}).eq('id',CU.id);
-  }catch(e){}
-  toast('WhatsApp desconectado','ok');
-}
-
-function waToogleSw(btn){
-  btn.classList.toggle('on');
-  // Salva config no localStorage
-  try{
-    const cfg = JSON.parse(localStorage.getItem('wa_cfg') || '{}');
-    cfg[btn.id] = btn.classList.contains('on');
-    localStorage.setItem('wa_cfg', JSON.stringify(cfg));
-  }catch(e){}
-}
-
-function waSalvarMensagens(){
-  try{
-    const msgs = {
-      confirm: id('msg-confirm')?.innerText || '',
-      lembrete: id('msg-lembrete')?.innerText || '',
-      retorno: id('msg-retorno')?.innerText || '',
-      aniv: id('msg-aniv')?.innerText || '',
-      sumido: id('msg-sumido')?.innerText || '',
-      pos: id('msg-pos')?.innerText || ''
-    };
-    localStorage.setItem('wa_msgs', JSON.stringify(msgs));
-    toast('Mensagens salvas! ✅','ok');
-  }catch(e){ toast('Erro ao salvar','err'); }
-}
-
-
-// ─────────────────────────────────────────────────
-// WHATSAPP — Automações periódicas
-// Roda ao carregar o sistema se WA estiver conectado
-// ─────────────────────────────────────────────────
-async function waRodarAutomacoes(){
-  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  if(!wasConn || !CU) return;
-
-  const hoje = new Date();
-  const hojeStr = hojeLocal();
-
-  try {
-    // Busca todos os clientes do usuário
-    const {data: clientes} = await sb.from('clientes')
-      .select('id,nome,telefone,data_nascimento,ultimo_atendimento')
-      .eq('user_id', CU.id);
-
-    if(!clientes?.length) return;
-
-    for(const cli of clientes){
-      if(!cli.telefone) continue;
-
-      // ── ANIVERSÁRIO ──
-      const swAniv = document.getElementById('wa-sw-aniv');
-      if(swAniv?.classList.contains('on') && cli.data_nascimento){
-        const nasc = new Date(cli.data_nascimento + 'T12:00');
-        if(nasc.getDate() === hoje.getDate() && nasc.getMonth() === hoje.getMonth()){
-          // Verifica se já enviou hoje
-          const chave = 'wa_aniv_' + cli.id + '_' + hojeStr;
-          if(!localStorage.getItem(chave)){
-            const tmpl = document.getElementById('msg-aniv')?.innerText ||
-              'Feliz aniversário, {nome}! 🎉 Que seu dia seja especial! Como presente, temos uma condição especial pra você hoje. Chama a gente! 💈';
-            const msg = tmpl.replace(/{nome}/g, cli.nome || 'Cliente');
-            const ok = await waEnviarMensagem(cli.telefone, msg);
-            if(ok) localStorage.setItem(chave, '1');
-          }
-        }
-      }
-
-      // ── CLIENTES SUMIDOS (45+ dias) ──
-      const swSumido = document.getElementById('wa-sw-sumido');
-      if(swSumido?.classList.contains('on') && cli.ultimo_atendimento){
-        const ult = new Date(cli.ultimo_atendimento + 'T12:00');
-        const dias = Math.floor((hoje - ult) / (1000*60*60*24));
-        if(dias >= 45){
-          const chave = 'wa_sumido_' + cli.id + '_' + hojeStr;
-          if(!localStorage.getItem(chave)){
-            const tmpl = document.getElementById('msg-sumido')?.innerText ||
-              'Olá {nome}! Sentimos sua falta! 😊 Faz um tempinho que você não aparece. Que tal agendar sua próxima manutenção? 💈';
-            const msg = tmpl
-              .replace(/{nome}/g, cli.nome || 'Cliente')
-              .replace(/{dias}/g, dias);
-            const ok = await waEnviarMensagem(cli.telefone, msg);
-            if(ok) localStorage.setItem(chave, '1');
-          }
-        }
-      }
-    }
-  } catch(e){ console.error('WA automações erro:', e); }
-}
-
-// ── LEMBRETE 24H ANTES ──
-async function waRodarLembretes(){
-  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  const swLemb = document.getElementById('wa-sw-lembrete');
-  if(!wasConn || !CU || !swLemb?.classList.contains('on')) return;
-
-  try {
-    const amanha = new Date();
-    amanha.setDate(amanha.getDate() + 1);
-    const amanhaStr = hojeLocal().replace(
-      /^(\d{4})-(\d{2})-(\d{2})$/,
-      (_, y, m, d) => {
-        const dt = new Date(parseInt(y), parseInt(m)-1, parseInt(d)+1);
-        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-      }
-    );
-
-    // Busca agendamentos de amanhã
-    const {data: ags} = await sb.from('agendamentos')
-      .select('id,data_hora,servico_nome,cliente_id')
-      .eq('user_id', CU.id)
-      .gte('data_hora', amanhaStr + 'T00:00')
-      .lte('data_hora', amanhaStr + 'T23:59')
-      .eq('status', 'agendado');
-
-    if(!ags?.length) return;
-
-    for(const ag of ags){
-      const chave = 'wa_lemb_' + ag.id;
-      if(localStorage.getItem(chave)) continue;
-
-      // Busca telefone do cliente
-      const {data: cli} = await sb.from('clientes')
-        .select('nome,telefone').eq('id', ag.cliente_id).single();
-      if(!cli?.telefone) continue;
-
-      const hora = new Date(ag.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      const tmpl = document.getElementById('msg-lembrete')?.innerText ||
-        'Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.\n\nConfirma sua presença? Responda SIM ✅ ou NÃO ❌';
-      const msg = tmpl
-        .replace(/{nome}/g, cli.nome || 'Cliente')
-        .replace(/{servico}/g, ag.servico_nome || '')
-        .replace(/{hora}/g, hora);
-
-      const ok = await waEnviarMensagem(cli.telefone, msg);
-      if(ok) localStorage.setItem(chave, '1');
-    }
-  } catch(e){ console.error('WA lembretes erro:', e); }
-}
-
-// ── ALERTA DE RETORNO ──
-async function waRodarRetornos(){
-  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  const swRet = document.getElementById('wa-sw-retorno');
-  if(!wasConn || !CU || !swRet?.classList.contains('on')) return;
-
-  try {
-    const hoje = new Date();
-    const hojeStr = hojeLocal();
-    const {data: clientes} = await sb.from('clientes')
-      .select('id,nome,telefone,ultimo_atendimento')
-      .eq('user_id', CU.id)
-      .not('ultimo_atendimento', 'is', null);
-
-    for(const cli of clientes){
-      if(!cli.telefone) continue;
-      const ult = new Date(cli.ultimo_atendimento + 'T12:00');
-      const dias = Math.floor((hoje - ult) / (1000*60*60*24));
-
-      // Dispara nos dias 7, 15 e 30
-      if([7,15,30].includes(dias)){
-        const chave = `wa_ret_${cli.id}_${dias}d_${hojeStr}`;
-        if(localStorage.getItem(chave)) continue;
-        const tmpl = document.getElementById('msg-retorno')?.innerText ||
-          'Olá {nome}! Faz {dias} dias desde sua última manutenção da prótese. 💈 Que tal agendar seu retorno?';
-        const msg = tmpl
-          .replace(/{nome}/g, cli.nome || 'Cliente')
-          .replace(/{dias}/g, dias);
-        const ok = await waEnviarMensagem(cli.telefone, msg);
-        if(ok) localStorage.setItem(chave, '1');
-      }
-    }
-  } catch(e){ console.error('WA retornos erro:', e); }
-}
-
-// Função para enviar mensagem via Evolution API
-async function waEnviarMensagem(telefone, mensagem){
-  if(!CU) return false;
-  const instId = waInstanciaId();
-  const tel = telefone.replace(/\D/g,'');
-  const telFormatado = tel.startsWith('55') ? tel : '55' + tel;
-  try{
-    const res = await fetch(`${EVO_URL}/message/sendText/${instId}`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':EVO_KEY},
-      body: JSON.stringify({
-        number: telFormatado + '@s.whatsapp.net',
-        text: mensagem
-      })
-    });
-    const data = await res.json();
-    return data.key?.id ? true : false;
-  }catch(e){
-    console.error('WA enviar erro:', e);
-    return false;
-  }
-}
-
-// Verifica status ao entrar na view de WhatsApp
-function initWaView(){
-  // Carrega config salva
-  try{
-    const cfg = JSON.parse(localStorage.getItem('wa_cfg') || '{}');
-    Object.entries(cfg).forEach(([k,v])=>{
-      const sw = id(k);
-      if(sw) sw.classList.toggle('on', v);
-    });
-    const msgs = JSON.parse(localStorage.getItem('wa_msgs') || '{}');
-    if(msgs.confirm && id('msg-confirm')) id('msg-confirm').innerText = msgs.confirm;
-    if(msgs.lembrete && id('msg-lembrete')) id('msg-lembrete').innerText = msgs.lembrete;
-    if(msgs.retorno && id('msg-retorno')) id('msg-retorno').innerText = msgs.retorno;
-    if(msgs.aniv && id('msg-aniv')) id('msg-aniv').innerText = msgs.aniv;
-    if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
-    if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
-  }catch(e){}
-  // Checa se estava conectado — localStorage ou Supabase
-  const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  if(wasLocal){
-    waCheckStatus();
-  } else if(CU?.id){
-    // Verifica no Supabase
-    sb.from('profiles').select('wa_connected,wa_instance').eq('id',CU.id).single()
-      .then(({data}) => {
-        if(data?.wa_connected){
-          localStorage.setItem('wa_connected_' + CU.id, '1');
-          waCheckStatus();
-        } else {
-          waSetStatus('disconnected');
-        }
-      });
-  } else {
-    waSetStatus('disconnected');
-  }
-}
-
-
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -2349,6 +1956,401 @@ Que tal agendar seu retorno? {link}</div>
 <div class="toast" id="toast"></div>
 
 <script>
+
+
+
+// ═══════════════════════════════════════════════════
+// WHATSAPP — Evolution API
+// ═══════════════════════════════════════════════════
+const EVO_URL = 'https://evolution-api-production-55e7.up.railway.app';
+const EVO_KEY = 'e40b81255bb4961a4c65b2393ddd8781479b7e0ec8f595d5e7ad8f7c08296adc';
+let waTimer = null;
+let waCheckInterval = null;
+
+function waInstanciaId(){
+  // ID único por usuário: klipflow_ + user_id (primeiros 8 chars)
+  return 'klipflow_' + (CU?.id || 'demo').substring(0,8);
+}
+
+function waSetStatus(status, txt){
+  const badge = id('wa-status-badge');
+  const badgeTxt = id('wa-badge-txt');
+  const statusTxt = id('wa-status-txt');
+  const btnConn = id('btn-wa-conn');
+  const btnDesc = id('btn-wa-desc');
+  const areaDisc = id('wa-area-disc');
+  const areaConn = id('wa-area-conn');
+  const statsCard = id('wa-stats-card');
+  if(badge) badge.className = 'wa-status-pill ' + status;
+  if(badgeTxt) badgeTxt.textContent = {connected:'Conectado', disconnected:'Desconectado', connecting:'Conectando...', qr:'QR Code pronto'}[status] || status;
+  if(statusTxt) statusTxt.textContent = {connected:'WhatsApp conectado e enviando mensagens', disconnected:'Conecte seu WhatsApp para ativar as automações', connecting:'Aguardando conexão...', qr:'Escaneie o QR Code com seu WhatsApp'}[status] || '';
+  if(status === 'connected'){
+    if(btnConn) btnConn.style.display='none';
+    if(btnDesc) btnDesc.style.display='inline-flex';
+    if(areaDisc) areaDisc.style.display='none';
+    if(areaConn) areaConn.style.display='block';
+    if(statsCard) statsCard.style.display='block';
+  } else {
+    if(btnConn) btnConn.style.display='inline-flex';
+    if(btnDesc) btnDesc.style.display='none';
+    if(areaDisc) areaDisc.style.display='block';
+    if(areaConn) areaConn.style.display='none';
+    if(statsCard) statsCard.style.display='none';
+  }
+}
+
+async function waConectar(){
+  if(!CU){ toast('Você precisa estar logado','err'); return; }
+  waSetStatus('connecting');
+  const instId = waInstanciaId();
+  try{
+    // Cria instância ou busca existente
+    const res = await fetch(`${EVO_URL}/instance/create`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':EVO_KEY},
+      body: JSON.stringify({
+        instanceName: instId,
+        qrcode: true,
+        integration: 'WHATSAPP-BAILEYS'
+      })
+    });
+    const data = await res.json();
+    if(data.qrcode?.base64){
+      waShowQR(data.qrcode.base64);
+    } else if(data.instance?.state === 'open'){
+      waSetStatus('connected');
+      id('wa-num-conn').textContent = data.instance.owner || 'Conectado';
+    } else {
+      // Busca QR se instância já existe
+      await waGetQR(instId);
+    }
+  } catch(e){
+    console.error('WA erro:', e);
+    toast('Erro ao conectar. Tente novamente.','err');
+    waSetStatus('disconnected');
+  }
+}
+
+async function waGetQR(instId){
+  try{
+    const res = await fetch(`${EVO_URL}/instance/connect/${instId}`, {
+      headers: {'apikey': EVO_KEY}
+    });
+    const data = await res.json();
+    if(data.qrcode?.base64 || data.base64){
+      waShowQR(data.qrcode?.base64 || data.base64);
+    } else if(data.instance?.state === 'open'){
+      waSetStatus('connected');
+    }
+  } catch(e){
+    console.error('WA getQR erro:', e);
+    waSetStatus('disconnected');
+    toast('Não foi possível gerar QR Code','err');
+  }
+}
+
+function waShowQR(base64){
+  waSetStatus('qr', 'QR pronto');
+  const qrBox = id('wa-qr-box');
+  const qrWrap = id('wa-qr-wrap');
+  const qrImg = id('wa-qr-img');
+  if(qrBox) qrBox.style.display='none';
+  if(qrWrap){ qrWrap.style.display='flex'; }
+  if(qrImg) qrImg.src = base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`;
+  // Timer 60s
+  let secs = 60;
+  if(waTimer) clearInterval(waTimer);
+  waTimer = setInterval(()=>{
+    secs--;
+    const timerEl = id('wa-timer');
+    if(timerEl) timerEl.textContent = secs;
+    if(secs <= 0){ clearInterval(waTimer); }
+  }, 1000);
+  // Polling para verificar se conectou
+  if(waCheckInterval) clearInterval(waCheckInterval);
+  waCheckInterval = setInterval(()=> waCheckStatus(), 4000);
+}
+
+async function waCheckStatus(){
+  const instId = waInstanciaId();
+  try{
+    const res = await fetch(`${EVO_URL}/instance/fetchInstances`, {
+      headers: {'apikey': EVO_KEY}
+    });
+    const data = await res.json();
+    const inst = Array.isArray(data) ? data.find(i => i.instance?.instanceName === instId) : null;
+    if(inst?.instance?.state === 'open'){
+      clearInterval(waCheckInterval);
+      if(waTimer) clearInterval(waTimer);
+      waSetStatus('connected');
+      id('wa-num-conn').textContent = inst.instance.owner ? `+${inst.instance.owner}` : 'Conectado';
+      toast('WhatsApp conectado! ✅','ok');
+      // Salva no localStorage
+      try{
+        localStorage.setItem('wa_connected_' + CU.id, '1');
+        // Salva no Supabase para persistir entre sessões
+        await sb.from('profiles').update({wa_connected:true, wa_instance:waInstanciaId()}).eq('id',CU.id);
+      }catch(e){}
+    }
+  } catch(e){}
+}
+
+async function waDesconectar(){
+  const instId = waInstanciaId();
+  try{
+    await fetch(`${EVO_URL}/instance/logout/${instId}`, {
+      method:'DELETE', headers:{'apikey':EVO_KEY}
+    });
+  }catch(e){}
+  if(waCheckInterval) clearInterval(waCheckInterval);
+  if(waTimer) clearInterval(waTimer);
+  waSetStatus('disconnected');
+  const qrBox = id('wa-qr-box');
+  const qrWrap = id('wa-qr-wrap');
+  if(qrBox) qrBox.style.display='flex';
+  if(qrWrap) qrWrap.style.display='none';
+  try{
+    localStorage.removeItem('wa_connected_' + CU.id);
+    await sb.from('profiles').update({wa_connected:false}).eq('id',CU.id);
+  }catch(e){}
+  toast('WhatsApp desconectado','ok');
+}
+
+function waToogleSw(btn){
+  btn.classList.toggle('on');
+  // Salva config no localStorage
+  try{
+    const cfg = JSON.parse(localStorage.getItem('wa_cfg') || '{}');
+    cfg[btn.id] = btn.classList.contains('on');
+    localStorage.setItem('wa_cfg', JSON.stringify(cfg));
+  }catch(e){}
+}
+
+function waSalvarMensagens(){
+  try{
+    const msgs = {
+      confirm: id('msg-confirm')?.innerText || '',
+      lembrete: id('msg-lembrete')?.innerText || '',
+      retorno: id('msg-retorno')?.innerText || '',
+      aniv: id('msg-aniv')?.innerText || '',
+      sumido: id('msg-sumido')?.innerText || '',
+      pos: id('msg-pos')?.innerText || ''
+    };
+    localStorage.setItem('wa_msgs', JSON.stringify(msgs));
+    toast('Mensagens salvas! ✅','ok');
+  }catch(e){ toast('Erro ao salvar','err'); }
+}
+
+
+// ─────────────────────────────────────────────────
+// WHATSAPP — Automações periódicas
+// Roda ao carregar o sistema se WA estiver conectado
+// ─────────────────────────────────────────────────
+async function waRodarAutomacoes(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  if(!wasConn || !CU) return;
+
+  const hoje = new Date();
+  const hojeStr = hojeLocal();
+
+  try {
+    // Busca todos os clientes do usuário
+    const {data: clientes} = await sb.from('clientes')
+      .select('id,nome,telefone,data_nascimento,ultimo_atendimento')
+      .eq('user_id', CU.id);
+
+    if(!clientes?.length) return;
+
+    for(const cli of clientes){
+      if(!cli.telefone) continue;
+
+      // ── ANIVERSÁRIO ──
+      const swAniv = document.getElementById('wa-sw-aniv');
+      if(swAniv?.classList.contains('on') && cli.data_nascimento){
+        const nasc = new Date(cli.data_nascimento + 'T12:00');
+        if(nasc.getDate() === hoje.getDate() && nasc.getMonth() === hoje.getMonth()){
+          // Verifica se já enviou hoje
+          const chave = 'wa_aniv_' + cli.id + '_' + hojeStr;
+          if(!localStorage.getItem(chave)){
+            const tmpl = document.getElementById('msg-aniv')?.innerText ||
+              'Feliz aniversário, {nome}! 🎉 Que seu dia seja especial! Como presente, temos uma condição especial pra você hoje. Chama a gente! 💈';
+            const msg = tmpl.replace(/{nome}/g, cli.nome || 'Cliente');
+            const ok = await waEnviarMensagem(cli.telefone, msg);
+            if(ok) localStorage.setItem(chave, '1');
+          }
+        }
+      }
+
+      // ── CLIENTES SUMIDOS (45+ dias) ──
+      const swSumido = document.getElementById('wa-sw-sumido');
+      if(swSumido?.classList.contains('on') && cli.ultimo_atendimento){
+        const ult = new Date(cli.ultimo_atendimento + 'T12:00');
+        const dias = Math.floor((hoje - ult) / (1000*60*60*24));
+        if(dias >= 45){
+          const chave = 'wa_sumido_' + cli.id + '_' + hojeStr;
+          if(!localStorage.getItem(chave)){
+            const tmpl = document.getElementById('msg-sumido')?.innerText ||
+              'Olá {nome}! Sentimos sua falta! 😊 Faz um tempinho que você não aparece. Que tal agendar sua próxima manutenção? 💈';
+            const msg = tmpl
+              .replace(/{nome}/g, cli.nome || 'Cliente')
+              .replace(/{dias}/g, dias);
+            const ok = await waEnviarMensagem(cli.telefone, msg);
+            if(ok) localStorage.setItem(chave, '1');
+          }
+        }
+      }
+    }
+  } catch(e){ console.error('WA automações erro:', e); }
+}
+
+// ── LEMBRETE 24H ANTES ──
+async function waRodarLembretes(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  const swLemb = document.getElementById('wa-sw-lembrete');
+  if(!wasConn || !CU || !swLemb?.classList.contains('on')) return;
+
+  try {
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const amanhaStr = hojeLocal().replace(
+      /^(\d{4})-(\d{2})-(\d{2})$/,
+      (_, y, m, d) => {
+        const dt = new Date(parseInt(y), parseInt(m)-1, parseInt(d)+1);
+        return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+      }
+    );
+
+    // Busca agendamentos de amanhã
+    const {data: ags} = await sb.from('agendamentos')
+      .select('id,data_hora,servico_nome,cliente_id')
+      .eq('user_id', CU.id)
+      .gte('data_hora', amanhaStr + 'T00:00')
+      .lte('data_hora', amanhaStr + 'T23:59')
+      .eq('status', 'agendado');
+
+    if(!ags?.length) return;
+
+    for(const ag of ags){
+      const chave = 'wa_lemb_' + ag.id;
+      if(localStorage.getItem(chave)) continue;
+
+      // Busca telefone do cliente
+      const {data: cli} = await sb.from('clientes')
+        .select('nome,telefone').eq('id', ag.cliente_id).single();
+      if(!cli?.telefone) continue;
+
+      const hora = new Date(ag.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const tmpl = document.getElementById('msg-lembrete')?.innerText ||
+        'Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.\n\nConfirma sua presença? Responda SIM ✅ ou NÃO ❌';
+      const msg = tmpl
+        .replace(/{nome}/g, cli.nome || 'Cliente')
+        .replace(/{servico}/g, ag.servico_nome || '')
+        .replace(/{hora}/g, hora);
+
+      const ok = await waEnviarMensagem(cli.telefone, msg);
+      if(ok) localStorage.setItem(chave, '1');
+    }
+  } catch(e){ console.error('WA lembretes erro:', e); }
+}
+
+// ── ALERTA DE RETORNO ──
+async function waRodarRetornos(){
+  const wasConn = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  const swRet = document.getElementById('wa-sw-retorno');
+  if(!wasConn || !CU || !swRet?.classList.contains('on')) return;
+
+  try {
+    const hoje = new Date();
+    const hojeStr = hojeLocal();
+    const {data: clientes} = await sb.from('clientes')
+      .select('id,nome,telefone,ultimo_atendimento')
+      .eq('user_id', CU.id)
+      .not('ultimo_atendimento', 'is', null);
+
+    for(const cli of clientes){
+      if(!cli.telefone) continue;
+      const ult = new Date(cli.ultimo_atendimento + 'T12:00');
+      const dias = Math.floor((hoje - ult) / (1000*60*60*24));
+
+      // Dispara nos dias 7, 15 e 30
+      if([7,15,30].includes(dias)){
+        const chave = `wa_ret_${cli.id}_${dias}d_${hojeStr}`;
+        if(localStorage.getItem(chave)) continue;
+        const tmpl = document.getElementById('msg-retorno')?.innerText ||
+          'Olá {nome}! Faz {dias} dias desde sua última manutenção da prótese. 💈 Que tal agendar seu retorno?';
+        const msg = tmpl
+          .replace(/{nome}/g, cli.nome || 'Cliente')
+          .replace(/{dias}/g, dias);
+        const ok = await waEnviarMensagem(cli.telefone, msg);
+        if(ok) localStorage.setItem(chave, '1');
+      }
+    }
+  } catch(e){ console.error('WA retornos erro:', e); }
+}
+
+// Função para enviar mensagem via Evolution API
+async function waEnviarMensagem(telefone, mensagem){
+  if(!CU) return false;
+  const instId = waInstanciaId();
+  const tel = telefone.replace(/\D/g,'');
+  const telFormatado = tel.startsWith('55') ? tel : '55' + tel;
+  try{
+    const res = await fetch(`${EVO_URL}/message/sendText/${instId}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':EVO_KEY},
+      body: JSON.stringify({
+        number: telFormatado + '@s.whatsapp.net',
+        text: mensagem
+      })
+    });
+    const data = await res.json();
+    return data.key?.id ? true : false;
+  }catch(e){
+    console.error('WA enviar erro:', e);
+    return false;
+  }
+}
+
+// Verifica status ao entrar na view de WhatsApp
+function initWaView(){
+  // Carrega config salva
+  try{
+    const cfg = JSON.parse(localStorage.getItem('wa_cfg') || '{}');
+    Object.entries(cfg).forEach(([k,v])=>{
+      const sw = id(k);
+      if(sw) sw.classList.toggle('on', v);
+    });
+    const msgs = JSON.parse(localStorage.getItem('wa_msgs') || '{}');
+    if(msgs.confirm && id('msg-confirm')) id('msg-confirm').innerText = msgs.confirm;
+    if(msgs.lembrete && id('msg-lembrete')) id('msg-lembrete').innerText = msgs.lembrete;
+    if(msgs.retorno && id('msg-retorno')) id('msg-retorno').innerText = msgs.retorno;
+    if(msgs.aniv && id('msg-aniv')) id('msg-aniv').innerText = msgs.aniv;
+    if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
+    if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
+  }catch(e){}
+  // Checa se estava conectado — localStorage ou Supabase
+  const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  if(wasLocal){
+    waCheckStatus();
+  } else if(CU?.id){
+    // Verifica no Supabase
+    sb.from('profiles').select('wa_connected,wa_instance').eq('id',CU.id).single()
+      .then(({data}) => {
+        if(data?.wa_connected){
+          localStorage.setItem('wa_connected_' + CU.id, '1');
+          waCheckStatus();
+        } else {
+          waSetStatus('disconnected');
+        }
+      });
+  } else {
+    waSetStatus('disconnected');
+  }
+}
+
+
+
+
 // Helper: data local no formato YYYY-MM-DD (sem bug de fuso horário)
 function hojeLocal(){const d=new Date();const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
 function fmtLocal(d){const p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
