@@ -1318,17 +1318,17 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
           <div class="pt">WhatsApp Automático</div>
           <div class="ps" id="wa-status-txt">Verificando conexão...</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <span id="wa-status-badge" class="wa-status-pill connecting"><span class="wa-status-dot"></span><span id="wa-badge-txt">Conectando...</span></span>
           <button class="btn btn-md btn-outline" id="btn-wa-desc" onclick="waDesconectar()" style="display:none">Desconectar</button>
           <button class="btn btn-md btn-primary" id="btn-wa-conn" onclick="waConectar()">Conectar WhatsApp</button>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start">
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;min-width:0;overflow:hidden">
 
         <!-- Coluna esquerda: conexão QR -->
-        <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
           <div class="card">
             <div class="sh" style="margin-bottom:20px">
               <div class="st">Conexão via QR Code</div>
@@ -1367,7 +1367,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
         </div>
 
         <!-- Coluna direita: automações -->
-        <div class="card">
+        <div class="card" style="min-width:0;overflow:hidden">
           <div class="sh" style="margin-bottom:20px">
             <div class="st">Automações</div>
             <div style="font-size:12px;color:var(--gray-400)">As mensagens saem automaticamente no momento certo</div>
