@@ -7,7 +7,7 @@
   <!-- v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inther:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -230,7 +230,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .ag-week-day.today{color:var(--brand);font-weight:700}
 .ag-week-day-num{font-size:20px;font-weight:700;display:block;margin-bottom:2px}
 
-/* MODAL AÇÃO RÁPIDA AGENDAMENTO */
+/* MODAL AÇAO RÁPIDA AGENDAMENTO */
 #m-ag-acao .modal{max-width:340px;padding:0;overflow:hidden}
 .ag-acao-header{padding:16px 20px;border-bottom:1px solid var(--gray-100)}
 .ag-acao-nome{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#0F172A}
@@ -273,7 +273,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--gray-50)}
 .st-finalizado{background:#DCFCE7;color:#16A34A}
 .st-cancelado{background:#E2E8F0;color:#64748B}
 
-/* MODAL AÇÃO RÁPIDA */
+/* MODAL AÇAO RÁPIDA */
 #m-ag-acao .modal{max-width:360px;padding:0;overflow:visible}
 .aacao-header{padding:16px 20px;border-bottom:1px solid var(--gray-100)}
 .aacao-nome{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#0F172A}
@@ -524,7 +524,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
   /* PERÍODO FILTROS — wrap */
   .dash-period,.com-period,.rel-period{font-size:11px;padding:4px 8px}
 
-  /* BOTÃO MENU MOBILE */
+  /* BOTAO MENU MOBILE */
   .mobile-menu-btn{display:flex!important}
 
   /* ANAMNESE — modal largo */
@@ -970,7 +970,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
     </div>
 
     <!-- ANAMNESE -->
-    <!-- VIEW MANUTENÇÃO -->
+    <!-- VIEW MANUTENÇAO -->
     <div class="view" id="view-manutencao">
       <div class="ph"><div><div class="pt">Controle de Manutenção</div><div class="ps">Clientes com prazo de retorno próximo ou vencido</div></div></div>
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
@@ -1212,7 +1212,7 @@ Te esperamos! 💈</div>
                 <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Lembrete (1 dia antes)</div>
                 <div class="wa-msg-box" id="msg-lembrete" contenteditable="true">Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.
 
-Confirma sua presença? Responda SIM ✅ ou NÃO ❌</div>
+Confirma sua presença? Responda SIM ✅ ou NAO ❌</div>
               </div>
               <div>
                 <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Retorno/Manutenção</div>
@@ -1458,7 +1458,7 @@ Que tal agendar seu retorno? {link}</div>
   </div>
 </div></div>
 
-<!-- MODAL AÇÃO RÁPIDA -->
+<!-- MODAL AÇAO RÁPIDA -->
 <div class="mo" id="m-ag-acao">
   <div class="modal">
     <div class="aacao-header">
@@ -2241,7 +2241,7 @@ async function waRodarLembretes(){
 
       const hora = new Date(ag.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       const tmpl = document.getElementById('msg-lembrete')?.innerText ||
-        'Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.\n\nConfirma sua presença? Responda SIM ✅ ou NÃO ❌';
+        'Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.\n\nConfirma sua presença? Responda SIM ✅ ou NAO ❌';
       const msg = tmpl
         .replace(/{nome}/g, cli.nome || 'Cliente')
         .replace(/{servico}/g, ag.servico_nome || '')
@@ -3622,7 +3622,7 @@ async function confAg(agId){await sb.from('agendamentos').update({status:'confir
 async function cancAg(agId){await sb.from('agendamentos').update({status:'cancelado'}).eq('id',agId);toast('Cancelado','err');loadAgenda();loadDash();}
 
 // ============================================================
-// MODAL AÇÃO RÁPIDA (estilo Gendo)
+// MODAL AÇAO RÁPIDA (estilo Gendo)
 // ============================================================
 let agAcaoId=null,agAcaoCliId=null;
 
@@ -4347,7 +4347,7 @@ async function loadRel(){
 
 
 // ============================================================
-// CONTROLE DE MANUTENÇÃO / RETORNO
+// CONTROLE DE MANUTENÇAO / RETORNO
 // ============================================================
 let manutFiltro = 0;
 
@@ -4738,7 +4738,7 @@ async function importarClientes(){
 }
 
 // ============================================================
-// EXPORTAÇÃO
+// EXPORTAÇAO
 // ============================================================
 async function exportarClientesCSV(){
   if(!CU){toast('Faça login primeiro','err');return;}
