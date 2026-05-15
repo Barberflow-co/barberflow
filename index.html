@@ -6223,53 +6223,61 @@ async function init(){
 async function loadCtx(){
   if(!CU)return;
   CE=null;CP=null;
-  
-  // Verifica PRIMEIRO se e membro de equipe (profissional convidado)
-  const{data:eqMembro}=await sb.from('equipe').select('*').eq('email',CU.email).limit(1);
-  if(eqMembro&&eqMembro.length){
-    const membro=eqMembro[0];
+
+  // Helper: aplica UI/contexto de membro de equipe e carrega dados.
+  const aplicarMembro=async(membro)=>{
     CE=membro;
     CP={nome_barbearia:'Klipflow',logo:null};
-    // Busca nome da barbearia do dono
-    sb.from('profiles').select('nome_barbearia').eq('id',membro.user_id).single().then(({data:ow})=>{
-      id('u-name').textContent=ow?.nome_barbearia||membro.nome;
+    // Busca dados da barbearia do dono (assíncrono — UI atualiza quando vier)
+    sb.from('profiles').select('*').eq('id',membro.user_id).single().then(({data:ow})=>{
+      if(ow){CP=ow;id('u-name').textContent=ow.nome_barbearia||membro.nome;}
     });
     id('u-role').textContent=membro.permissao||'profissional';
     id('u-av').textContent=membro.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    applyPerm(membro.permissao||'profissional');
     if(membro.permissao==='profissional'){
       document.body.classList.add('is-prof');
       aplicarMenuProf();setTimeout(()=>aplicarMenuProf(),500);
     }
-    if(!membro.auth_user_id){
-      await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
-    }
-    // Carrega dados e ativa realtime para o profissional tambem
     await loadServsBD();await loadProfsBD();await loadCliSels();
     ativarRealtime();
-    return;
-  }
+  };
 
-  // Se nao e equipe, busca profile de admin
-  const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).single();
+  // 1) PRIMÁRIO: identifica membro de equipe pelo auth_user_id (vínculo forte e único).
+  const{data:eqByAuth}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).maybeSingle();
+  if(eqByAuth){await aplicarMembro(eqByAuth);return;}
+
+  // 2) Não é membro vinculado: busca profile de admin (dono da barbearia).
+  const{data:prof}=await sb.from('profiles').select('*').eq('id',CU.id).maybeSingle();
   if(prof){
     CP=prof;CE=null;applyPerm('admin');
     setUI(prof.nome||'Admin','Admin - Proprietário','#0D6EFD');
     if(prof.nome_barbearia&&id('c-barb'))id('c-barb').value=prof.nome_barbearia;
     if(prof.nome&&id('c-nome'))id('c-nome').value=prof.nome;
     if(prof.telefone&&id('c-tel'))id('c-tel').value=prof.telefone;
-  } else {
-    const{data:eq}=await sb.from('equipe').select('*').eq('auth_user_id',CU.id).single();
-    if(eq){
-      CE=eq;
-      const{data:ow}=await sb.from('profiles').select('*').eq('id',eq.user_id).single();
-      if(ow)CP=ow;
-      applyPerm(eq.permissao||'profissional');
-      setUI(eq.nome,PERMS[eq.permissao||'profissional']?.label||'',eq.cor||'#0D6EFD');
-    }
+    await loadServsBD();await loadProfsBD();await loadCliSels();
+    ativarRealtime();
+    return;
   }
-  await loadServsBD();await loadProfsBD();await loadCliSels();
-  // Ativa realtime - atualiza agenda automaticamente quando ha mudancas
-  ativarRealtime();
+
+  // 3) FALLBACK LEGADO: membro cadastrado antes do vínculo via auth_user_id.
+  //    Auto-vincula APENAS se houver um único registro pendente com este email.
+  //    Múltiplos pendentes = ambiguidade (ex-funcionário recadastrado) → bloqueia.
+  const{data:pendentes}=await sb.from('equipe').select('*').eq('email',CU.email).is('auth_user_id',null);
+  if(pendentes&&pendentes.length===1){
+    const membro=pendentes[0];
+    await sb.from('equipe').update({auth_user_id:CU.id}).eq('id',membro.id);
+    membro.auth_user_id=CU.id;
+    await aplicarMembro(membro);
+    return;
+  }
+  if(pendentes&&pendentes.length>1){
+    toast('Cadastro ambíguo: seu email está vinculado a múltiplas barbearias. Contate o suporte.','err');
+    return;
+  }
+
+  // 4) Conta órfã: signup sem profile e sem equipe correspondente.
+  toast('Conta sem barbearia associada. Contate o suporte.','err');
 }
 
 function ativarRealtime(){
@@ -6423,12 +6431,21 @@ async function doRegister(){
   if(!nome||!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
   if(pass.length<8){err.textContent='Senha com mínimo 8 caracteres.';err.style.display='block';return;}
   if(pass !== pass2){err.textContent='As senhas não coincidem. Verifique e tente novamente.';err.style.display='block';id('r-pass2').focus();return;}
-  const{data:eqCheck}=await sb.from('equipe').select('id,user_id').eq('email',email).single();
+  // Verifica se há convite pendente em equipe (auth_user_id IS NULL) com este email.
+  // Não considera registros já vinculados — protege contra hijack de funcionário
+  // ativo de outra barbearia. Múltiplos pendentes = ambiguidade, bloqueia.
+  const{data:pendentes}=await sb.from('equipe').select('id,user_id').eq('email',email).is('auth_user_id',null);
+  if(pendentes&&pendentes.length>1){
+    err.textContent='Seu email tem cadastros pendentes em múltiplas barbearias. Contate o suporte para resolver antes de criar a conta.';
+    err.style.display='block';
+    return;
+  }
+  const conviteUnico=(pendentes&&pendentes.length===1)?pendentes[0]:null;
   const{data,error}=await sb.auth.signUp({email,password:pass});
   if(error){err.textContent=error.message;err.style.display='block';return;}
   if(data.user){
-    if(eqCheck){
-      await sb.from('equipe').update({auth_user_id:data.user.id}).eq('id',eqCheck.id);
+    if(conviteUnico){
+      await sb.from('equipe').update({auth_user_id:data.user.id}).eq('id',conviteUnico.id);
       toast('Acesso ativado. Bem-vindo!','ok');
     } else {
       await sb.from('profiles').insert({id:data.user.id,nome:nome+' '+sob,email,telefone:tel,nome_barbearia:barb,plano:'trial'});
