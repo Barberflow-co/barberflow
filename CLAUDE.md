@@ -72,3 +72,4 @@ Open the HTML file directly, or serve the directory with any static server (e.g.
 - **Inline everything.** Styles use single-letter utility classes (`.fi`, `.fg`, `.fl`, `.btn`, `.b-green`, etc.) defined at the top. Reuse them rather than adding new ones.
 - **`getOwn()` everywhere.** Any insert/select/update against a tenant table must scope to `user_id: getOwn()`.
 - **Secrets in client code.** The Supabase anon key (and in `admin.html`, the service_role key) are committed in plaintext. That's the current state — flag it if it's relevant to a task, but don't refactor it out unilaterally.
+- **Always respond in Brazilian Portuguese (pt-BR).** Interface messages from Claude Code itself stay in English, but all analysis, explanations, plans, comments and chat responses must be in pt-BR.
