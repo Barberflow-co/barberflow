@@ -2210,8 +2210,6 @@ async function waRodarLembretes(){
   if(!wasConn || !CU || !swLemb?.classList.contains('on')) return;
 
   try {
-    const amanha = new Date();
-    amanha.setDate(amanha.getDate() + 1);
     const amanhaStr = hojeLocal().replace(
       /^(\d{4})-(\d{2})-(\d{2})$/,
       (_, y, m, d) => {
@@ -2226,7 +2224,7 @@ async function waRodarLembretes(){
       .eq('user_id', CU.id)
       .gte('data_hora', amanhaStr + 'T00:00')
       .lte('data_hora', amanhaStr + 'T23:59')
-      .eq('status', 'agendado');
+      .in('status', ['aguardando','confirmado']);
 
     if(!ags?.length) return;
 
