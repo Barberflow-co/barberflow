@@ -3950,20 +3950,21 @@ async function abrirAcaoAg(agId){
   }
   // Sempre mostra botao de envio WA (independente do status)
   if(a.wa_confirmado){
-    html += `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;margin-top:2px">
-      <div style="width:30px;height:30px;background:#22C55E;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+    html+=`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;margin-top:4px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#22C55E" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413z"/></svg>
+      <div style="flex:1">
+        <div style="font-size:12.5px;font-weight:700;color:#166534">Mensagem enviada</div>
+        <div style="font-size:11px;color:#16A34A">Confirmacao WA ja foi disparada</div>
       </div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700;color:#166534">Confirmacao WA enviada</div>
-        <div style="font-size:11.5px;color:#16A34A;margin-top:1px">Cliente ja recebeu a mensagem</div>
-      </div>
-      <button onclick="aacaoEnviarWA()" style="background:none;border:1px solid #BBF7D0;border-radius:8px;padding:5px 10px;font-size:11.5px;color:#16A34A;cursor:pointer;font-weight:600;white-space:nowrap">Reenviar</button>
+      <button onclick="aacaoEnviarWA()" style="background:none;border:1px solid #BBF7D0;border-radius:8px;padding:4px 10px;font-size:11.5px;color:#16A34A;cursor:pointer;font-weight:600;white-space:nowrap;flex-shrink:0">Reenviar</button>
     </div>`;
-  } else {
-    html += `<button class="aacao-btn aacao-btn-wa" onclick="aacaoEnviarWA()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
-      Enviar confirmacao pelo WhatsApp
+  } else if(a.clientes?.telefone){
+    html+=`<button class="aacao-btn aacao-btn-wa" onclick="aacaoEnviarWA()" style="margin-top:4px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413z"/></svg>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700">Mensagem nao enviada</div>
+        <div style="font-size:11px;opacity:.8">Clique para enviar agora</div>
+      </div>
     </button>`;
   }
   id('aacao-btns').innerHTML=html;
@@ -4025,55 +4026,28 @@ async function aacaoWhatsApp(){
 }
 
 async function aacaoEnviarWA(){
-  // Envia mensagem de confirmacao com 1 clique via Evolution API
   const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,telefone)').eq('id',agAcaoId).single();
   if(!a){toast('Agendamento nao encontrado','err');return;}
   if(!a.clientes?.telefone){toast('Cliente sem telefone cadastrado','err');return;}
-  
-  const telefone = a.clientes.telefone;
-  const nome = a.clientes.nome?.split(' ')[0] || 'Cliente';
-  const hr = new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const dt = new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
-  const serv = a.profissional || 'servico';
-  
-  // Usa o template salvo ou o padrao
-  const msgTemplate = document.getElementById('msg-confirm')?.innerText ||
-    'Ola {nome}! Seu agendamento foi confirmado:\n {data} as {hora}\n {servico}\nTe esperamos!';
-  const msg = msgTemplate
-    .replace(/{nome}/g, nome)
-    .replace(/{data}/g, dt)
-    .replace(/{hora}/g, hr)
-    .replace(/{servico}/g, serv);
-  
-  // Desabilita o botao enquanto envia
-  const btn = document.querySelector('.aacao-btn-wa');
-  if(btn){ btn.disabled=true; btn.textContent='Enviando...'; }
-  
-  const ok = await waEnviarMensagem(telefone, msg, agAcaoId);
-  
+  const telefone=a.clientes.telefone;
+  const nome=a.clientes.nome?.split(' ')[0]||'Cliente';
+  const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
+  const serv=a.profissional||'servico';
+  const tpl=document.getElementById('msg-confirm')?.innerText||'Ola {nome}! Seu agendamento foi confirmado: {data} as {hora} - {servico}. Te esperamos!';
+  const msg=tpl.replace(/{nome}/g,nome).replace(/{data}/g,dt).replace(/{hora}/g,hr).replace(/{servico}/g,serv);
+  const btn=document.querySelector('.aacao-btn-wa');
+  if(btn){btn.style.opacity='.5';btn.style.pointerEvents='none';}
+  const ok=await waEnviarMensagem(telefone, msg, agAcaoId);
   if(ok){
-    toast('Mensagem enviada pelo WhatsApp!','ok');
+    toast('Mensagem enviada!','ok');
     cm('m-ag-acao');
-    // Atualiza o visual do agendamento na agenda
     setTimeout(()=>loadAgenda(),500);
   } else {
-    toast('WA desconectado. Abrindo WhatsApp Web...','err');
-    const tel = telefone.replace(/\D/g,'');
-    setTimeout(() => window.open('https://wa.me/55'+tel+'?text='+encodeURIComponent(msg),'_blank'), 800);
-    cm('m-ag-acao');
+    if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
+    toast('Falhou. Verifique se o WhatsApp esta conectado.','err');
   }
 }
-
-function aacaoEditar(){
-  cm('m-ag-acao');
-  editarAg(agAcaoId);
-}
-
-function aacaoEditarCliente(){
-  cm('m-ag-acao');
-  if(agAcaoCliId)editarCli(agAcaoCliId);
-}
-
 async function aacaoExcluir(){
   cm('m-ag-acao');
   await excluirAg(agAcaoId);
