@@ -6599,6 +6599,7 @@ async function sv(name,el){
   if(name==='caixa')await loadCaixa();
   if(name==='aniversarios')await loadAniversarios();
   if(name==='manutencao')await loadManutencao();
+  if(name==='whatsapp')initWaView();
 }
 function getOwn(){return CE?CE.user_id:CU?.id;}
 
