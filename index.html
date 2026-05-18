@@ -579,6 +579,11 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 .wa-sw.on{background:#22C55E}
 .wa-sw::after{content:'';width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .wa-sw.on::after{left:23px}
+
+/* WA MSG BOX */
+.wa-msg-box{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--gray-700);line-height:1.7;white-space:pre-wrap;font-family:inherit;min-height:60px;transition:border-color .2s}
+.wa-msg-box:focus{outline:none;border-color:var(--brand);background:#fff}
+.wa-msg-box:hover{border-color:var(--gray-300)}
 </style>
 </head>
 <body>
@@ -1099,146 +1104,275 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 
     <!-- WHATSAPP -->
     <div class="view" id="view-whatsapp">
+
+      <!-- HEADER com status -->
       <div class="ph">
         <div>
           <div class="pt">WhatsApp Automático</div>
           <div class="ps" id="wa-status-txt">Verificando conexão...</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span id="wa-status-badge" class="wa-status-pill connecting"><span class="wa-status-dot"></span><span id="wa-badge-txt">Conectando...</span></span>
-          <button class="btn btn-md btn-outline" id="btn-wa-desc" onclick="waDesconectar()" style="display:none">Desconectar</button>
-          <button class="btn btn-md btn-primary" id="btn-wa-conn" onclick="waConectar()">Conectar WhatsApp</button>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span id="wa-status-badge" class="wa-status-pill disconnected">
+            <span class="wa-status-dot"></span>
+            <span id="wa-badge-txt">Desconectado</span>
+          </span>
+          <button class="btn btn-outline btn-md" id="btn-wa-desc" onclick="waDesconectar()" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+            Desconectar
+          </button>
+          <button class="btn btn-primary btn-md" id="btn-wa-conn" onclick="waConectar()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.527 5.845L.057 23.882l6.198-1.448A11.93 11.93 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374A9.86 9.86 0 0 1 2.118 12c0-5.454 4.428-9.882 9.882-9.882 5.454 0 9.882 4.428 9.882 9.882 0 5.454-4.428 9.882-9.882 9.882z"/></svg>
+            Conectar WhatsApp
+          </button>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;min-width:0;overflow:hidden">
+      <!-- GRID PRINCIPAL: 2 colunas -->
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;min-width:0">
 
-        <!-- Coluna esquerda: conexão QR -->
+        <!-- COLUNA ESQUERDA -->
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-          <div class="card">
-            <div class="sh" style="margin-bottom:20px">
-              <div class="st">Conexão via QR Code</div>
-            </div>
 
+          <!-- Card Conexão -->
+          <div class="card" style="padding:24px">
+            <div class="st" style="margin-bottom:16px">Conexão</div>
+
+            <!-- Estado: desconectado -->
             <div id="wa-area-disc">
-              <div class="wa-qr-box" id="wa-qr-box" style="display:flex">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <div style="font-size:14px;font-weight:600;color:var(--gray-700);text-align:center">Clique em "Conectar WhatsApp"<br>para gerar o QR Code</div>
-                <div class="wa-qr-hint">Abra o WhatsApp no celular → Menu → Aparelhos conectados → Conectar aparelho</div>
+              <!-- Instrução inicial -->
+              <div id="wa-qr-box" style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 16px;background:var(--gray-50);border:2px dashed var(--gray-200);border-radius:12px;text-align:center;margin-bottom:14px">
+                <div style="width:56px;height:56px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">Clique em "Conectar WhatsApp"</div>
+                <div style="font-size:12px;color:var(--gray-400);line-height:1.6">O QR Code vai aparecer aqui.<br>Escaneie com seu WhatsApp.</div>
               </div>
+              <!-- QR Code -->
               <div id="wa-qr-wrap" style="display:none;flex-direction:column;align-items:center;gap:12px">
-                <img id="wa-qr-img" class="wa-qr-img" src="" alt="QR Code">
-                <div class="wa-qr-hint">Escaneie com seu WhatsApp.<br>O código expira em <strong id="wa-timer">60</strong>s</div>
-                <button class="btn btn-sm btn-outline" onclick="waConectar()">Recarregar QR</button>
+                <img id="wa-qr-img" style="width:200px;height:200px;border-radius:10px;border:2px solid var(--gray-200)" src="" alt="QR Code">
+                <div style="font-size:12.5px;color:var(--gray-500);text-align:center;line-height:1.7">
+                  Abra o WhatsApp no celular<br>
+                  <strong>Menu → Aparelhos conectados → Conectar</strong><br>
+                  Expira em <strong id="wa-timer" style="color:var(--brand)">60</strong>s
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="waConectar()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4"/></svg>
+                  Recarregar QR
+                </button>
               </div>
             </div>
 
+            <!-- Estado: conectado -->
             <div id="wa-area-conn" style="display:none">
-              <div class="wa-connected-box">
+              <div style="display:flex;align-items:center;gap:14px;padding:16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px">
                 <div style="width:44px;height:44px;background:#22C55E;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <div>
                   <div style="font-weight:700;font-size:14px;color:#166534">WhatsApp conectado!</div>
-                  <div style="font-size:12px;color:#16A34A;margin-top:3px" id="wa-num-conn">Número conectado</div>
+                  <div style="font-size:12px;color:#16A34A;margin-top:2px" id="wa-num-conn">Numero conectado</div>
                 </div>
               </div>
-              <div style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
-                <div style="font-size:12px;color:var(--gray-500);line-height:1.6">
-                  💡 Seu WhatsApp fica conectado enquanto o celular tiver internet. Se desconectar, clique em "Conectar WhatsApp" para escanear novamente.
+              <div style="margin-top:12px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);line-height:1.6">
+                Mantenha o celular com internet. Se desconectar, clique em "Conectar WhatsApp" novamente.
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Estatisticas -->
+          <div class="card" id="wa-stats-card" style="display:none;padding:24px">
+            <div class="st" style="margin-bottom:14px">Este mes</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="text-align:center;padding:16px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
+                <div style="font-size:32px;font-weight:800;color:#22C55E;line-height:1" id="wa-stat-env">0</div>
+                <div style="font-size:11px;color:var(--gray-400);margin-top:6px;font-weight:500">ENVIADAS</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
+                <div style="font-size:32px;font-weight:800;color:var(--brand);line-height:1" id="wa-stat-pend">0</div>
+                <div style="font-size:11px;color:var(--gray-400);margin-top:6px;font-weight:500">PENDENTES</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Variaveis -->
+          <div class="card" style="padding:24px">
+            <div class="st" style="margin-bottom:12px">Variaveis disponiveis</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <code style="background:var(--brand-light);color:var(--brand);padding:3px 8px;border-radius:5px;font-size:11.5px;font-weight:700;flex-shrink:0">{nome}</code>
+                <span style="font-size:12px;color:var(--gray-500)">Nome do cliente</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <code style="background:var(--brand-light);color:var(--brand);padding:3px 8px;border-radius:5px;font-size:11.5px;font-weight:700;flex-shrink:0">{data}</code>
+                <span style="font-size:12px;color:var(--gray-500)">Data do agendamento</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <code style="background:var(--brand-light);color:var(--brand);padding:3px 8px;border-radius:5px;font-size:11.5px;font-weight:700;flex-shrink:0">{hora}</code>
+                <span style="font-size:12px;color:var(--gray-500)">Horario do atendimento</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <code style="background:var(--brand-light);color:var(--brand);padding:3px 8px;border-radius:5px;font-size:11.5px;font-weight:700;flex-shrink:0">{servico}</code>
+                <span style="font-size:12px;color:var(--gray-500)">Nome do servico</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <code style="background:var(--brand-light);color:var(--brand);padding:3px 8px;border-radius:5px;font-size:11.5px;font-weight:700;flex-shrink:0">{dias}</code>
+                <span style="font-size:12px;color:var(--gray-500)">Dias sem visita</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUNA DIREITA: Automacoes + Mensagens -->
+        <div style="min-width:0">
+          <div class="card" style="padding:0;overflow:hidden">
+
+            <!-- Header do card -->
+            <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div class="st" style="font-size:15px">Automacoes</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">As mensagens saem automaticamente no momento certo</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="waSalvarMensagens()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+                Salvar mensagens
+              </button>
+            </div>
+
+            <!-- Lista de automacoes -->
+            <div style="display:flex;flex-direction:column">
+
+              <!-- 1. Confirmacao -->
+              <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#DBEAFE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Confirmacao de agendamento</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviada logo apos o agendamento ser criado</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-confirm" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-confirm" contenteditable="true">Ola {nome}! [OK] Seu agendamento foi confirmado:
+ {data} as {hora}
+[Tesoura] {servico}
+Te esperamos!</div>
+                  </div>
                 </div>
               </div>
+
+              <!-- 2. Lembrete -->
+              <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Lembrete 1 dia antes</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado na vespera do atendimento</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-lembrete" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-lembrete" contenteditable="true">Ola {nome}! Lembrete: amanha voce tem *{servico}* as *{hora}*.
+
+Confirma sua presenca? Responda SIM ou NAO</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Retorno/Manutencao -->
+              <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#D1FAE5;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Alerta de retorno / manutencao</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Avisa quando esta na hora de voltar (7, 15 e 30 dias)</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-retorno" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-retorno" contenteditable="true">Ola {nome}! Faz {dias} dias desde sua ultima manutencao da protese. Que tal agendar seu retorno?</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. Aniversario -->
+              <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#FCE7F3;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DB2777" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Aniversario do cliente</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Mensagem automatica no dia do aniversario</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-aniv" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-aniv" contenteditable="true">Feliz aniversario, {nome}! Que seu dia seja especial! Como presente, temos uma condicao especial pra voce hoje. Chama a gente!</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5. Clientes sumidos -->
+              <div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Reativacao de clientes sumidos</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Para clientes sem visita ha mais de 45 dias</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-sumido" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-sumido" contenteditable="true">Ola {nome}! Sentimos sua falta! Faz um tempinho que voce nao aparece. Que tal agendar sua proxima manutencao da protese?</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 6. Pos-atendimento -->
+              <div style="padding:20px 24px">
+                <div style="display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:40px;height:40px;border-radius:10px;background:#F3E8FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Pos-atendimento</div>
+                        <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado 2 horas apos o atendimento ser finalizado</div>
+                      </div>
+                      <div class="wa-sw on" id="wa-sw-pos" onclick="waToogleSw(this)"></div>
+                    </div>
+                    <div style="font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Mensagem</div>
+                    <div class="wa-msg-box" id="msg-pos" contenteditable="true">Ola {nome}! Como foi seu atendimento hoje? Sua opiniao e muito importante pra gente. Obrigado pela confianca!</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Stats -->
-          <div class="card" id="wa-stats-card" style="display:none;margin-bottom:16px">
-            <div class="st" style="margin-bottom:14px">Mensagens este mês</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div style="text-align:center;padding:14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
-                <div style="font-size:26px;font-weight:700;color:#22C55E" id="wa-stat-env">0</div>
-                <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Enviadas</div>
-              </div>
-              <div style="text-align:center;padding:14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)">
-                <div style="font-size:26px;font-weight:700;color:var(--brand)" id="wa-stat-pend">0</div>
-                <div style="font-size:11px;color:var(--gray-400);margin-top:4px">Pendentes</div>
-              </div>
-            </div>
-          </div>
-
-        <!-- Coluna direita: automações -->
-        <div class="card" style="min-width:0;overflow:hidden">
-          <div class="sh" style="margin-bottom:20px">
-            <div class="st">Automações</div>
-            <div style="font-size:12px;color:var(--gray-400)">As mensagens saem automaticamente no momento certo</div>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">✅ Confirmação de agendamento</div><div class="wa-toggle-sub">Enviada logo após o agendamento ser criado</div></div>
-            <button class="wa-sw on" id="wa-sw-confirm" onclick="waToogleSw(this)"></button>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">⏰ Lembrete 1 dia antes</div><div class="wa-toggle-sub">Enviado na véspera do atendimento</div></div>
-            <button class="wa-sw on" id="wa-sw-lembrete" onclick="waToogleSw(this)"></button>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">🔄 Alerta de retorno/manutenção</div><div class="wa-toggle-sub">Avisa quando está na hora de voltar (3, 7 e 15 dias)</div></div>
-            <button class="wa-sw on" id="wa-sw-retorno" onclick="waToogleSw(this)"></button>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">🎂 Aniversário do cliente</div><div class="wa-toggle-sub">Mensagem automática no dia do aniversário</div></div>
-            <button class="wa-sw on" id="wa-sw-aniv" onclick="waToogleSw(this)"></button>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">💤 Reativação de clientes sumidos</div><div class="wa-toggle-sub">Para clientes sem visita há mais de 45 dias</div></div>
-            <button class="wa-sw on" id="wa-sw-sumido" onclick="waToogleSw(this)"></button>
-          </div>
-          <div class="wa-toggle-row">
-            <div><div class="wa-toggle-label">⭐ Pós-atendimento</div><div class="wa-toggle-sub">Enviado 2 horas após o atendimento ser finalizado</div></div>
-            <button class="wa-sw on" id="wa-sw-pos" onclick="waToogleSw(this)"></button>
-          </div>
-
-          <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-200)">
-            <div class="st" style="margin-bottom:14px;font-size:13px">Personalizar mensagens</div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Confirmação de agendamento</div>
-                <div class="wa-msg-box" id="msg-confirm" contenteditable="true">Olá {nome}! ✅ Seu agendamento foi confirmado:
-📅 {data} às {hora}
-✂️ {servico}
-Te esperamos! 💈</div>
-              </div>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Lembrete (1 dia antes)</div>
-                <div class="wa-msg-box" id="msg-lembrete" contenteditable="true">Olá {nome}! 💈 Lembrete: amanhã você tem *{servico}* às *{hora}*.
-
-Confirma sua presença? Responda SIM ✅ ou NÃO ❌</div>
-              </div>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Retorno/Manutenção</div>
-                <div class="wa-msg-box" id="msg-retorno" contenteditable="true">Olá {nome}! Faz {dias} dias desde sua última manutenção. 💈
-
-Que tal agendar seu retorno? {link}</div>
-              </div>
-            </div>
-                          <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">🎂 Aniversário do cliente</div>
-                <div class="wa-msg-box" id="msg-aniv" contenteditable="true">Feliz aniversário, {nome}! 🎉 Que seu dia seja especial! Como presente, temos uma condição especial pra você hoje. Chama a gente! 💈</div>
-              </div>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">💤 Reativação (cliente sumido)</div>
-                <div class="wa-msg-box" id="msg-sumido" contenteditable="true">Olá {nome}! Sentimos sua falta! 😊 Faz um tempinho que você não aparece. Que tal agendar sua próxima manutenção da prótese? 💈</div>
-              </div>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">⭐ Pós-atendimento</div>
-                <div class="wa-msg-box" id="msg-pos" contenteditable="true">Olá {nome}! Como foi seu atendimento hoje? 😊 Sua opinião é muito importante pra gente. Obrigado pela confiança! 💈</div>
-              </div>
-              <button class="btn btn-primary btn-md" style="margin-top:14px" onclick="waSalvarMensagens()">Salvar mensagens</button>
-          </div>
-        </div>
       </div>
     </div>
-
     <!-- MINHA PÁGINA -->
     <div class="view" id="view-linkpage">
       <div class="ph"><div><div class="pt">Minha Página</div><div class="ps">Crie sua página de links para divulgar no Instagram</div></div></div>
@@ -1969,7 +2103,20 @@ let waCheckInterval = null;
 
 function waInstanciaId(){
   // ID unico por usuario: klipflow_ + user_id (primeiros 8 chars)
-  return 'klipflow_' + (CU?.id || 'demo').substring(0,8);
+  // Tenta CU.id, depois verifica localStorage do Supabase auth
+  let uid = CU?.id || '';
+  if(!uid){
+    try{
+      // Tenta recuperar do localStorage do Supabase
+      const keys = Object.keys(localStorage).filter(k => k.includes('supabase') && k.includes('auth'));
+      for(const k of keys){
+        const d = JSON.parse(localStorage.getItem(k)||'{}');
+        uid = d?.user?.id || d?.currentSession?.user?.id || '';
+        if(uid) break;
+      }
+    }catch(e){}
+  }
+  return 'klipflow_' + (uid || 'demo').substring(0,8);
 }
 
 function waSetStatus(status, txt){
@@ -2074,12 +2221,12 @@ function waShowQR(base64){
 async function waCheckStatus(){
   const instId = waInstanciaId();
   try{
-    const res = await fetch(`${window.EVO_URL}/instance/fetchInstances`, {
+    const res = await fetch(`${window.EVO_URL}/instance/connectionState/${instId}`, {
       headers: {'apikey': window.EVO_KEY}
     });
     const data = await res.json();
-    const inst = Array.isArray(data) ? data.find(i => i.instance?.instanceName === instId) : null;
-    if(inst?.instance?.state === 'open'){
+    const state = data?.instance?.state || data?.state || '';
+    if(state === 'open'){
       clearInterval(waCheckInterval);
       if(waTimer) clearInterval(waTimer);
       waSetStatus('connected');
@@ -2328,24 +2475,30 @@ function initWaView(){
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
   }catch(e){}
-  // Checa se estava conectado - localStorage ou Supabase
-  const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  if(wasLocal){
-    waCheckStatus();
-  } else if(CU?.id){
-    // Verifica no Supabase
-    sb.from('profiles').select('wa_connected,wa_instance').eq('id',CU.id).single()
-      .then(({data}) => {
-        if(data?.wa_connected){
-          localStorage.setItem('wa_connected_' + CU.id, '1');
-          waCheckStatus();
-        } else {
-          waSetStatus('disconnected');
-        }
-      });
-  } else {
-    waSetStatus('disconnected');
-  }
+  // Verifica conexao DIRETAMENTE na Evolution API (ignora localStorage/CU)
+  // Isso resolve o bug do F5 onde CU ainda e null
+  waSetStatus('connecting');
+  const instId = 'klipflow_' + ((CU?.id || '') || 'demo').substring(0,8);
+  fetch(window.EVO_URL + '/instance/connectionState/' + instId, {
+    headers: {'apikey': window.EVO_KEY}
+  })
+  .then(r => r.json())
+  .then(d => {
+    const state = d?.instance?.state || d?.state || '';
+    if(state === 'open'){
+      waSetStatus('connected');
+      if(CU?.id) localStorage.setItem('wa_connected_' + CU.id, '1');
+    } else {
+      waSetStatus('disconnected');
+      if(CU?.id) localStorage.removeItem('wa_connected_' + CU.id);
+    }
+  })
+  .catch(() => {
+    // Se falhar, tenta via localStorage como fallback
+    const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
+    waSetStatus(wasLocal ? 'connecting' : 'disconnected');
+    if(wasLocal) waCheckStatus();
+  });
 }
 
 
