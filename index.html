@@ -2141,8 +2141,9 @@ function waSetStatus(status, txt){
     if(areaDisc) areaDisc.style.display='none';
     if(areaConn) areaConn.style.display='block';
     if(statsCard) statsCard.style.display='block';
+    // Salva estado conectado no Supabase para persistir entre sessoes
     const uid = CU?.id || '';
-    if(uid){
+    if(uid) {
       localStorage.setItem('wa_connected_' + uid, '1');
       window.sb?.from('profiles').update({wa_connected:true}).eq('id',uid).then(()=>{}).catch(()=>{});
     }
@@ -2155,8 +2156,38 @@ function waSetStatus(status, txt){
   }
 }
 
+async function waReconectarSilencioso(instId){
+  // Tenta reconectar sem QR - apenas restaura a sessao existente
+  try{
+    const res = await fetch(`${window.EVO_URL}/instance/connect/${instId}`, {
+      headers: {'apikey': window.EVO_KEY}
+    });
+    const data = await res.json();
+    if(data.instance?.state === 'open' || data.state === 'open'){
+      waSetStatus('connected');
+      if(id('wa-num-conn')) id('wa-num-conn').textContent = data.instance?.owner || 'Conectado';
+    } else if(data.base64 || data.qrcode?.base64){
+      // Precisou de QR - mostra para o usuario
+      waShowQR(data.base64 || data.qrcode.base64);
+    } else {
+      // Fallback: verifica de novo apos 3s
+      setTimeout(() => {
+        fetch(window.EVO_URL + '/instance/connectionState/' + instId, {headers:{'apikey':window.EVO_KEY}})
+        .then(r=>r.json())
+        .then(d => {
+          if(d?.instance?.state === 'open') waSetStatus('connected');
+          else waSetStatus('disconnected');
+        })
+        .catch(() => waSetStatus('disconnected'));
+      }, 3000);
+    }
+  }catch(e){
+    waSetStatus('disconnected');
+  }
+}
+
 async function waConectar(){
-  if(!CU){ toast('Você precisa estar logado','err'); return; }
+  if(!CU){ toast('Voce precisa estar logado','err'); return; }
   waSetStatus('connecting');
   const instId = waInstanciaId();
   try{
@@ -2462,12 +2493,15 @@ async function waEnviarMensagem(telefone, mensagem){
     const data = await res.json();
     const sucesso = data.key?.id ? true : false;
     if(sucesso){
+      // Incrementa contador mensal no localStorage
       const mesAtual = new Date().toISOString().substring(0,7);
       const chaveCount = 'wa_count_' + mesAtual;
       const countAtual = parseInt(localStorage.getItem(chaveCount) || '0');
-      localStorage.setItem(chaveCount, String(countAtual + 1));
+      const novoCount = countAtual + 1;
+      localStorage.setItem(chaveCount, String(novoCount));
+      // Atualiza o card de stats na tela
       const elEnv = document.getElementById('wa-stat-env');
-      if(elEnv) elEnv.textContent = String(countAtual + 1);
+      if(elEnv) elEnv.textContent = String(novoCount);
     }
     return sucesso;
   }catch(e){
@@ -2493,45 +2527,62 @@ function initWaView(){
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
   }catch(e){}
-  // Carrega contador de mensagens enviadas
+  // Carrega contadores
   try{
     const mesAtual = new Date().toISOString().substring(0,7);
+    const countEnv = parseInt(localStorage.getItem('wa_count_' + mesAtual) || '0');
     const elEnv = document.getElementById('wa-stat-env');
-    if(elEnv) elEnv.textContent = localStorage.getItem('wa_count_' + mesAtual) || '0';
+    if(elEnv) elEnv.textContent = String(countEnv);
   }catch(e){}
-  // Verifica status WA: Supabase como cache rapido, API como confirmacao
+  // Verifica status WA: primeiro localStorage/Supabase (rapido), depois API (preciso)
   const instId = waInstanciaId();
-  const checkAPI = (iId) => {
+  
+  // Funcao que verifica na API da Evolution
+  const checkAPI = (iId, autoReconnect=false) => {
     if(!iId || iId === 'klipflow_demo'){ waSetStatus('disconnected'); return; }
     fetch(window.EVO_URL + '/instance/connectionState/' + iId, {headers:{'apikey':window.EVO_KEY}})
     .then(r=>r.json())
     .then(d=>{
       const state = d?.instance?.state || d?.state || '';
-      waSetStatus(state === 'open' ? 'connected' : 'disconnected');
+      if(state === 'open'){
+        waSetStatus('connected');
+      } else if(autoReconnect && (state === 'close' || state === 'connecting')){
+        // Reconecta silenciosamente sem pedir QR
+        waReconectarSilencioso(iId);
+      } else {
+        waSetStatus('disconnected');
+      }
     })
     .catch(()=>waSetStatus('disconnected'));
   };
+
+  // Se CU nao carregou ainda, usa a sessao do Supabase
   if(!instId || instId === 'klipflow_demo'){
     window.sb.auth.getSession().then(async s => {
       const uid = s?.data?.session?.user?.id || '';
       if(!uid){ waSetStatus('disconnected'); return; }
       const realInstId = 'klipflow_' + uid.substring(0,8);
-      try{
-        const {data:prof} = await window.sb.from('profiles').select('wa_connected').eq('id',uid).single();
-        if(prof?.wa_connected){
-          waSetStatus('connected');
-          checkAPI(realInstId);
-        } else {
-          checkAPI(realInstId);
-        }
-      }catch(e){ checkAPI(realInstId); }
+      // Verifica no Supabase primeiro (cache rapido)
+      const {data:prof} = await window.sb.from('profiles').select('wa_connected').eq('id',uid).single().catch(() => ({data:null}));
+      if(prof?.wa_connected){
+        waSetStatus('connected'); // mostra conectado imediatamente
+        checkAPI(realInstId, true); // confirma e reconecta automaticamente
+      } else {
+        checkAPI(realInstId, false);    // verifica na API
+      }
     });
     return;
   }
+
+  // CU esta disponivel - verifica localStorage como cache
   const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
-  if(wasLocal) waSetStatus('connected');
-  else waSetStatus('connecting');
-  checkAPI(instId);
+  if(wasLocal){
+    waSetStatus('connected'); // mostra conectado imediatamente (evita o pisca)
+  } else {
+    waSetStatus('connecting');
+  }
+  // Confirma com a API em background
+  checkAPI(instId, !!wasLocal); // autoReconnect se tinha local
 }
 
 
