@@ -2141,6 +2141,11 @@ function waSetStatus(status, txt){
     if(areaDisc) areaDisc.style.display='none';
     if(areaConn) areaConn.style.display='block';
     if(statsCard) statsCard.style.display='block';
+    const uid = CU?.id || '';
+    if(uid){
+      localStorage.setItem('wa_connected_' + uid, '1');
+      window.sb?.from('profiles').update({wa_connected:true}).eq('id',uid).then(()=>{}).catch(()=>{});
+    }
   } else {
     if(btnConn) btnConn.style.display='inline-flex';
     if(btnDesc) btnDesc.style.display='none';
@@ -2455,7 +2460,16 @@ async function waEnviarMensagem(telefone, mensagem){
       })
     });
     const data = await res.json();
-    return data.key?.id ? true : false;
+    const sucesso = data.key?.id ? true : false;
+    if(sucesso){
+      const mesAtual = new Date().toISOString().substring(0,7);
+      const chaveCount = 'wa_count_' + mesAtual;
+      const countAtual = parseInt(localStorage.getItem(chaveCount) || '0');
+      localStorage.setItem(chaveCount, String(countAtual + 1));
+      const elEnv = document.getElementById('wa-stat-env');
+      if(elEnv) elEnv.textContent = String(countAtual + 1);
+    }
+    return sucesso;
   }catch(e){
     console.error('WA enviar erro:', e);
     return false;
@@ -2479,48 +2493,45 @@ function initWaView(){
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
   }catch(e){}
-  // Verifica conexao DIRETAMENTE na Evolution API
-  // Usa waInstanciaId() que busca o uid mesmo sem CU
-  waSetStatus('connecting');
+  // Carrega contador de mensagens enviadas
+  try{
+    const mesAtual = new Date().toISOString().substring(0,7);
+    const elEnv = document.getElementById('wa-stat-env');
+    if(elEnv) elEnv.textContent = localStorage.getItem('wa_count_' + mesAtual) || '0';
+  }catch(e){}
+  // Verifica status WA: Supabase como cache rapido, API como confirmacao
   const instId = waInstanciaId();
+  const checkAPI = (iId) => {
+    if(!iId || iId === 'klipflow_demo'){ waSetStatus('disconnected'); return; }
+    fetch(window.EVO_URL + '/instance/connectionState/' + iId, {headers:{'apikey':window.EVO_KEY}})
+    .then(r=>r.json())
+    .then(d=>{
+      const state = d?.instance?.state || d?.state || '';
+      waSetStatus(state === 'open' ? 'connected' : 'disconnected');
+    })
+    .catch(()=>waSetStatus('disconnected'));
+  };
   if(!instId || instId === 'klipflow_demo'){
-    // CU ainda nao carregou - aguarda a sessao do Supabase
-    window.sb.auth.getSession().then(s => {
+    window.sb.auth.getSession().then(async s => {
       const uid = s?.data?.session?.user?.id || '';
-      const realInstId = uid ? 'klipflow_' + uid.substring(0,8) : null;
-      if(realInstId){
-        fetch(window.EVO_URL + '/instance/connectionState/' + realInstId, {
-          headers: {'apikey': window.EVO_KEY}
-        })
-        .then(r => r.json())
-        .then(d => {
-          const state = d?.instance?.state || d?.state || '';
-          waSetStatus(state === 'open' ? 'connected' : 'disconnected');
-        })
-        .catch(() => waSetStatus('disconnected'));
-      } else {
-        waSetStatus('disconnected');
-      }
+      if(!uid){ waSetStatus('disconnected'); return; }
+      const realInstId = 'klipflow_' + uid.substring(0,8);
+      try{
+        const {data:prof} = await window.sb.from('profiles').select('wa_connected').eq('id',uid).single();
+        if(prof?.wa_connected){
+          waSetStatus('connected');
+          checkAPI(realInstId);
+        } else {
+          checkAPI(realInstId);
+        }
+      }catch(e){ checkAPI(realInstId); }
     });
     return;
   }
-  fetch(window.EVO_URL + '/instance/connectionState/' + instId, {
-    headers: {'apikey': window.EVO_KEY}
-  })
-  .then(r => r.json())
-  .then(d => {
-    const state = d?.instance?.state || d?.state || '';
-    if(state === 'open'){
-      waSetStatus('connected');
-      if(CU?.id) localStorage.setItem('wa_connected_' + CU.id, '1');
-    } else {
-      waSetStatus('disconnected');
-      if(CU?.id) localStorage.removeItem('wa_connected_' + CU.id);
-    }
-  })
-  .catch(() => {
-    waSetStatus('disconnected');
-  });
+  const wasLocal = localStorage.getItem('wa_connected_' + (CU?.id||''));
+  if(wasLocal) waSetStatus('connected');
+  else waSetStatus('connecting');
+  checkAPI(instId);
 }
 
 
