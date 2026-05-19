@@ -5968,8 +5968,10 @@ async function renderizarLinkPage(slug){
 
   const arrowSvg=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
 
+  const mostrarAgendar = dados.show_agendar !== false;
+
   // Botao de agendamento online via WhatsApp
-  const agBtn=dados.whatsapp?`
+  const agBtn=dados.whatsapp&&mostrarAgendar?`
     <a href="https://wa.me/55${dados.whatsapp}?text=${encodeURIComponent('Olá! Gostaria de agendar um horário.')}" target="_blank" class="link-btn" style="background:linear-gradient(135deg,#0D6EFD,#0A4FBF);border-color:transparent;margin-bottom:10px">
       <div class="link-btn-icon" style="background:rgba(255,255,255,.2)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -5981,8 +5983,6 @@ async function renderizarLinkPage(slug){
       <div class="link-btn-arrow">${arrowSvg}</div>
     </a>`:'';
 
-  // Botao agendar respeita toggle
-  const mostrarAgendar = dados.show_agendar !== false;
   // Links personalizados do usuario
   const linksCustomHtml=(dados.links_custom||[]).filter(l=>l.titulo&&l.url).map(l=>{
     // Garante que URL tem protocolo
