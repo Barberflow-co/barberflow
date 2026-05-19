@@ -1140,6 +1140,10 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 
           <!-- Card Conexão -->
           <div class="card" style="padding:24px">
+            <div style="display:flex;gap:8px;margin-bottom:16px">
+              <button id="wa-tab-1" onclick="waSelectTab(1)" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--brand);color:#fff;transition:all .15s">Numero 1</button>
+              <button id="wa-tab-2" onclick="waSelectTab(2)" style="flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--gray-100);color:var(--gray-600);transition:all .15s">Numero 2</button>
+            </div>
             <div class="st" style="margin-bottom:16px">Conexão</div>
 
             <!-- Estado: desconectado -->
@@ -1256,7 +1260,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Confirmacao de agendamento</div>
+                        <div contenteditable="true" id="wa-title-confirm" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Confirmacao de agendamento</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviada logo apos o agendamento ser criado</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-confirm" onclick="waToogleSw(this)"></div>
@@ -1279,7 +1283,7 @@ Te esperamos!</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Lembrete 1 dia antes</div>
+                        <div contenteditable="true" id="wa-title-lembrete" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Lembrete 1 dia antes</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado na vespera do atendimento</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-lembrete" onclick="waToogleSw(this)"></div>
@@ -1301,7 +1305,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Alerta de retorno / manutencao</div>
+                        <div contenteditable="true" id="wa-title-retorno" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Alerta de retorno / manutencao</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Avisa quando esta na hora de voltar (7, 15 e 30 dias)</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-retorno" onclick="waToogleSw(this)"></div>
@@ -1321,7 +1325,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Aniversario do cliente</div>
+                        <div contenteditable="true" id="wa-title-aniv" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Aniversario do cliente</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Mensagem automatica no dia do aniversario</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-aniv" onclick="waToogleSw(this)"></div>
@@ -1341,7 +1345,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Reativacao de clientes sumidos</div>
+                        <div contenteditable="true" id="wa-title-sumido" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Reativacao de clientes sumidos</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Para clientes sem visita ha mais de 45 dias</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-sumido" onclick="waToogleSw(this)"></div>
@@ -1361,7 +1365,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--gray-800)">Pos-atendimento</div>
+                        <div contenteditable="true" id="wa-title-pos" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Pos-atendimento</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado 2 horas apos o atendimento ser finalizado</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-pos" onclick="waToogleSw(this)"></div>
@@ -1383,7 +1387,19 @@ Confirma sua presenca? Responda SIM ou NAO</div>
       <div class="ph"><div><div class="pt">Minha Página</div><div class="ps">Crie sua página de links para divulgar no Instagram</div></div></div>
       <div style="max-width:600px;display:flex;flex-direction:column;gap:16px">
         <div class="card">
-          <div class="st" style="margin-bottom:14px">Configure sua página</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div class="st" style="margin-bottom:0">Configure sua pagina</div>
+            <div style="display:flex;flex-direction:column;gap:8px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px 16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                <span style="font-size:12.5px;font-weight:600;color:var(--gray-600)">Pagina ativa</span>
+                <div class="wa-sw on" id="lp-sw-ativa" onclick="this.classList.toggle('on');salvarCfgLp()" title="Ativar ou desativar sua pagina publica"></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+                <span style="font-size:12.5px;font-weight:600;color:var(--gray-600)">Botao agendar</span>
+                <div class="wa-sw on" id="lp-sw-agendar" onclick="this.classList.toggle('on');salvarCfgLp()" title="Mostrar ou ocultar o botao de agendamento"></div>
+              </div>
+            </div>
+          </div>
           <div style="font-size:13px;color:var(--gray-500);margin-bottom:14px">Preencha os dados abaixo e gere seu link personalizado para colocar na bio do Instagram.</div>
           
           <!-- Upload de foto/logo -->
@@ -2106,6 +2122,16 @@ window.EVO_KEY = 'e40b81255bb4961a4c65b2393ddd8781479b7e0ec8f595d5e7ad8f7c08296a
 let waTimer = null;
 let waCheckInterval = null;
 
+let waTabAtual = 1;
+
+function waSelectTab(num){
+  waTabAtual = num;
+  const t1=document.getElementById('wa-tab-1'),t2=document.getElementById('wa-tab-2');
+  if(t1){t1.style.background=num===1?'var(--brand)':'var(--gray-100)';t1.style.color=num===1?'#fff':'var(--gray-600)';}
+  if(t2){t2.style.background=num===2?'var(--brand)':'var(--gray-100)';t2.style.color=num===2?'#fff':'var(--gray-600)';}
+  initWaView();
+}
+
 function waInstanciaId(){
   // ID unico por usuario: klipflow_ + user_id (primeiros 8 chars)
   let uid = CU?.id || '';
@@ -2125,7 +2151,8 @@ function waInstanciaId(){
       }
     }catch(e){}
   }
-  return 'klipflow_' + (uid || 'demo').substring(0,8);
+  const base='klipflow_'+(uid||'demo').substring(0,8);
+  return (typeof waTabAtual!=='undefined'&&waTabAtual===2)?base+'_b':base;
 }
 
 function waSetStatus(status, txt){
@@ -2328,8 +2355,10 @@ function waSalvarMensagens(){
       sumido: id('msg-sumido')?.innerText || '',
       pos: id('msg-pos')?.innerText || ''
     };
+    const titles={confirm:document.getElementById('wa-title-confirm')?.innerText,lembrete:document.getElementById('wa-title-lembrete')?.innerText,retorno:document.getElementById('wa-title-retorno')?.innerText,aniv:document.getElementById('wa-title-aniv')?.innerText,sumido:document.getElementById('wa-title-sumido')?.innerText,pos:document.getElementById('wa-title-pos')?.innerText};
     localStorage.setItem('wa_msgs', JSON.stringify(msgs));
-    toast('Mensagens salvas! [OK]','ok');
+    localStorage.setItem('wa_titles', JSON.stringify(titles));
+    toast('Salvo!','ok');
   }catch(e){ toast('Erro ao salvar','err'); }
 }
 
@@ -2538,6 +2567,7 @@ function initWaView(){
     if(msgs.aniv && id('msg-aniv')) id('msg-aniv').innerText = msgs.aniv;
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
+    try{const titles=JSON.parse(localStorage.getItem('wa_titles')||'{}');['confirm','lembrete','retorno','aniv','sumido','pos'].forEach(k=>{const el=document.getElementById('wa-title-'+k);if(el&&titles[k])el.innerText=titles[k];});}catch(e){}
   }catch(e){}
   // Carrega contadores
   try{
@@ -5699,6 +5729,23 @@ function toastCenter(msg, type='ok'){
   setTimeout(()=>{el.style.opacity='0';el.style.transform='translate(-50%,-50%) scale(0.9)';setTimeout(()=>el.remove(),300);}, 2800);
 }
 
+function salvarCfgLp(){
+  clearTimeout(window._lpSwTimer);
+  window._lpSwTimer = setTimeout(async () => {
+    if(!CU) return;
+    const lpAtiva = document.getElementById('lp-sw-ativa')?.classList.contains('on') !== false;
+    const lpAgendar = document.getElementById('lp-sw-agendar')?.classList.contains('on') !== false;
+    try{
+      const {data:profAtual} = await sb.from('profiles').select('link_page').eq('id',CU.id).single();
+      let lp = {};
+      if(profAtual?.link_page){ try{lp=JSON.parse(profAtual.link_page);}catch(e){} }
+      lp.ativa = lpAtiva; lp.show_agendar = lpAgendar;
+      await sb.from('profiles').update({link_page: JSON.stringify(lp)}).eq('id',CU.id);
+      toast(lpAtiva ? 'Pagina ativada' : 'Pagina desativada', 'ok');
+    }catch(e){ toast('Erro ao salvar','err'); }
+  }, 500);
+}
+
 async function salvarLinkPage(){
   if(!CU){toast('Você precisa estar logado!','err');return;}
   const slug=id('lp-cfg-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'-');
@@ -5715,7 +5762,12 @@ async function salvarLinkPage(){
   if(!fotoSalva){
     const{data:profAtual}=await sb.from('profiles').select('link_page').eq('id',CU.id).single();
     if(profAtual?.link_page){
-      try{const lpAtual=JSON.parse(profAtual.link_page);fotoSalva=lpAtual.foto||null;}catch(e){}
+      try{const lpAtual=JSON.parse(profAtual.link_page);
+        fotoSalva=lpAtual.foto||null;
+        const swAtiva=document.getElementById('lp-sw-ativa');
+        const swAg=document.getElementById('lp-sw-agendar');
+        if(swAtiva){ if(lpAtual.ativa===false) swAtiva.classList.remove('on'); else swAtiva.classList.add('on'); }
+        if(swAg){ if(lpAtual.show_agendar===false) swAg.classList.remove('on'); else swAg.classList.add('on'); }}catch(e){}
     }
   }
   
@@ -5730,7 +5782,9 @@ async function salvarLinkPage(){
     slug:slug,
     user_id:CU.id,
     hora_abre:id('lp-hora-abre')?.value||'09:00',
-    hora_fecha:id('lp-hora-fecha')?.value||'20:00',
+    hora_fecha:id('lp-hora-fecha')?.value,
+    ativa: document.getElementById('lp-sw-ativa')?.classList.contains('on') !== false,
+    show_agendar: document.getElementById('lp-sw-agendar')?.classList.contains('on') !== false||'20:00',
     dias:diasAtivos
   };
 
@@ -5826,7 +5880,13 @@ async function renderizarLinkPage(slug){
     });
     const profiles=await res.json();
     if(profiles&&profiles.length){
-      try{dados=JSON.parse(profiles[0].link_page||'{}');}catch(e){}
+      try{
+        const lpCheck=JSON.parse(profiles[0].link_page||'{}');
+        if(lpCheck.ativa===false){
+          document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center;padding:40px;color:#6B7280"><div style="font-size:18px;font-weight:700;margin-bottom:8px;color:#374151">Pagina indisponivel</div><div style="font-size:14px">Esta pagina esta temporariamente desativada.</div></div></div>';
+          return;
+        }
+        dados=JSON.parse(profiles[0].link_page||'{}');}catch(e){}
     }
   }catch(e){
     console.error('Erro ao buscar página:',e);
@@ -5921,6 +5981,8 @@ async function renderizarLinkPage(slug){
       <div class="link-btn-arrow">${arrowSvg}</div>
     </a>`:'';
 
+  // Botao agendar respeita toggle
+  const mostrarAgendar = dados.show_agendar !== false;
   // Links personalizados do usuario
   const linksCustomHtml=(dados.links_custom||[]).filter(l=>l.titulo&&l.url).map(l=>{
     // Garante que URL tem protocolo
