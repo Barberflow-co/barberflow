@@ -478,73 +478,109 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 .loading-sub{font-size:13px;color:var(--gray-400)}
 
 @media(max-width:768px){
+  /* ─── VARIÁVEIS ─── */
   :root{--sidebar-w:0px}
 
-  /* SIDEBAR — esconde e abre com toggle */
-  .sidebar{transform:translateX(-240px);transition:transform .3s;z-index:200;position:fixed}
-  .sidebar.open{transform:translateX(0);width:240px}
-  .main{margin-left:0}
+  /* ─── SIDEBAR: desliza de fora ─── */
+  .sidebar{transform:translateX(-260px);transition:transform .3s;z-index:300;position:fixed;width:260px!important;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299}
+  .sidebar.open~.sidebar-overlay,.sidebar-overlay.open{display:block}
 
-  /* OVERLAY quando sidebar aberta */
-  .sidebar-overlay{display:none}
+  /* ─── MAIN: sem margem ─── */
+  .main{margin-left:0!important;width:100%!important;overflow-x:hidden}
 
-  /* GRIDS — tudo em coluna única */
-  .stats-row{grid-template-columns:1fr 1fr}
-  .fg2,.fg3{grid-template-columns:1fr}
+  /* ─── VIEW: padding menor ─── */
+  .view{padding:16px 14px}
+
+  /* ─── PAGE HEADER ─── */
+  .ph{flex-wrap:wrap;gap:10px;margin-bottom:16px}
+  .ph>div:first-child{flex:1;min-width:0}
+  .ph>div:last-child{width:100%;display:flex;gap:8px;flex-wrap:wrap}
+  .ph button{flex:1;min-width:140px;justify-content:center}
+  .pt{font-size:18px!important}
+  .ps{font-size:12px}
+
+  /* ─── AUTH ─── */
   .auth-left{display:none}
-  .auth-right{flex:1}
+  .auth-right{flex:1;padding:24px 16px}
 
-  /* DASHBOARD — cards em grid 2x2 no mobile */
+  /* ─── CARDS ─── */
+  .card{padding:14px}
+
+  /* ─── GRIDS: coluna única ─── */
+  .stats-row{grid-template-columns:1fr 1fr;gap:10px}
+  .fg2,.fg3,[style*="grid-template-columns: 1fr 1fr"],[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
   #dash-body{grid-template-columns:1fr!important}
-
-  /* PÁGINA HEADER */
-  .ph{flex-wrap:wrap;gap:10px}
-  .ph>div:last-child{width:100%}
-  .ph button, .ph>div[style*="display:flex"]{width:100%;justify-content:flex-end}
-
-  /* TABELAS — scroll horizontal */
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:500px}
-
-  /* MODAIS — fullscreen no mobile */
-  .modal{width:100%!important;max-width:100%!important;max-height:90vh;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;top:auto;margin:0}
-  .mo{align-items:flex-end}
-
-  /* AGENDA — tabs menores */
-  .ag-view-tabs{gap:4px}
-  .ag-view-tabs button{font-size:11px;padding:5px 8px}
-
-  /* PERFIL — coluna única */
-  #view-perfil>div[style*="grid-template-columns"]{display:block!important}
-  #view-perfil>div>div:first-child{margin-bottom:16px}
-
-  /* RELATÓRIO — corpo em coluna única */
   #rel-body{display:flex!important;flex-direction:column!important}
 
-  /* PERÍODO FILTROS — wrap */
+  /* ─── DASHBOARD ─── */
+  .stat-val{font-size:20px!important}
+  .stat-box{padding:12px}
   .dash-period,.com-period,.rel-period{font-size:11px;padding:4px 8px}
 
-  /* BOTÃO MENU MOBILE */
-  .mobile-menu-btn{display:flex!important}
+  /* ─── AGENDA ─── */
+  .ag-view-tabs{gap:4px;overflow-x:auto;white-space:nowrap;padding-bottom:4px}
+  .ag-view-tabs button{font-size:11px;padding:5px 10px;white-space:nowrap}
+  /* Grade semanal: scroll horizontal */
+  .ag-week-wrap,.ag-grid-wrap,.ag-body{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ag-week-grid,.ag-week-cols,.ag-week{min-width:560px}
+  /* Dia único: ok */
+  .ag-day-view{min-width:unset;width:100%}
+  /* Botões de data */
+  .ag-nav{gap:6px}
+  .ag-nav button{padding:6px 10px;font-size:12px}
+  .ag-today-btn{display:none}
 
-  /* ANAMNESE — modal largo */
-  #m-anam .modal{max-width:100%!important}
+  /* ─── WHATSAPP ─── */
+  #view-whatsapp>[style*="grid-template-columns"]{display:flex!important;flex-direction:column!important}
+  #view-whatsapp [style*="grid-template-columns:300px"]{display:flex!important;flex-direction:column!important;width:100%}
 
-  /* CARDS PERFIL */
+  /* ─── TABELAS: scroll horizontal ─── */
+  .tw,.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
+  table{min-width:480px}
+  th,td{padding:10px 10px;font-size:12.5px;white-space:nowrap}
+
+  /* ─── MODAIS: bottom sheet ─── */
+  .mo{align-items:flex-end}
+  .modal{width:100%!important;max-width:100%!important;max-height:92vh;border-radius:18px 18px 0 0!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;top:auto!important;margin:0!important;overflow-y:auto}
+  #m-anam .modal,#m-cliente .modal{max-height:95vh}
+
+  /* ─── FORMULÁRIOS ─── */
+  .form-row,[style*="grid-template-columns"]{display:flex!important;flex-direction:column!important;gap:10px}
+  input,select,textarea{font-size:16px!important} /* evita zoom no iOS */
+
+  /* ─── BOTÕES ─── */
+  .btn-md{padding:9px 14px;font-size:13px}
+
+  /* ─── PERFIL ─── */
+  #view-perfil>div[style*="grid-template-columns"]{display:block!important}
+  #view-perfil>div>div:first-child{margin-bottom:16px}
   .prof-card{min-width:0}
 
-  /* STATS menor no mobile */
+  /* ─── BOTÃO MENU MOBILE ─── */
+  .mobile-menu-btn{display:flex!important}
+
+  /* ─── BOTTOM NAV MOBILE ─── */
+  .mobile-bottom-nav{display:flex!important}
+  .main{padding-bottom:64px}
+
+  /* ─── MISC ─── */
   .stat-val{font-size:18px!important}
-  .stat-box{padding:12px}
+  #view-relatorios .card{overflow-x:auto}
+  .aacao-btn{font-size:13px;padding:11px 14px}
 }
 
 @media(max-width:480px){
-  /* MUITO pequeno — ajustes extras */
-  .stats-row{grid-template-columns:1fr 1fr}
-  .stat-val{font-size:16px!important}
-  h1,.pt{font-size:18px}
-  .btn-md{padding:8px 14px;font-size:13px}
-  #dash-body{grid-template-columns:1fr!important}
+  .view{padding:12px 10px}
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-val{font-size:17px!important}
+  .pt{font-size:16px!important}
+  .btn-md{padding:8px 12px;font-size:12.5px}
+  .card{padding:12px}
+  .modal{max-height:95vh}
+  table{min-width:420px}
+  th,td{padding:8px 8px;font-size:12px}
 }
 
 /* -- SCORE DO CLIENTE --───────────────────────────── */
@@ -589,6 +625,13 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
 .wa-msg-box{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--gray-700);line-height:1.7;white-space:pre-wrap;font-family:inherit;min-height:60px;transition:border-color .2s}
 .wa-msg-box:focus{outline:none;border-color:var(--brand);background:#fff}
 .wa-msg-box:hover{border-color:var(--gray-300)}
+
+/* ─── BOTTOM NAV MOBILE ─── */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:#fff;border-top:1px solid var(--gray-200);z-index:100;justify-content:space-around;align-items:center;padding:0 4px;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.mobile-bottom-nav a,.mobile-bottom-nav button{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:9.5px;font-weight:600;padding:8px 4px;border-radius:8px;text-decoration:none;transition:color .15s}
+.mobile-bottom-nav a.active,.mobile-bottom-nav button.active,.mobile-bottom-nav a:has(svg.act),.mob-nav-active{color:var(--brand)!important}
+.mobile-bottom-nav svg{transition:color .15s}
+.mobile-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:none;border:none;cursor:pointer;color:var(--gray-600);border-radius:8px}
 </style>
 </head>
 <body>
@@ -1260,7 +1303,7 @@ body.dark .ag-nav-btn{background:#2A2A3E!important;color:#EBEBFF!important;borde
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-confirm" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Confirmacao de agendamento</div>
+                        <div contenteditable="true" id="wa-title-confirm" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Confirmacao de agendamento</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviada logo apos o agendamento ser criado</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-confirm" onclick="waToogleSw(this)"></div>
@@ -1283,7 +1326,7 @@ Te esperamos!</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-lembrete" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Lembrete 1 dia antes</div>
+                        <div contenteditable="true" id="wa-title-lembrete" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Lembrete 1 dia antes</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado na vespera do atendimento</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-lembrete" onclick="waToogleSw(this)"></div>
@@ -1305,7 +1348,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-retorno" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Alerta de retorno / manutencao</div>
+                        <div contenteditable="true" id="wa-title-retorno" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Alerta de retorno / manutencao</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Avisa quando esta na hora de voltar (7, 15 e 30 dias)</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-retorno" onclick="waToogleSw(this)"></div>
@@ -1325,7 +1368,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-aniv" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Aniversario do cliente</div>
+                        <div contenteditable="true" id="wa-title-aniv" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Aniversario do cliente</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Mensagem automatica no dia do aniversario</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-aniv" onclick="waToogleSw(this)"></div>
@@ -1345,7 +1388,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-sumido" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Reativacao de clientes sumidos</div>
+                        <div contenteditable="true" id="wa-title-sumido" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Reativacao de clientes sumidos</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Para clientes sem visita ha mais de 45 dias</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-sumido" onclick="waToogleSw(this)"></div>
@@ -1365,7 +1408,7 @@ Confirma sua presenca? Responda SIM ou NAO</div>
                   <div style="flex:1;min-width:0">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                       <div>
-                        <div contenteditable="true" id="wa-title-pos" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar">Pos-atendimento</div>
+                        <div contenteditable="true" id="wa-title-pos" spellcheck="false" style="font-weight:700;font-size:14px;color:var(--gray-800);outline:none;cursor:text;padding-bottom:1px;border-bottom:1px dashed transparent;transition:border-color .15s" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='transparent';waSalvarMensagens()" title="Clique para editar o titulo">Pos-atendimento</div>
                         <div style="font-size:12px;color:var(--gray-400);margin-top:1px">Enviado 2 horas apos o atendimento ser finalizado</div>
                       </div>
                       <div class="wa-sw on" id="wa-sw-pos" onclick="waToogleSw(this)"></div>
@@ -2126,21 +2169,20 @@ let waTabAtual = 1;
 
 function waSelectTab(num){
   waTabAtual = num;
-  const t1=document.getElementById('wa-tab-1'),t2=document.getElementById('wa-tab-2');
+  const t1=document.getElementById('wa-tab-1');
+  const t2=document.getElementById('wa-tab-2');
   if(t1){t1.style.background=num===1?'var(--brand)':'var(--gray-100)';t1.style.color=num===1?'#fff':'var(--gray-600)';}
   if(t2){t2.style.background=num===2?'var(--brand)':'var(--gray-100)';t2.style.color=num===2?'#fff':'var(--gray-600)';}
   initWaView();
 }
 
 function waInstanciaId(){
-  // ID unico por usuario: klipflow_ + user_id (primeiros 8 chars)
+  // ID unico por usuario: klipflow_ + user_id + sufixo por numero
   let uid = CU?.id || '';
   if(!uid){
     try{
-      // Busca em todas as chaves do localStorage
       for(const k of Object.keys(localStorage)){
         const v = localStorage.getItem(k) || '';
-        // Supabase salva a sessao em chaves como sb-xxx-auth-token
         if(v.includes('"user"') && v.includes('"id"')){
           try{
             const d = JSON.parse(v);
@@ -2151,8 +2193,8 @@ function waInstanciaId(){
       }
     }catch(e){}
   }
-  const base='klipflow_'+(uid||'demo').substring(0,8);
-  return (typeof waTabAtual!=='undefined'&&waTabAtual===2)?base+'_b':base;
+  const base = 'klipflow_' + (uid || 'demo').substring(0,8);
+  return (typeof waTabAtual !== 'undefined' && waTabAtual === 2) ? base + '_b' : base;
 }
 
 function waSetStatus(status, txt){
@@ -2355,7 +2397,14 @@ function waSalvarMensagens(){
       sumido: id('msg-sumido')?.innerText || '',
       pos: id('msg-pos')?.innerText || ''
     };
-    const titles={confirm:document.getElementById('wa-title-confirm')?.innerText,lembrete:document.getElementById('wa-title-lembrete')?.innerText,retorno:document.getElementById('wa-title-retorno')?.innerText,aniv:document.getElementById('wa-title-aniv')?.innerText,sumido:document.getElementById('wa-title-sumido')?.innerText,pos:document.getElementById('wa-title-pos')?.innerText};
+    const titles = {
+      confirm: document.getElementById('wa-title-confirm')?.innerText,
+      lembrete: document.getElementById('wa-title-lembrete')?.innerText,
+      retorno: document.getElementById('wa-title-retorno')?.innerText,
+      aniv: document.getElementById('wa-title-aniv')?.innerText,
+      sumido: document.getElementById('wa-title-sumido')?.innerText,
+      pos: document.getElementById('wa-title-pos')?.innerText,
+    };
     localStorage.setItem('wa_msgs', JSON.stringify(msgs));
     localStorage.setItem('wa_titles', JSON.stringify(titles));
     toast('Salvo!','ok');
@@ -2567,7 +2616,14 @@ function initWaView(){
     if(msgs.aniv && id('msg-aniv')) id('msg-aniv').innerText = msgs.aniv;
     if(msgs.sumido && id('msg-sumido')) id('msg-sumido').innerText = msgs.sumido;
     if(msgs.pos && id('msg-pos')) id('msg-pos').innerText = msgs.pos;
-    try{const titles=JSON.parse(localStorage.getItem('wa_titles')||'{}');['confirm','lembrete','retorno','aniv','sumido','pos'].forEach(k=>{const el=document.getElementById('wa-title-'+k);if(el&&titles[k])el.innerText=titles[k];});}catch(e){}
+    // Carrega titulos customizados
+    try{
+      const titles = JSON.parse(localStorage.getItem('wa_titles') || '{}');
+      ['confirm','lembrete','retorno','aniv','sumido','pos'].forEach(k => {
+        const el = document.getElementById('wa-title-'+k);
+        if(el && titles[k]) el.innerText = titles[k];
+      });
+    }catch(e){}
   }catch(e){}
   // Carrega contadores
   try{
@@ -3948,7 +4004,7 @@ const ST_DOTS={
 
 async function abrirAcaoAg(agId){
   agAcaoId=agId;
-  const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,id)').eq('id',agId).single();
+  const{data:a}=await sb.from('agendamentos').select('*,clientes(nome,id,telefone)').eq('id',agId).single();
   if(!a)return;
   agAcaoCliId=a.cliente_id;
 
@@ -3979,9 +4035,11 @@ async function abrirAcaoAg(agId){
     html+=mkBtn('confirmar','Reagendar (voltar para aguardando)','#1E40AF',`aacaoStatus('aguardando')`);
   }
   // Sempre mostra botao de envio WA (independente do status)
+  // Status WA: mostra se a mensagem foi ou nao enviada
   if(a.wa_confirmado){
+    // MSG JA ENVIADA: badge verde + botao reenviar
     html+=`<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;margin-top:4px">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="#22C55E" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#22C55E" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
       <div style="flex:1">
         <div style="font-size:12.5px;font-weight:700;color:#166534">Mensagem enviada</div>
         <div style="font-size:11px;color:#16A34A">Confirmacao WA ja foi disparada</div>
@@ -3989,11 +4047,12 @@ async function abrirAcaoAg(agId){
       <button onclick="aacaoEnviarWA()" style="background:none;border:1px solid #BBF7D0;border-radius:8px;padding:4px 10px;font-size:11.5px;color:#16A34A;cursor:pointer;font-weight:600;white-space:nowrap;flex-shrink:0">Reenviar</button>
     </div>`;
   } else if(a.clientes?.telefone){
+    // MSG NAO ENVIADA: badge laranja + botao enviar com 1 clique (sem popup)
     html+=`<button class="aacao-btn aacao-btn-wa" onclick="aacaoEnviarWA()" style="margin-top:4px">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52c.149-.174.198-.298.298-.497c.099-.198.05-.371-.025-.52c-.075-.149-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413c.248-.694.248-1.289.173-1.413z"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a8.85 8.85 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
       <div style="flex:1">
         <div style="font-size:13px;font-weight:700">Mensagem nao enviada</div>
-        <div style="font-size:11px;opacity:.8">Clique para enviar agora</div>
+        <div style="font-size:11px;opacity:.8">Clique para enviar confirmacao agora</div>
       </div>
     </button>`;
   }
@@ -4064,10 +4123,12 @@ async function aacaoEnviarWA(){
   const hr=new Date(a.data_hora).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const dt=new Date(a.data_hora).toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
   const serv=a.profissional||'servico';
-  const tpl=document.getElementById('msg-confirm')?.innerText||'Ola {nome}! Seu agendamento foi confirmado: {data} as {hora} - {servico}. Te esperamos!';
-  const msg=tpl.replace(/{nome}/g,nome).replace(/{data}/g,dt).replace(/{hora}/g,hr).replace(/{servico}/g,serv);
+  const msgTemplate=document.getElementById('msg-confirm')?.innerText||'Ola {nome}! Seu agendamento foi confirmado:\n {data} as {hora}\n {servico}\nTe esperamos!';
+  const msg=msgTemplate.replace(/{nome}/g,nome).replace(/{data}/g,dt).replace(/{hora}/g,hr).replace(/{servico}/g,serv);
+  // Feedback visual no botao
   const btn=document.querySelector('.aacao-btn-wa');
-  if(btn){btn.style.opacity='.5';btn.style.pointerEvents='none';}
+  if(btn){btn.style.opacity='.6';btn.style.pointerEvents='none';}
+  // Envia direto via API - sem abrir WhatsApp Web
   const ok=await waEnviarMensagem(telefone, msg, agAcaoId);
   if(ok){
     toast('Mensagem enviada!','ok');
@@ -4078,6 +4139,7 @@ async function aacaoEnviarWA(){
     toast('Falhou. Verifique se o WhatsApp esta conectado.','err');
   }
 }
+
 async function aacaoExcluir(){
   cm('m-ag-acao');
   await excluirAg(agAcaoId);
@@ -5484,7 +5546,31 @@ async function gerarTermoPDF(){
   </head><body>
     <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
     ${html}
-  </body></html>`);
+  
+  <!-- BOTTOM NAV MOBILE -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+    <button onclick="sv('dashboard');mobNavActive(this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Inicio
+    </button>
+    <button onclick="sv('agenda');mobNavActive(this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Agenda
+    </button>
+    <button onclick="sv('clientes');mobNavActive(this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Clientes
+    </button>
+    <button onclick="sv('caixa');mobNavActive(this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Caixa
+    </button>
+    <button onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      Menu
+    </button>
+  </nav>
+</body></html>`);
   win.document.close();
   toast('Termo gerado! Clique em "Imprimir / Salvar PDF"','ok');
 }
@@ -5739,7 +5825,8 @@ function salvarCfgLp(){
       const {data:profAtual} = await sb.from('profiles').select('link_page').eq('id',CU.id).single();
       let lp = {};
       if(profAtual?.link_page){ try{lp=JSON.parse(profAtual.link_page);}catch(e){} }
-      lp.ativa = lpAtiva; lp.show_agendar = lpAgendar;
+      lp.ativa = lpAtiva;
+      lp.show_agendar = lpAgendar;
       await sb.from('profiles').update({link_page: JSON.stringify(lp)}).eq('id',CU.id);
       toast(lpAtiva ? 'Pagina ativada' : 'Pagina desativada', 'ok');
     }catch(e){ toast('Erro ao salvar','err'); }
@@ -5784,7 +5871,7 @@ async function salvarLinkPage(){
     hora_abre:id('lp-hora-abre')?.value||'09:00',
     hora_fecha:id('lp-hora-fecha')?.value,
     ativa: document.getElementById('lp-sw-ativa')?.classList.contains('on') !== false,
-    show_agendar: document.getElementById('lp-sw-agendar')?.classList.contains('on') !== false||'20:00',
+    show_agendar: document.getElementById('lp-sw-agendar')?.classList.contains('on') !== false,
     dias:diasAtivos
   };
 
@@ -5883,7 +5970,7 @@ async function renderizarLinkPage(slug){
       try{
         const lpCheck=JSON.parse(profiles[0].link_page||'{}');
         if(lpCheck.ativa===false){
-          document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center;padding:40px;color:#6B7280"><div style="font-size:18px;font-weight:700;margin-bottom:8px;color:#374151">Pagina indisponivel</div><div style="font-size:14px">Esta pagina esta temporariamente desativada.</div></div></div>';
+          document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center;padding:40px;color:#6B7280"><div style="font-size:48px;margin-bottom:16px">[cadeado]</div><div style="font-size:18px;font-weight:700;margin-bottom:8px;color:#374151">Pagina indisponivel</div><div style="font-size:14px">Esta pagina esta temporariamente desativada.</div></div></div>';
           return;
         }
         dados=JSON.parse(profiles[0].link_page||'{}');}catch(e){}
@@ -5968,7 +6055,9 @@ async function renderizarLinkPage(slug){
 
   const arrowSvg=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
 
-  const mostrarAgendar = dados.show_agendar !== false;
+  // Respeita o toggle de mostrar/ocultar botao de agendamento
+  // show_agendar=true mostra, false ou qualquer outro valor oculta
+  const mostrarAgendar = dados.show_agendar === true || dados.show_agendar === undefined;
 
   // Botao de agendamento online via WhatsApp
   const agBtn=dados.whatsapp&&mostrarAgendar?`
@@ -6719,6 +6808,11 @@ function go(p){
   id('page-'+p).classList.add('active');
   const loading=id('page-loading');
   if(loading){loading.classList.add('hide');setTimeout(()=>loading.style.display='none',400);}
+}
+
+function mobNavActive(btn){
+  document.querySelectorAll('.mobile-bottom-nav button').forEach(b=>b.classList.remove('mob-nav-active'));
+  if(btn) btn.classList.add('mob-nav-active');
 }
 
 async function sv(name,el){
